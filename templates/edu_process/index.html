@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if not user.is_authenticated %}
+<form method="POST" action="/">{% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="submit" value="Вхід">
+</form>
+{% else %}
+<a href="{{ profile_url }}">Вхід</a>
+{% endif %}
+</body>
+</html>
