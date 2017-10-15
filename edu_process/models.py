@@ -65,3 +65,9 @@ class Profile(models.Model):
 
     def is_student(self):
         return self.user_type == self.STUDENT
+
+    def __str__(self):
+        return '%s %s (%s)' % (self.user.first_name,
+                               self.user.last_name,
+                               self.get_user_type_display()
+                               )

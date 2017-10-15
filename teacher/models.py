@@ -11,14 +11,22 @@ class Course(models.Model):
         verbose_name = 'Курс'
         verbose_name_plural = 'Курси'
 
+    name = models.CharField(verbose_name='Назва курсу', max_length=128)
     description = models.TextField(verbose_name='Опис курсу', max_length=4096)
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
 
-    visible = models.BooleanField(default=True)
-    visible_for_groups = models.ManyToManyField(Group)
-
     draft = models.BooleanField(default=False)
     pub_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '%s (by: %s)' % (self.name, self.author.user.last_name)
+
+
+class CourseLayout(models.Model):
+    course = models.ForeignKey(Course)
+
+    visible_for_all = models.BooleanField(default=True)
+    visible_for_groups = models.ManyToManyField(Group)
 
 
 class Module(models.Model):
@@ -27,6 +35,12 @@ class Module(models.Model):
         verbose_name_plural = 'Модулі'
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    name = models.CharField(
+        verbose_name='Назва модулю',
+        max_length=128,
+        blank=True,
+        null=True
+    )
     description = models.TextField(
         verbose_name='Опис модулю',
         max_length=4096,
@@ -37,6 +51,9 @@ class Module(models.Model):
     draft = models.BooleanField(default=False)
     pub_date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return '%s (Курс: %s)' % (self.name, self.course.name)
+
 
 class Lesson(models.Model):
     class Meta:
@@ -44,11 +61,19 @@ class Lesson(models.Model):
         verbose_name_plural = 'Заняття'
 
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
-    name = models.CharField(verbose_name='Назва заняття', max_length=255)
+    name = models.CharField(
+        verbose_name='Назва заняття',
+        max_length=255,
+        blank=True,
+        null=True
+    )
     short_description = models.TextField(verbose_name='Короткий опис заняття', max_length=512)
 
     pub_date = models.DateTimeField(auto_now_add=True)
     change_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s (Курс: %s)' % (self.name, self.module.course.name)
 
 
 class LessonFile(models.Model):
@@ -58,4 +83,4 @@ class LessonFile(models.Model):
 
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
 
-    file = models.FileField(verbose_name='')
+    file = models.FileField(verbose_name='Файл')
