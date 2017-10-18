@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.shortcuts import reverse
 
 
 class Group(models.Model):
@@ -65,6 +66,15 @@ class Profile(models.Model):
 
     def is_student(self):
         return self.user_type == self.STUDENT
+
+    user_type_urls = {
+        TEACHER: reverse('teacher:index'),
+        STUDENT: reverse('student:profile'),
+    }
+
+    def get_absolute_url(self):
+        """Повертає посилання в особистий кабінет викладача залежно від типу профілю"""
+        return self.user_type_urls.get(self.user_type, reverse('index'))
 
     def __str__(self):
         return '%s %s (%s)' % (self.user.first_name,
