@@ -1,5 +1,12 @@
+import os
+
 from django.db import models
-from edu_process.models import Profile, Group
+
+from edu_process.models import (
+    Profile, Group, profile_photo_path,
+)
+
+
 
 
 class Course(models.Model):
@@ -76,6 +83,16 @@ class Lesson(models.Model):
         return '%s (Курс: %s)' % (self.name, self.module.course.name)
 
 
+def lesson_file_upload_path(instance, filename):
+    return os.path.join(
+        profile_photo_path(instance.lesson.module.course.author, ''),
+        str(instance.lesson.module.course.id),
+        str(instance.lesson.module.id),
+        str(instance.lesson.id),
+        filename
+    )
+
+
 class LessonFile(models.Model):
     class Meta:
         verbose_name = 'Навчальний файл'
@@ -83,4 +100,4 @@ class LessonFile(models.Model):
 
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
 
-    file = models.FileField(verbose_name='Файл')
+    file = models.FileField(verbose_name='Файл', upload_to=lesson_file_upload_path)

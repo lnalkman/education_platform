@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -12,6 +14,10 @@ class Group(models.Model):
         blank=True,
         null=True
     )
+
+
+def profile_photo_path(instance, filename):
+    return os.path.join(instance.user_type, instance.user.username, filename)
 
 
 class Profile(models.Model):
@@ -50,6 +56,7 @@ class Profile(models.Model):
 
     photo = models.FileField(
         verbose_name='Фото',
+        upload_to=profile_photo_path,
         blank=True,
         null=True
     )
