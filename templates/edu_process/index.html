@@ -1,14 +1,94 @@
+{% load staticfiles %}
 <!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<form method="POST" action="/">{% csrf_token %}
-    {{ form }}
+<html lang="ru">
 
-    <input type="submit" value="Вхід">
-</form>
+<head>
+
+	<meta charset="utf-8">
+
+	<title>Title</title>
+	<meta name="description" content="">
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<meta property="og:image" content="path/to/image.jpg">
+	<link rel="shortcut icon" href="{%  static 'img/favicon/favicon.ico' %}" type="image/x-icon">
+	<link rel="apple-touch-icon" href="{%  static 'img/favicon/apple-touch-icon.png' %}">
+	<link rel="apple-touch-icon" sizes="72x72" href="{%  static 'img/favicon/apple-touch-icon-72x72.png' %}">
+	<link rel="apple-touch-icon" sizes="114x114" href="{%  static 'img/favicon/apple-touch-icon-114x114.png' %}">
+
+	<!-- Chrome, Firefox OS and Opera -->
+	<meta name="theme-color" content="#000">
+	<!-- Windows Phone -->
+	<meta name="msapplication-navbutton-color" content="#000">
+	<!-- iOS Safari -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="#000">
+
+</head>
+
+<body>
+
+	<header class="main-head" style="background-image: url({%  static 'img/header-background.jpg' %});">
+		<!-- Сюда добавить уведомление об ошибки -->
+        {{ form.non_field_errors }}
+{#		<ul class="errorlist">#}
+{#			<li class="exit">x</li>#}
+{#			<h4>Попередження</h4>#}
+{#			<li>Ви ввели неправильний логін або пароль, будь ласка перевірте данні та спробуйте ще раз.</li>#}
+{#		</ul>#}
+		<!-- Убрать ссылку, просто логотип -->
+		<a href="#" class="logo"><img src="{%  static 'img/logo.png' %}" alt="Canvas"></a>
+
+		<div class="header-wrap">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-8">
+						<div class="header-name">
+							<h1>KPI Edu System</h1>
+							<p>
+                                Сучасна система навчання та контролю знань.
+                                Різні варіанти подачі інформації.
+                                Зручний інтерфейс.
+                                Доступ будь-де, будь-коли, з будь-якого пристрою
+                            </p>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<form action="{% url 'index' %}" method="POST" class="forms">{% csrf_token %}
+							<h4>Вхід до системи</h4>
+							<p>Щоб увійти в особистий кабінет уведіть ваш логін та пароль. </p>
+                            <p>
+                                {{ form.username.label }}
+                                {{ form.username }}
+                            </p>
+                            <p>
+                                {{ form.password.label }}
+                                {{ form.password }}
+                            </p>
+
+{#							<label>#}
+{#								<span>Login:</span>#}
+{#								<input type="text" name="login" required>#}
+{#							</label>#}
+{#							<label>#}
+{#								<span>Password:</span>#}
+{#								<input type="password" name="password" required>#}
+{#							</label>#}
+
+							<div class="button-wrap">
+								<button class="buttons">Вхід</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</header>
+	
+	<link rel="stylesheet" href="{%  static 'css/main.min.css' %}">
+	<script src="{%  static 'js/scripts.min.js' %}"></script>
+
 </body>
 </html>
