@@ -31,12 +31,15 @@
 
 	<header class="main-head" style="background-image: url({%  static 'img/header-background.jpg' %});">
 		<!-- Сюда добавить уведомление об ошибки -->
-        {{ form.non_field_errors }}
-{#		<ul class="errorlist">#}
-{#			<li class="exit">x</li>#}
-{#			<h4>Попередження</h4>#}
-{#			<li>Ви ввели неправильний логін або пароль, будь ласка перевірте данні та спробуйте ще раз.</li>#}
-{#		</ul>#}
+        {% if form.non_field_errors %}
+            <ul class="animated fadeIn errorlist">
+                <li class="exit">x</li>
+                <h4>Попередження</h4>
+                {% for err in form.non_field_errors %}
+                    <li>{{ err }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 		<!-- Убрать ссылку, просто логотип -->
 		<a href="#" class="logo"><img src="{%  static 'img/logo.png' %}" alt="Canvas"></a>
 
@@ -87,7 +90,8 @@
 		
 	</header>
 	
-	<link rel="stylesheet" href="{%  static 'css/main.min.css' %}">
+    <link rel="stylesheet" href="{%  static 'css/main.min.css' %}">
+    <link rel="stylesheet" href="{%  static 'css/animate.css' %}">
 	<script src="{%  static 'js/scripts.min.js' %}"></script>
 
 </body>

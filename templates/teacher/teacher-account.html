@@ -1,10 +1,131 @@
+{% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+
+	<meta charset="utf-8">
+
+	<title>Title</title>
+	<meta name="description" content="">
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<meta property="og:image" content="path/to/image.jpg">
+	<link rel="shortcut icon" href="{% static 'img/favicon/favicon.ico' %}" type="image/x-icon">
+	<link rel="apple-touch-icon" href="{% static 'img/favicon/apple-touch-icon.png' %}">
+	<link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/favicon/apple-touch-icon-72x72.png' %}">
+	<link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/favicon/apple-touch-icon-114x114.png' %}">
+
+	<!-- Chrome, Firefox OS and Opera -->
+	<meta name="theme-color" content="#000">
+	<!-- Windows Phone -->
+	<meta name="msapplication-navbutton-color" content="#000">
+	<!-- iOS Safari -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="#000">
+
 </head>
+
 <body>
-<h1>Тут кабінет викладача</h1>
+
+	<header class="header">
+		<ul>
+			<li>
+				<a class="logo" href="index.html">
+					<img src="{% static 'img/logo.png' %}" alt="KPI">
+				</a>
+			</li>
+			<li>
+				<a href="account.html" class="active">
+					<img src="{% static 'img/menu/account.png' %}" alt="Account">
+				</a>
+				<span class="tooltip">Account</span>
+			</li>
+			<li>
+				<a href="#">
+					<img src="{% static 'img/menu/courses.png' %}" alt="Courses">
+				</a>
+				<span class="tooltip">Courses</span>
+			</li>
+			<li>
+				<a href="#">
+					<img src="{% static 'img/menu/letters.png' %}" alt="Letters">
+				</a>
+				<span class="tooltip">Letters</span>
+			</li>
+			<li>
+				<a href="#">
+					<img src="{% static 'img/menu/calendar.png' %}" alt="Calendar">
+				</a>
+				<span class="tooltip">Calendar</span>
+			</li>
+			<li>
+				<a href="#">
+					<img src="{% static 'img/menu/blog.png' %}" alt="Blog">
+				</a>
+				<span class="tooltip">Blog</span>
+			</li>
+		</ul>
+	</header>
+	
+
+	<div class="page-content">
+		<h2>Викладацький профіль</h2>
+		<div class="profile-info">
+			<div class="image">
+                <img src="{% if object.photo %}{{ object.photo.url }}{% else %}{% static 'img/profile.jpg' %}{% endif %}" alt="Profile">
+            </div>
+			<div class="info">
+				<div class="name">{{ object.user.first_name }} {{ object.user.last_name }}</div>
+                <div class="personal-info">{% if object.about_me %}{{ object.about_me }}{% else %}<span style="color:#bbb">Інформація відсутня</span>{% endif %}</div>
+			</div>
+		</div>
+		<h3>Останні публікації</h3>
+		<div class="posts">
+			<a href="#" class="post">
+				<div class="image" style="background-image: url({% static 'img/post.jpg' %});"></div>
+				<div class="content">
+					<div class="name">Name</div>
+					<div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam quibusdam sit magni beatae suscipit aspernatur, numquam odit provident non. Delectus magnam labore blanditiis ad asperiores officiis ipsa fugit voluptatum quia.</div>
+				</div>
+			</a>
+			<a href="#" class="post">
+				<div class="image" style="background-image: url({% static 'img/post.jpg' %});"></div>
+				<div class="content">
+					<div class="name">Name</div>
+					<div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam quibusdam sit magni beatae suscipit aspernatur, numquam odit provident non. Delectus magnam labore blanditiis ad asperiores officiis ipsa fugit voluptatum quia.</div>
+				</div>
+			</a>
+			<a href="#" class="post">
+				<div class="image" style="background-image: url({% static 'img/post.jpg' %});"></div>
+				<div class="content">
+					<div class="name">Name</div>
+					<div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam quibusdam sit magni beatae suscipit aspernatur, numquam odit provident non. Delectus magnam labore blanditiis ad asperiores officiis ipsa fugit voluptatum quia.</div>
+				</div>
+			</a>
+		</div>
+	</div>
+
+	
+	<div class="events">
+		<h3>Найближчі події</h3>
+		<a href="#" class="event">
+			<div class="date">
+				<span class="number">25.</span><span class="month">10</span>
+			</div>
+			<div class="name">Зробити те!</div>
+		</a href="#">
+		<a href="#" class="event">
+			<div class="date">
+				<span class="number">30.</span><span class="month">10</span>
+			</div>
+			<div class="name">Вийти на двір!</div>
+		</a href="#">
+	</div>
+
+	<link rel="stylesheet" href="{% static 'css/main.min.css' %}">
+	<script src="{% static 'js/scripts.min.js' %}"></script>
+
 </body>
 </html>
