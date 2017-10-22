@@ -101,3 +101,27 @@ class LessonFile(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
 
     file = models.FileField(verbose_name='Файл', upload_to=lesson_file_upload_path)
+
+
+class Publication(models.Model):
+    """
+    Публікації викладачів. Перевірка того, що публікація викладацько повинна
+    проводитьсь у views.
+    """
+    class Meta:
+        verbose_name = 'Публікація'
+        verbose_name_plural = 'Публікації'
+
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+    title = models.CharField(verbose_name='Заголовок', max_length=64)
+    photo = models.FileField(verbose_name='Фотографія', blank=True, null=True)
+    content = models.TextField(verbose_name='Контент', max_length=8192)
+
+    def __str__(self):
+        author_user = self.author.user
+        return '%(post_title)s (by: %(author)s)' % ({
+            'post_title': self.title,
+            'author': author_user.first_name + author_user.last_name,
+        })
+

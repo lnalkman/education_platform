@@ -73,6 +73,14 @@ class Profile(models.Model):
     def is_student(self):
         return self.user_type == self.STUDENT
 
+    def save(self, *args, **kwargs):
+        curr_photo = Profile.objects.get(pk=self.pk).photo
+        # Видаляємо стару фотографію
+        if curr_photo != self.photo:
+            curr_photo.delete(save=False)
+        # Зберігаємо нову фотографію
+        super(Profile, self).save(*args, **kwargs)
+
     def __str__(self):
         return '%s %s (%s)' % (self.user.first_name,
                                self.user.last_name,
