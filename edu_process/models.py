@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class Group(models.Model):
@@ -14,19 +15,6 @@ class Group(models.Model):
         blank=True,
         null=True
     )
-
-
-class TemporaryUser(models.Model):
-    """
-    Модель тимчасового користувача, ссилається на користувачів
-    з атрибутом is_active == False.
-    """
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name='temp_user'
-        )
-    password = models.CharField(verbose_name='Тимчасовий пароль', max_length=32)
 
 
 def profile_photo_path(instance, filename):
@@ -87,18 +75,24 @@ class Profile(models.Model):
         return self.user_type == self.STUDENT
 
     def save(self, *args, **kwargs):
-        curr_photo = Profile.objects.get(pk=self.pk).photo
-        # Видаляємо стару фотографію
-        if curr_photo != self.photo:
-            curr_photo.delete(save=False)
+        try:
+            # Підніме виключення, якщо цей об'єкт не збережено в БД
+            curr_photo = Profile.objects.get(pk=self.pk).photo
 
-        # Якщо користувач став активним, видяляємо об'єкт тимчасового користувача
-        # який зв'язаний з цим профілем.
-        if self.user.is_active and not Profile.objects.get(pk=self.pk).user.is_active:
-            try:
-                self.temp_user.delete()
-            except User.DoesNotExist:
-                pass
+            # Видаляємо стару фотографію
+            if curr_photo != self.photo:
+                curr_photo.delete(save=False)
+
+            # Якщо користувач став активним, видяляємо об'єкт тимчасового користувача
+            # який зв'язаний з цим профілем.
+            if self.user.is_active and not Profile.objects.get(pk=self.pk).user.is_active:
+                try:
+                    self.temp_user.delete()
+                except User.DoesNotExist:
+                    pass
+        # Помилка виникає, якщо об'єкт створюється(не оновлюється)
+        except ObjectDoesNotExist:
+            pass
 
         # Зберігаємо нову фотографію
         super(Profile, self).save(*args, **kwargs)
@@ -108,3 +102,17 @@ class Profile(models.Model):
                                self.user.last_name,
                                self.get_user_type_display()
                                )
+
+
+class TemporaryUser(models.Model):
+    """
+    Модель тимчасового користувача, ссилається на користувачів
+    з атрибутом is_active == False.
+    """
+    profile = models.OneToOneField(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='temp_user',
+        null=True,
+        )
+    password = models.CharField(verbose_name='Тимчасовий пароль', max_length=32)

@@ -1,5 +1,4 @@
 from django.urls import reverse_lazy
-from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -20,6 +19,7 @@ class TeacherAdmin(StaffRequired, FormView):
     form_class = TempUserForm
 
     def form_valid(self, form):
+        form.save()
         return JsonResponse({
             'text': '<strong>Успіх!</strong>'
                     '<br>Викладач <strong>%(full_name)s</strong> <br>'
@@ -41,6 +41,6 @@ class TeacherAdmin(StaffRequired, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(FormView, self).get_context_data(**kwargs)
-        context['user_list'] = User.objects.filter(profile__user_type='TC')
+        context['user_list'] = User.objects.filter(profile__user_type='TC', is_active=True)
         context['inactive_user_list'] = User.objects.filter(is_active=False)
         return context
