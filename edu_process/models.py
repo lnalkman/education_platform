@@ -16,6 +16,19 @@ class Group(models.Model):
     )
 
 
+class TemporaryUser(models.Model):
+    """
+    Модель тимчасового користувача, ссилається на користувачів
+    з атрибутом is_active == False.
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='temp_user'
+        )
+    password = models.CharField(verbose_name='Тимчасовий пароль', max_length=32)
+
+
 def profile_photo_path(instance, filename):
     return os.path.join(instance.user_type, instance.user.username, filename)
 
@@ -78,6 +91,15 @@ class Profile(models.Model):
         # Видаляємо стару фотографію
         if curr_photo != self.photo:
             curr_photo.delete(save=False)
+
+        # Якщо користувач став активним, видяляємо об'єкт тимчасового користувача
+        # який зв'язаний з цим профілем.
+        if self.user.is_active and not Profile.objects.get(pk=self.pk).user.is_active:
+            try:
+                self.temp_user.delete()
+            except User.DoesNotExist:
+                pass
+
         # Зберігаємо нову фотографію
         super(Profile, self).save(*args, **kwargs)
 
