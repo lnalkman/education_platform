@@ -2,7 +2,8 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponseForbidden
+from django.template.response import TemplateResponse
 
 from .forms import TempUserForm
 
@@ -38,6 +39,18 @@ class TeacherAdmin(StaffRequired, FormView):
             'status': '400',
             'errors': form.errors.as_json(),
         })
+
+    def get(self, *args, **kwargs):
+        if self.request.is_ajax():
+            if self.request.GET.get('q') == 'inactive_users':
+                return TemplateResponse(
+                    self.request,
+                    template='staff/tables/inactive-teacher-list.html',
+                    context={'inactive_user_list': User.objects.filter(is_active=False)}
+                )
+            return HttpResponseForbidden('Invalid q value.')
+
+        return super(FormView, self).get(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(FormView, self).get_context_data(**kwargs)

@@ -72,19 +72,7 @@
               <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
             </form>
             <table class="table table-hover">
-              <thead>
-                <tr> <th>#</th> <th>Ім'я</th> <th>Прізвище</th> <th>Логін</th> </tr>
-              </thead>
-              <tbody>
-                {% for user in user_list %}
-                    <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                            <td>{{ user.first_name|default:"???" }}</td>
-                            <td>{{ user.last_name|default:"???" }}</td>
-                            <td>{{ user.username|default:"???" }}</td>
-                    </tr>
-                {% endfor %}
-              </tbody>
+                {% include "./tables/teacher-list.html" %}
             </table>
           </div>
           <!-- END OF USER LIST -->
@@ -145,25 +133,7 @@
                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
               </form>
               <table class="table bg-warning table-hover">
-                <thead>
-                  <tr> <th>#</th> <th>Ім'я</th> <th>Прізвище</th> <th>Логін</th> </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                      <th scope="row">-</th>
-                      <td><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg">Mark</a></td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
-                  </tr>
-                {% for user in inactive_user_list %}
-                    <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                            <td>{{ user.first_name|default:"???" }}</td>
-                            <td>{{ user.last_name|default:"???" }}</td>
-                            <td>{{ user.username|default:"???" }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
+                  {% include "./tables/inactive-teacher-list.html" %}
               </table>
           </div>
           <!-- END OF DISABLED USER LIST -->

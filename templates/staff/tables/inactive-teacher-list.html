@@ -1,0 +1,29 @@
+<thead>
+<tr>
+    <th>#</th>
+    <th>Ім'я</th>
+    <th>Прізвище</th>
+    <th>Логін</th>
+    <th>Пароль</th>
+</tr>
+</thead>
+<tbody>
+{% for user in inactive_user_list %}
+    <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ user.first_name|default:"???" }}</td>
+        <td>{{ user.last_name|default:"???" }}</td>
+        <td>{{ user.username|default:"???" }}</td>
+        <td>
+            <button
+                    class="btn btn-link btn-xs glyphicon glyphicon-lock"
+                    data-trigger="click"
+                    data-toggle="popover"
+                    data-placement="left"
+                    title="Тимчасовий пароль"
+                    data-content="{{ user.profile.temp_user.password }}">
+            </button>
+        </td>
+    </tr>
+{% endfor %}
+</tbody>
