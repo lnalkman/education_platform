@@ -5,15 +5,21 @@ function random_password() {
 
 // Завантаження нової таблиці неактивних користувача та заміна
 // старої таблиці на нову
-function reloadInactiveUsers() {
+function reloadInactiveUsers(search) {
     $.ajax({
         url: window.location.href,
-        data: {q: 'inactive_users'},
+        data: {q: 'inactive_users', search: search},
         method: 'get',
         success: function (data, textStatus, jqXHR) {
             $('#disabled-users table').html(data);
             // Вмикаємо pop-up на доданих елементах
             $('[data-toggle="popover"]').popover();
+
+            // Вмикаємо можливість обирати всі чекбокси
+            $('#disabled-users table thead input[type="checkbox"]').click(function () {
+                var checked = this.checked;
+                $('#disabled-users input[name="user_pk"]').prop('checked', checked)
+            });
         },
         dataType: 'html'
     })
@@ -72,9 +78,14 @@ $("#user-add form").submit(function () {
 });
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-  if ($(e.target).attr('aria-controls') == '#disabled-users') {
-      reloadInactiveUsers();
-  }
+    if ($(e.target).attr('aria-controls') == '#disabled-users') {
+        reloadInactiveUsers();
+    }
+});
+
+$("#disabled-users .search").submit(function (e) {
+    reloadInactiveUsers($(this).children('input[type="text"]').val());
+    return false;
 });
 
 $('[name=password]').attr('value', random_password());

@@ -128,10 +128,20 @@
           <!-- END OF USER ADD -->
           <!-- DISABLED USER LIST -->
           <div id="disabled-users" class="tab-pane fade">
-              <form class="form-inline" action"#" mathod="POST">
+              <form class="form-inline pull-left search">
                 <input class="form-control" type="text" placeholder="Знайти викладача">
                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
               </form>
+              <!-- START ACTION BUTTON -->
+              <div class="btn-group pull-right">
+                  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Дія <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li class="bg-danger"><a href="#">Видалити обраних користувачів</a></li>
+                  </ul>
+              </div>
+              <!-- END ACTION BUTTON -->
               <table class="table bg-warning table-hover">
                   {% include "./tables/inactive-teacher-list.html" %}
               </table>

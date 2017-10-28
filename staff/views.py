@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http.response import JsonResponse, HttpResponseForbidden
 from django.template.response import TemplateResponse
+from django.db.models import Q
 
 from .forms import TempUserForm
 
@@ -43,10 +44,21 @@ class TeacherAdmin(StaffRequired, FormView):
     def get(self, *args, **kwargs):
         if self.request.is_ajax():
             if self.request.GET.get('q') == 'inactive_users':
+                search_val = self.request.GET.get('search')
+                if search_val:
+                    context = {
+                        'inactive_user_list': User.objects.filter(
+                            Q(is_active=False),
+                            Q(first_name__contains=search_val) | Q(last_name__contains=search_val)
+                        )
+                    }
+                else:
+                    context = {'inactive_user_list': User.objects.filter(is_active=False)}
                 return TemplateResponse(
                     self.request,
                     template='staff/tables/inactive-teacher-list.html',
-                    context={'inactive_user_list': User.objects.filter(is_active=False)}
+                    context=context
+
                 )
             return HttpResponseForbidden('Invalid q value.')
 

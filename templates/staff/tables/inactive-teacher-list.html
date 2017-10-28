@@ -1,5 +1,6 @@
 <thead>
 <tr>
+    <th><input type="checkbox"></th>
     <th>#</th>
     <th>Ім'я</th>
     <th>Прізвище</th>
@@ -10,6 +11,7 @@
 <tbody>
 {% for user in inactive_user_list %}
     <tr>
+        <td><input type="checkbox" name="user_pk" value="{{ user.pk }}"></td>
         <th scope="row">{{ forloop.counter }}</th>
         <td>{{ user.first_name|default:"???" }}</td>
         <td>{{ user.last_name|default:"???" }}</td>
