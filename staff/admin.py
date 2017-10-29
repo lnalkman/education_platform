@@ -33,7 +33,7 @@ class AbstractAjaxAction:
 
 class AjaxAction(AbstractAjaxAction):
     def __init__(self, queryset=None, answers=None):
-        if self.using_queryset:
+        if self.using_queryset and answers:
             if not isinstance(queryset, QuerySet):
                 raise ValueError(
                     'queryset should be defined as QuerySet class or subclass object.'
@@ -52,3 +52,16 @@ class AjaxAction(AbstractAjaxAction):
         for answer in self.answers:
             if hasattr(self, answer):
                 getattr(self, answer)()
+
+
+class DeleteAction(AbstractAjaxAction):
+    code = 'delete'
+    verbose_name = 'Видалити обраних користувачів'
+    prompt = True
+    prompt_text = 'Ви справді хочете видалити обраних користувачів'
+
+    def __init__(self, queryset=None):
+        self.queryset = queryset
+
+    def yes(self):
+        self.queryset.delete()

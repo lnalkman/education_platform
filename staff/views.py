@@ -3,11 +3,11 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http.response import JsonResponse, HttpResponseForbidden
-from django.template.response import TemplateResponse
+from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.db.models import Q
 
 from .forms import TempUserForm
+from .admin import DeleteAction
 
 
 class StaffRequired(LoginRequiredMixin ,UserPassesTestMixin):
@@ -50,6 +50,7 @@ class TeacherAdmin(StaffRequired, FormView):
         context = super(FormView, self).get_context_data(**kwargs)
         context['user_list'] = User.objects.filter(profile__user_type='TC', is_active=True)
         context['inactive_user_list'] = User.objects.filter(profile__user_type='TC', is_active=False)
+        context['delete_action'] = DeleteAction()
         return context
 
 
@@ -60,10 +61,14 @@ class AjaxTeacherAdmin(StaffRequired, TemplateView):
     :is_active - повертати активних/неактивних користувачів(якщо задано - поверне активних)
     :q - строка пошуку (пошук по іменам та фаміліям)
     """
-    http_method_names = ['get',]
+    http_method_names = ['get', 'post']
 
-    def get_actions(self):
-        pass
+    def post(self, *args):
+        action_code = self.request.POST.get('action')
+        if action_code == DeleteAction.code:
+            ids = self.request.POST.getlist('user_pk')
+            DeleteAction(User.objects.filter(is_active=False, profile__user_type='TC', id__in=ids)).yes()
+        return HttpResponse()
 
     def get_template_names(self):
         if bool(self.request.GET.get('is_active')):

@@ -88,5 +88,22 @@ $("#disabled-users .search").submit(function (e) {
     return false;
 });
 
+$('.action').click(function () {
+    var data = $('input[name=user_pk]').serializeArray();
+    data = data.concat([
+        {name: 'csrfmiddlewaretoken', value: $('input[name=csrfmiddlewaretoken]').val()},
+        {name: 'action', value: 'delete'}
+    ]);
+    console.log(data);
+    console.log($.param(data));
+    $.ajax({
+        url: '/staff/teachers/ajax',
+        data: data,
+        method: 'post',
+        success: reloadInactiveUsers
+    })
+});
+
+
 $('[name=password]').attr('value', random_password());
 $('[data-toggle="popover"]').popover();
