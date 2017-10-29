@@ -7,8 +7,8 @@ function random_password() {
 // старої таблиці на нову
 function reloadInactiveUsers(search) {
     $.ajax({
-        url: window.location.href,
-        data: {q: 'inactive_users', search: search},
+        url: '/staff/teachers/ajax',
+        data: {is_active: '', q: search}, // Only inactive
         method: 'get',
         success: function (data, textStatus, jqXHR) {
             $('#disabled-users table').html(data);

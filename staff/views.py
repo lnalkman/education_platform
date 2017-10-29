@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -17,6 +18,10 @@ class StaffRequired(LoginRequiredMixin ,UserPassesTestMixin):
 
 
 class TeacherAdmin(StaffRequired, FormView):
+    """
+    View генерує сторінку з таблицями викладачів(активні/неактивні)
+    Обробляє форму додавання нового викладача
+    """
     template_name = 'staff/teacher_page.html'
     form_class = TempUserForm
 
@@ -41,31 +46,44 @@ class TeacherAdmin(StaffRequired, FormView):
             'errors': form.errors.as_json(),
         })
 
-    def get(self, *args, **kwargs):
-        if self.request.is_ajax():
-            if self.request.GET.get('q') == 'inactive_users':
-                search_val = self.request.GET.get('search')
-                if search_val:
-                    context = {
-                        'inactive_user_list': User.objects.filter(
-                            Q(is_active=False),
-                            Q(first_name__contains=search_val) | Q(last_name__contains=search_val)
-                        )
-                    }
-                else:
-                    context = {'inactive_user_list': User.objects.filter(is_active=False)}
-                return TemplateResponse(
-                    self.request,
-                    template='staff/tables/inactive-teacher-list.html',
-                    context=context
-
-                )
-            return HttpResponseForbidden('Invalid q value.')
-
-        return super(FormView, self).get(*args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super(FormView, self).get_context_data(**kwargs)
         context['user_list'] = User.objects.filter(profile__user_type='TC', is_active=True)
-        context['inactive_user_list'] = User.objects.filter(is_active=False)
+        context['inactive_user_list'] = User.objects.filter(profile__user_type='TC', is_active=False)
+        return context
+
+
+class AjaxTeacherAdmin(StaffRequired, TemplateView):
+    """
+    Повертає данні таблиці користувачів.
+    page_kwargs:
+    :is_active - повертати активних/неактивних користувачів(якщо задано - поверне активних)
+    :q - строка пошуку (пошук по іменам та фаміліям)
+    """
+    http_method_names = ['get',]
+
+    def get_template_names(self):
+        if bool(self.request.GET.get('is_active')):
+            return ('staff/tables/teacher-list.html',)
+        return ('staff/tables/inactive-teacher-list.html',)
+
+    def get_context_name(self):
+        if bool(self.request.GET.get('is_active')):
+            return 'user_list'
+        return 'inactive_user_list'
+
+    def get_queryset(self):
+        is_active = bool(self.request.GET.get('is_active'))
+        search_val = self.request.GET.get('q')
+
+        if search_val:
+            return User.objects.filter(
+                Q(is_active=is_active),
+                Q(first_name__icontains=search_val) | Q(last_name__icontains=search_val)
+            )
+        return User.objects.filter(is_active=is_active)
+
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context[self.get_context_name()] = self.get_queryset()
         return context
