@@ -62,6 +62,9 @@ class AjaxTeacherAdmin(StaffRequired, TemplateView):
     """
     http_method_names = ['get',]
 
+    def get_actions(self):
+        pass
+
     def get_template_names(self):
         if bool(self.request.GET.get('is_active')):
             return ('staff/tables/teacher-list.html',)
