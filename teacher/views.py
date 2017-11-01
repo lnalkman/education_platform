@@ -34,9 +34,9 @@ class TeacherProfile(TeacherRequiredMixin, UpdateView):
 
 class AddCourseView(TeacherRequiredMixin, FormView):
     """View для додавання курсів. Доступний тільки для вчителів."""
-    template_name = 'teacher/course-edit.html'
+    template_name = 'teacher/course-add.html'
     form_class = CourseForm
-    success_url = '/teacher/course/'
+    success_url = '/teacher/courses/'
 
     def form_valid(self, form):
         """Додаємо поле з автором вручну і зберігаємо"""
