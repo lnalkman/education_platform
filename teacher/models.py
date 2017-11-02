@@ -7,8 +7,6 @@ from edu_process.models import (
 )
 
 
-
-
 class Course(models.Model):
     """
     Курс включає в себе модулі, які включають заняття
@@ -124,4 +122,23 @@ class Publication(models.Model):
             'post_title': self.title,
             'author': author_user.first_name + author_user.last_name,
         })
+
+
+class CalendarNote(models.Model):
+    class Meta:
+        verbose_name = 'Календарний запис'
+        verbose_name_plural = 'Календарні записи'
+
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+
+    title = models.CharField(verbose_name='Заголовок', max_length=48, blank=True, null=True)
+    content = models.TextField(verbose_name='Нотатка', max_length=512)
+    date = models.DateTimeField()
 
