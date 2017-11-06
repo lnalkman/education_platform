@@ -194,9 +194,11 @@ class CalendarView(TeacherRequiredMixin, TemplateView):
 class CalendarRedirect(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if self.request.GET:
-            year, month = self.request.GET.get('year', 0), self.request.GET.get('month', 0)
-            if not (isinstance(year, int) and isinstance(month, int)
-                and 1995 < year < 2500 and 0 < month <= 12):
+            try:
+                year, month = int(self.request.GET.get('year', 0)), int(self.request.GET.get('month', 0))
+                if not (1995 < year < 2500 and 0 < month <= 12):
+                    year, month = datetime.now().timetuple()[:2]
+            except ValueError:
                 year, month = datetime.now().timetuple()[:2]
         else:
             year, month = datetime.now().timetuple()[:2]
