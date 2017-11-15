@@ -5,14 +5,14 @@ from functools import partial
 
 from django.urls import reverse_lazy
 from django.shortcuts import reverse
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView, FormView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views.generic.base import TemplateView, RedirectView
 from django.http.response import HttpResponseRedirect
 
 from .models import Course, CalendarNote
-from .forms import CourseForm, TeacherProfileForm
+from .forms import CourseForm, TeacherProfileForm, CalendarNoteForm
 
 
 class TeacherRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -83,8 +83,6 @@ class HrefCalendar(HTMLCalendar):
     # Якщо в цей день є якісь події/нотатки
     booked_class = 'booked'
 
-    href = '#'
-
     def __init__(self, theyear, themonth, prew_url='#', next_url='#', booked_days=None):
         """:booked_days -> контейнер в якому зберігаються дні в місяці в яких є якісь нотатки"""
         HTMLCalendar.__init__(self)
@@ -93,7 +91,6 @@ class HrefCalendar(HTMLCalendar):
         self.prew_url = prew_url
         self.next_url = next_url
         self.booked_days = booked_days
-        # self.href = partial(reverse, year=theyear, month=)
 
     def formatmonthname(self, theyear, themonth, withyear=True):
         """
@@ -116,7 +113,14 @@ class HrefCalendar(HTMLCalendar):
         else:
             return '<td class="%s %s"><a href="%s">%d</a></td>' % (self.cssclasses[weekday],
                                                                    self.booked_class if booked else '',
-                                                                   self.href,
+                                                                   reverse(
+                                                                       'teacher:calendar-day',
+                                                                        kwargs={
+                                                                            'year': self.theyear,
+                                                                            'month': self.themonth,
+                                                                            'day': day
+                                                                        }
+                                                                   ),
                                                                    day
                                                                    )
 
@@ -193,6 +197,7 @@ class CalendarView(TeacherRequiredMixin, TemplateView):
 
 class CalendarRedirect(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
+        print(args, **kwargs)
         if self.request.GET:
             try:
                 year, month = int(self.request.GET.get('year', 0)), int(self.request.GET.get('month', 0))
@@ -203,3 +208,130 @@ class CalendarRedirect(RedirectView):
         else:
             year, month = datetime.now().timetuple()[:2]
         return reverse('teacher:calendar', kwargs={'year': year, 'month': month})
+
+
+class CalendarDay(TeacherRequiredMixin, ListView):
+
+    def get_queryset(self):
+        return CalendarNote.objects.filter(
+            author=self.request.user.profile,
+            date__year=self.kwargs['year'],
+            date__month=self.kwargs['month'],
+            date__day=self.kwargs['day']
+        )
+
+    def get_add_form(self):
+        return CalendarNoteForm(
+            initial={'author': self.request.user.profile},
+            date=datetime(year=int(self.kwargs['year']),
+                          month=int(self.kwargs['month']),
+                          day=int(self.kwargs['day']))
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(ListView, self).get_context_data(**kwargs)
+        context['form_add'] = self.get_add_form()
+        context['month_url'] = reverse('teacher:calendar', kwargs={
+            'year': self.kwargs['year'],
+            'month': self.kwargs['month']
+        })
+        context['day_url'] = reverse(
+            'teacher:calendar-day',
+            kwargs={
+                'year': self.kwargs['year'],
+                'month': self.kwargs['month'],
+                'day': self.kwargs['day']
+            }
+        )
+
+        return context
+
+
+class CalendarNoteAdd(TeacherRequiredMixin, RedirectView):
+    http_method_names = ('post',)
+
+    def get_redirect_url(self, *args, **kwargs):
+        url = self.request.POST.get('next_to')
+        if url:
+            return url
+        return reverse('teacher:calendar-redirect')
+
+    def post(self, *args, **kwargs):
+        form = CalendarNoteForm(self.request.POST, initial={'author': self.request.user.profile})
+        if form.is_valid():
+            CalendarNote.objects.create(
+                **form.cleaned_data,
+                author=self.request.user.profile,
+            )
+
+        return RedirectView.post(self, *args, **kwargs)
+
+
+class CalendarNoteDelete(TeacherRequiredMixin, RedirectView):
+    http_method_names = ('post',)
+    model = CalendarNote
+
+    def get_redirect_url(self, *args, **kwargs):
+        url = self.request.POST.get('next_to')
+        if url:
+            return url
+        return reverse('teacher:calendar-redirect')
+
+    def can_delete(self, obj):
+        return self.request.user.profile == obj.author
+
+    def delete_object(self, pk):
+        obj = self.model.objects.get(pk=pk)
+        if self.can_delete(obj):
+            obj.delete()
+            return True
+        return False
+
+    def post(self, *args, **kwargs):
+        try:
+            pk = self.request.POST.get('pk')
+        except ValueError:
+            pass
+        else:
+            self.delete_object(pk)
+
+        return RedirectView.post(self, *args, **kwargs)
+
+
+class CalendarNoteChange(TeacherRequiredMixin, FormView):
+    """Повертає html форму для зміни нотатки"""
+    http_method_names = ('get', 'post', )
+    template_name = 'teacher/components/calendar-note-form-modal.html'
+    model = CalendarNote
+    form_class = CalendarNoteForm
+
+    def get_success_url(self):
+        if hasattr(self, 'day_url'):
+            return self.day_url
+        return self.request.POST.get('next_to') or reverse('teacher:calendar-redirect')
+
+    def get_form_kwargs(self):
+        kwargs = super(FormView, self).get_form_kwargs()
+        if self.request.method == 'POST':
+            pk = int(self.request.POST['pk'])
+        else:
+            pk = int(self.request.GET['pk'])
+        kwargs['instance'] = CalendarNote.objects.get(pk=pk)
+        return kwargs
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        if instance.author != self.request.user.profile:
+            return self.form_invalid(form)
+        else:
+            instance.save()
+
+        # Обраховуємо посилання на день, у який ми зберігаємо цей запис
+        date = form.cleaned_data['date'].timetuple()[:3]
+        self.day_url = reverse('teacher:calendar-day', kwargs={'year': date[0], 'month': date[1], 'day': date[2]})
+        return super(FormView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(FormView, self).get_context_data(**kwargs)
+        context['pk'] = self.request.GET.get('pk')
+        return context

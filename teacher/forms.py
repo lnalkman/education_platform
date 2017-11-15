@@ -1,7 +1,8 @@
+from django import forms
 from django.forms.models import ModelForm
 
 from .models import (
-    Course
+    Course, CalendarNote,
 )
 from edu_process.models import Profile
 
@@ -25,3 +26,29 @@ class TeacherProfileForm(ModelForm):
         fields = (
             'about_me', 'photo',
         )
+
+
+class CalendarNoteForm(ModelForm):
+    class Meta:
+        model = CalendarNote
+        fields = '__all__'
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'cols': 9}),
+            'lesson': forms.Select(attrs={'class': 'form-control', 'hidden': '1'}),
+            'date': forms.TextInput(attrs={'class': 'form-control'}),
+            'author': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, date=None, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+        author = self.initial['author'] if self.initial else self.instance.author
+        self.fields['course'] = forms.ModelChoiceField(
+            queryset=Course.objects.filter(author=author),
+            widget=forms.Select(attrs={'class': 'form-control'})
+        )
+        if not self.is_bound and date:
+            self.fields['date'] = forms.DateTimeField(
+                initial=date,
+                widget=forms.TextInput(attrs={'class': 'form-control'})
+            )
