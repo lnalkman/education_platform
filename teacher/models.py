@@ -1,6 +1,7 @@
 import os
 
 from django.db import models
+from django.shortcuts import reverse
 
 from edu_process.models import (
     Profile, Group, profile_photo_path,
@@ -141,4 +142,11 @@ class CalendarNote(models.Model):
     title = models.CharField(verbose_name='Заголовок', max_length=48, blank=True, null=True)
     content = models.TextField(verbose_name='Нотатка', max_length=512)
     date = models.DateTimeField()
+
+    def get_day_url(self):
+        return reverse('teacher:calendar-day', kwargs={
+            'year': self.date.year,
+            'month': self.date.month,
+            'day': self.date.day
+        })
 

@@ -1,6 +1,6 @@
 from calendar import HTMLCalendar
 from calendar import month_name
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import partial
 
 from django.urls import reverse_lazy
@@ -34,8 +34,17 @@ class TeacherProfile(TeacherRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user.profile
 
+    def get_upcoming_events(self):
+        now = datetime.now().date()
+        return CalendarNote.objects.filter(
+            author=self.request.user.profile,
+            date__date__gt=now,
+            date__date__lte=now + timedelta(days=7)
+        )[:4]
+
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
+        context['upcoming_events'] = self.get_upcoming_events()
         return context
 
 
@@ -261,8 +270,8 @@ class CalendarNoteAdd(TeacherRequiredMixin, RedirectView):
         if form.is_valid():
             CalendarNote.objects.create(
                 **form.cleaned_data,
-                author=self.request.user.profile,
             )
+        print(form.errors)
 
         return RedirectView.post(self, *args, **kwargs)
 
