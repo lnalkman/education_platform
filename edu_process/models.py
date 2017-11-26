@@ -15,6 +15,13 @@ class Group(models.Model):
         blank=True,
         null=True
     )
+    courses = models.ManyToManyField(
+        'teacher.Course',
+        blank=True
+    )
+
+    def __str__(self):
+        return self.name
 
 
 def profile_photo_path(instance, filename):
