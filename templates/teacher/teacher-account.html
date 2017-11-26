@@ -108,18 +108,16 @@
 
 	<div class="events">
 		<h3>Найближчі події</h3>
-		<a href="#" class="event">
-			<div class="date">
-				<span class="number">25.</span><span class="month">10</span>
-			</div>
-			<div class="name">Сходити туди</div>
-		</a href="#">
-		<a href="#" class="event">
-			<div class="date">
-				<span class="number">30.</span><span class="month">10</span>
-			</div>
-			<div class="name">Вийти з дому!</div>
-		</a href="#">
+        {% for event in upcoming_events %}
+            <a href="{{ event.get_day_url }}" class="event">
+                <div class="date">
+                    <span class="number">{{ event.date.day }}.</span><span class="month">{{ event.date.month }}</span>
+                </div>
+                <div class="name">{{ event.title|truncatechars:14 }}</div>
+            </a>
+            {% empty %}
+            <p>На найближчі 7 днів не заплановано ніяких подій</p>
+        {% endfor %}
 	</div>
 
 	<link rel="stylesheet" href="{% static 'css/main.min.css' %}">
