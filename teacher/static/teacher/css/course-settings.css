@@ -1,0 +1,90 @@
+body .content {
+    padding-left: 69px;
+    padding-top: 25px;
+}
+
+#modules, #settings {
+    padding-top: 10px;
+}
+
+#delete-course-modal form {
+    display: inline;
+}
+
+.status {
+    display: none;
+}
+
+.access-control .list-group:first-of-type {
+    overflow-y: auto;
+    height: 220px;
+}
+
+.access-control .search-results .list-group-item {
+    padding: 2px 7px;
+}
+
+.styled-input-single {
+    position: relative;
+    padding: 0px 0 10px 30px;
+    text-align: left;
+}
+
+.styled-input-single label {
+    cursor: pointer;
+}
+
+.styled-input-single label:before, .styled-input-single label:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    border-radius: 50%;
+}
+
+.styled-input-single label:before {
+    left: 0;
+    width: 20px;
+    height: 20px;
+    margin: -15px 0 0;
+    background: #f7f7f7;
+    box-shadow: 0 0 1px grey;
+}
+
+.styled-input-single label:after {
+    left: 5px;
+    width: 10px;
+    height: 10px;
+    margin: -10px 0 0;
+    opacity: 0;
+    background: #37b2b2;
+    -webkit-transform: translate3d(-40px, 0, 0) scale(0.5);
+    transform: translate3d(-40px, 0, 0) scale(0.5);
+    -webkit-transition: opacity 0.25s ease-in-out, -webkit-transform 0.25s ease-in-out;
+    transition: opacity 0.25s ease-in-out, -webkit-transform 0.25s ease-in-out;
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out, -webkit-transform 0.25s ease-in-out;
+}
+
+.styled-input-single input[type="radio"],
+.styled-input-single input[type="checkbox"] {
+    position: absolute;
+    top: 0;
+    left: -9999px;
+    visibility: hidden;
+}
+
+.styled-input--diamond label:before, .styled-input--diamond label:after {
+    border-radius: 0;
+}
+
+.styled-input--diamond label:before {
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.styled-input--diamond input[type="radio"]:checked + label:after,
+.styled-input--diamond input[type="checkbox"]:checked + label:after {
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    opacity: 1;
+}

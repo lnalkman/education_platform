@@ -8,11 +8,16 @@ from django.shortcuts import reverse
 from django.views.generic.edit import FormView, UpdateView, FormView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.views.generic.base import TemplateView, RedirectView
-from django.http.response import HttpResponseRedirect
+from django.views.generic.base import TemplateView, RedirectView, View
+from django.http.response import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.core import serializers
 
+from edu_process.models import Group
 from .models import Course, CalendarNote
-from .forms import CourseForm, TeacherProfileForm, CalendarNoteForm
+from .forms import (
+    CourseForm, TeacherProfileForm, CalendarNoteForm,
+    ModuleForm,
+)
 
 
 class TeacherRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -68,9 +73,10 @@ class CourseListView(TeacherRequiredMixin, ListView):
         return self.request.user.profile.course_set.all()
 
 
-class CourseDetail(TeacherRequiredMixin, UpdateView):
-    template_name = 'teacher/course-detail.html'
+class CourseSettings(TeacherRequiredMixin, UpdateView):
+    template_name = 'teacher/course-settings.html'
     form_class = CourseForm
+    context_object_name = 'Course'
 
     def test_func(self):
         """Перевірка чи є користувач викладачем і чи належить запитуваний курс йому"""
@@ -84,8 +90,254 @@ class CourseDetail(TeacherRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context['modules_list'] = self.object.module_set.all()
+        context['module_list'] = self.object.module_set.all()
+        context['calendar_note_list'] = self.object.calendarnote_set.all()
+        context['update_form'] = CourseForm(instance=self.object)
+        context['add_module_form'] = ModuleForm(initial={'course': self.object})
         return context
+
+
+class AjaxUpdateCourse(TeacherRequiredMixin, View):
+    http_method_names = ('post',)
+    form = CourseForm
+
+    def test_func(self):
+        """Перевірка чи є користувач викладачем і чи належить запитуваний курс йому"""
+        return (
+            TeacherRequiredMixin.test_func(self)
+            and self.request.user.profile.course_set.filter(pk=self.kwargs['pk']).exists()
+        )
+
+    def render_to_json(self, data):
+        return JsonResponse(data)
+
+    def form_valid(self, form):
+        Course.objects.filter(pk=self.kwargs['pk']).update(
+            **form.cleaned_data
+        )
+        return self.render_to_json({'success': True})
+
+    def form_invalid(self, form):
+        data = {
+            'success': False,
+            'errors': form.errors.as_json()
+        }
+        return self.render_to_json(data)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(self.request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+
+class CourseDelete(TeacherRequiredMixin, RedirectView):
+    http_method_names = ('post',)
+    url = reverse_lazy('teacher:course-list')
+
+    def test_func(self):
+        """
+        Перевірка чи є користувач викладачем і чи належить курс йому
+        """
+        return (
+            TeacherRequiredMixin.test_func(self)
+            and self.request.user.profile.course_set.filter(pk=self.kwargs['pk']).exists()
+        )
+
+    def post(self, request, *args, **kwargs):
+        Course.objects.get(pk=kwargs['pk']).delete()
+        return RedirectView.post(self, request, *args, **kwargs)
+    http_method_names = ('post',)
+    form = CourseForm
+
+    def test_func(self):
+        """Перевірка чи є користувач викладачем і чи належить запитуваний курс йому"""
+        return (
+            TeacherRequiredMixin.test_func(self)
+            and self.request.user.profile.course_set.filter(pk=self.kwargs['pk']).exists()
+        )
+
+    def render_to_json(self, data):
+        return JsonResponse(data)
+
+    def form_valid(self, form):
+        Course.objects.filter(pk=self.kwargs['pk']).update(
+            **form.cleaned_data
+        )
+        return self.render_to_json({'success': True})
+
+    def form_invalid(self, form):
+        data = {
+            'success': False,
+            'errors': form.errors.as_json()
+        }
+        return self.render_to_json(data)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(self.request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+
+class AjaxAddModule(TeacherRequiredMixin, View):
+    http_method_names = ('post',)
+    form = ModuleForm
+
+    def test_func(self):
+        """Перевірка чи є користувач викладачем і чи належить запитуваний курс йому"""
+        return (
+            TeacherRequiredMixin.test_func(self)
+            and self.request.user.profile.course_set.filter(pk=self.kwargs['pk']).exists()
+        )
+
+    def can_add(self, obj):
+        if obj.course.author == self.request.user.profile:
+            return True
+
+    def render_to_json(self, data):
+        return JsonResponse(data)
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        if self.can_add(obj):
+            obj.save()
+            return self.render_to_json({'success': True})
+        form.add_error(field=None, error='У вас немає прав додавати модуль до цього курсу')
+        return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        data = {
+            'success': False,
+            'errors': form.errors.as_json()
+        }
+        return self.render_to_json(data)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(self.request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+
+class AjaxAddGroupToCourse(TeacherRequiredMixin, View):
+    http_method_names = ('post',)
+
+    def test_func(self):
+        """Перевірка чи є користувач викладачем і чи належить запитуваний курс йому"""
+        return (
+            TeacherRequiredMixin.test_func(self)
+            and self.request.user.profile.course_set.filter(pk=self.kwargs['pk']).exists()
+        )
+
+    def get_course(self, pk):
+        return Course.objects.get(pk=pk)
+
+    def get_group(self, name):
+        group = None
+        try:
+            group = Group.objects.get(name=name)
+        finally:
+            return group
+
+    def add_group(self, group, course):
+        if not group:
+            return 'Невірно задана група'
+        if not course:
+            return 'Невірне значення курсу'
+
+        try:
+            course.group_set.add(group)
+        except Exception as e:
+            return str(e)
+
+    def render_to_json(self, error=None):
+        return JsonResponse({
+            'error': error
+        })
+
+    def post(self, request, *args, **kwargs):
+        course_pk = kwargs['pk']
+        group_name = request.POST.get('group_name', 0)
+
+        group = self.get_group(group_name)
+        course = self.get_course(course_pk)
+        error = self.add_group(group, course)
+        return self.render_to_json(error)
+
+
+class AjaxCourseGroups(View):
+    http_method_names = ('get',)
+
+    def get_course(self, course_pk):
+        obj = None
+        try:
+            obj = Course.objects.filter(pk=course_pk)
+        finally:
+            return obj
+
+    def get_queryset(self, course_pk):
+        queryset = None
+        try:
+            queryset = Course.objects.get(pk=course_pk).group_set.all()
+        finally:
+            return queryset
+
+    def render_to_json(self):
+        json = """{{
+            "course": {:},
+            "groups": {:}
+        }}""".format(
+            serializers.serialize('json', self.course, fields=('name',)),
+            serializers.serialize('json', self.queryset, fields=('name',)),
+        )
+
+        return HttpResponse(json)
+
+    def get(self, request, *args, **kwargs):
+        self.course = self.get_course(kwargs['pk'])
+        self.queryset = self.get_queryset(kwargs['pk'])
+
+        return self.render_to_json()
+
+
+class AjaxRemoveCourseGroups(TeacherRequiredMixin, View):
+    http_method_names = ('post',)
+
+    def test_func(self):
+        """Перевірка чи є користувач викладачем і чи належить запитуваний курс йому"""
+        return (
+            TeacherRequiredMixin.test_func(self)
+            and self.request.user.profile.course_set.filter(pk=self.kwargs['pk']).exists()
+        )
+
+    def get_course(self):
+        return Course.objects.get(pk=self.kwargs['pk'])
+
+    def get_queryset(self, pk_list):
+        queryset = None
+        try:
+            queryset = self.course.group_set.filter(pk__in=pk_list)
+        finally:
+            return queryset
+
+    def remove_groups(self):
+        self.course.group_set.remove(
+            *self.queryset
+        )
+
+    def render_to_json(self, error=''):
+        return JsonResponse({'error': error})
+
+    def post(self, request, *args, **kwargs):
+        pk_list = request.POST.getlist('pk_list[]')
+        self.course = self.get_course()
+        self.queryset = self.get_queryset(pk_list)
+
+        if self.queryset:
+            self.remove_groups()
+
+        return self.render_to_json()
 
 
 class HrefCalendar(HTMLCalendar):
@@ -206,7 +458,6 @@ class CalendarView(TeacherRequiredMixin, TemplateView):
 
 class CalendarRedirect(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        print(args, **kwargs)
         if self.request.GET:
             try:
                 year, month = int(self.request.GET.get('year', 0)), int(self.request.GET.get('month', 0))
@@ -271,7 +522,6 @@ class CalendarNoteAdd(TeacherRequiredMixin, RedirectView):
             CalendarNote.objects.create(
                 **form.cleaned_data,
             )
-        print(form.errors)
 
         return RedirectView.post(self, *args, **kwargs)
 
