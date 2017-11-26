@@ -1,4 +1,5 @@
 import os
+import textwrap
 
 from django.db import models
 from django.shortcuts import reverse
@@ -25,14 +26,7 @@ class Course(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s (by: %s)' % (self.name, self.author.user.last_name)
-
-
-class CourseLayout(models.Model):
-    course = models.ForeignKey(Course)
-
-    visible_for_all = models.BooleanField(default=True)
-    visible_for_groups = models.ManyToManyField(Group)
+        return textwrap.shorten(self.name, width=24, placeholder='...')
 
 
 class Module(models.Model):
@@ -43,18 +37,13 @@ class Module(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(
         verbose_name='Назва модулю',
-        max_length=128,
-        blank=True,
-        null=True
+        max_length=128
     )
     description = models.TextField(
         verbose_name='Опис модулю',
-        max_length=4096,
-        blank=True,
-        null=True
+        max_length=4096
     )
     visible = models.BooleanField(default=True)
-    draft = models.BooleanField(default=False)
     pub_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
