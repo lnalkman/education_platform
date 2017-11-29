@@ -5,18 +5,19 @@ from functools import partial
 
 from django.urls import reverse_lazy
 from django.shortcuts import reverse
-from django.views.generic.edit import FormView, UpdateView, FormView
+from django.views.generic.edit import UpdateView, FormView
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views.generic.base import TemplateView, RedirectView, View
 from django.http.response import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.core import serializers
 
 from edu_process.models import Group
-from .models import Course, CalendarNote
+from .models import Course, CalendarNote, Module
 from .forms import (
     CourseForm, TeacherProfileForm, CalendarNoteForm,
-    ModuleForm,
+    ModuleForm, LessonForm, Lesson
 )
 
 
@@ -147,37 +148,6 @@ class CourseDelete(TeacherRequiredMixin, RedirectView):
     def post(self, request, *args, **kwargs):
         Course.objects.get(pk=kwargs['pk']).delete()
         return RedirectView.post(self, request, *args, **kwargs)
-    http_method_names = ('post',)
-    form = CourseForm
-
-    def test_func(self):
-        """Перевірка чи є користувач викладачем і чи належить запитуваний курс йому"""
-        return (
-            TeacherRequiredMixin.test_func(self)
-            and self.request.user.profile.course_set.filter(pk=self.kwargs['pk']).exists()
-        )
-
-    def render_to_json(self, data):
-        return JsonResponse(data)
-
-    def form_valid(self, form):
-        Course.objects.filter(pk=self.kwargs['pk']).update(
-            **form.cleaned_data
-        )
-        return self.render_to_json({'success': True})
-
-    def form_invalid(self, form):
-        data = {
-            'success': False,
-            'errors': form.errors.as_json()
-        }
-        return self.render_to_json(data)
-
-    def post(self, request, *args, **kwargs):
-        form = self.form(self.request.POST)
-        if form.is_valid():
-            return self.form_valid(form)
-        return self.form_invalid(form)
 
 
 class AjaxAddModule(TeacherRequiredMixin, View):
@@ -338,6 +308,120 @@ class AjaxRemoveCourseGroups(TeacherRequiredMixin, View):
             self.remove_groups()
 
         return self.render_to_json()
+
+
+class ModuleDetail(TeacherRequiredMixin, DetailView):
+    template_name = 'teacher/module-settings.html'
+    model = Module
+    context_object_name = 'Module'
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        context['lesson_form'] = LessonForm()
+        return context
+
+
+class DeleteModule(TeacherRequiredMixin, RedirectView):
+    http_method_names = ('post',)
+
+    def get_redirect_url(self, *args, **kwargs):
+        if self.course_pk:
+            return reverse(
+                'teacher:course-settings',
+                kwargs={'pk': self.course_pk}
+            )
+        return reverse(
+            'teacher:module-settings',
+            kwargs={'pk': self.kwargs['pk']}
+        )
+
+    def can_delete(self, obj):
+        return obj.course.author == self.request.user.profile
+
+    def delete_module(self, pk):
+        try:
+            obj = Module.objects.get(pk=pk)
+            self.course_pk = obj.course.pk
+        except Module.DoesNotExist:
+            pass
+        else:
+            if self.can_delete(obj):
+                obj.delete()
+
+    def post(self, request, *args, **kwargs):
+        pk = request.POST.get('pk')
+        self.course_pk = None
+        if pk:
+            self.delete_module(pk)
+
+        return super(RedirectView, self).post(request, *args, **kwargs)
+
+class AjaxAddLessonForm(TeacherRequiredMixin, View):
+    http_method_names = ('post',)
+    form = LessonForm
+    model = Lesson
+
+    def can_add(self):
+        try:
+            self.module = Module.objects.get(pk=self.kwargs['pk'])
+        except Module.DoesNotExist:
+            return False
+        return self.module.course.author == self.request.user.profile
+
+    def form_valid(self, form):
+        if self.can_add():
+            Lesson.objects.create(
+                module=self.module,
+                **form.cleaned_data
+            )
+            return self.render_to_json({'status': 1})
+        else:
+            form.add_error(None, 'У вас немає прав на додавання уроків до цього модулю')
+        return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_json({
+            'status': 0,
+            'errors': form.errors,
+        })
+
+    def render_to_json(self, data):
+        return JsonResponse(data)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+
+class DeleteLesson(TeacherRequiredMixin, RedirectView):
+    http_method_names = ('post',)
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse(
+            'teacher:lesson-settings',
+            kwargs={'pk': self.kwargs['pk']}
+        )
+
+    def can_delete(self, obj):
+        return obj.module.course.author == self.request.user.profile
+
+    def delete_lesson(self, pk):
+        try:
+            obj = Lesson.objects.get(pk=pk)
+        except Lesson.DoesNotExist:
+            pass
+        else:
+            if self.can_delete(obj):
+                obj.delete()
+
+    def post(self, request, *args, **kwargs):
+        pk = request.POST.get('pk')
+        if pk:
+            self.delete_lesson(pk)
+
+        return super(RedirectView, self).post(request, *args, **kwargs)
 
 
 class HrefCalendar(HTMLCalendar):
