@@ -125,7 +125,7 @@
                                 </div>
                                 <div class="list-group">
                                     {% for module in module_list %}
-                                        <a href="#" class="list-group-item">
+                                        <a href="{% url 'teacher:module-settings' pk=module.pk %}" class="list-group-item">
                                             <h4 class="list-group-item-heading ">{{ module.name }}</h4>
                                             <p class="list-group-item-text">
                                                 {{ module.description|truncatechars:150 }}
@@ -158,17 +158,17 @@
                                         <td>Кількість модулів</td>
                                         <td>{{ module_list|length }}</td>
                                     </tr>
-                                    <tr>
-                                        <td>Загальна кількість уроків</td>
-                                        <td>XX</td>
-                                    </tr>
+{#                                    <tr>#}
+{#                                        <td>Загальна кількість уроків</td>#}
+{#                                        <td>XX</td>#}
+{#                                    </tr>#}
                                     <tr>
                                         <td>Кількість подій у календарі</td>
                                         <td>{{ calendar_note_list|length }}</td>
                                     </tr>
                                     <tr>
                                         <td>Кількість оцінюваних груп</td>
-                                        <td>XX</td>
+                                        <td>{{ Course.group_set.count }}</td>
                                     </tr>
                                     </tbody>
                                 </table>
