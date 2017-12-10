@@ -79,7 +79,7 @@
                     <div class="description">{{ course.description }}</div>
                     <div class="published">Дата створення: {{ course.pub_date }}</div>
                     <div class="modules">Кiлькiсть модулiв в курсi: <span>{{ course.module_set.count }}</span></div>
-                    <a href="#" class="edit"><img src="{% static 'img/edit.png' %}" alt="Edit">Редагувати курс</a>
+                    <a href="{% url 'teacher:course-settings' pk=course.pk %}" class="edit"><img src="{% static 'img/edit.png' %}" alt="Edit">Редагувати курс</a>
 			    </div>
             {% empty %}
                 <h3 style="margin-top: 50px; color: #555; text-align: center">Ви не створили жодного курсу.</h3>
