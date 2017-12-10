@@ -93,7 +93,7 @@
 <div class="nav">
     <a href="{{ month_url }}"><span class="glyphicon glyphicon-menu-left"></span><span
             class="hidden-xs">Назад</span></a>
-    <h4 class="date">27 листопада 2017</h4>
+    <h4 class="date">{{ day_date.date }}</h4>
     <button type="button" class="add-note" data-toggle="modal" data-target="#add-note-modal"><span
             class="glyphicon glyphicon-pencil"></span><span class="hidden-xs">Додати запис</span>
     </button>
@@ -108,7 +108,7 @@
                     <div class="card col-md-5 col-md-offset-{% cycle '0' '1' %} col-sm-offset-1 col-sm-10">
                         <h2 class="card-title">
                             {{ note.title|truncatechars:21 }}
-                            <span class="card-subtitle">{{ note.date.timetuple.tm_hour }}:{{ note.date.timetuple.tm_min }}</span>
+                            <span class="card-subtitle">{{ note.date.timetuple.tm_hour|stringformat:"02d" }}:{{ note.date.timetuple.tm_min|stringformat:"02d" }}</span>
                         </h2>
                         {% if note.course %}
                             <a href="{% url 'teacher:course-settings' pk=note.course.pk %}"

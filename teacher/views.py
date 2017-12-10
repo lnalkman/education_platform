@@ -709,6 +709,11 @@ class CalendarDay(TeacherRequiredMixin, ListView):
             'year': self.kwargs['year'],
             'month': self.kwargs['month']
         })
+        context['day_date'] = datetime(
+            int(self.kwargs['year']),
+            int(self.kwargs['month']),
+            int(self.kwargs['day']),
+        )
         context['day_url'] = reverse(
             'teacher:calendar-day',
             kwargs={
