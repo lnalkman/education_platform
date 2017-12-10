@@ -1,0 +1,103 @@
+div.content {
+    padding-left: 69px;
+    padding-top: 30px;
+}
+
+.lesson .list-group-item, .panel-body, .files-manage .list-group-item {
+    position: relative;
+    padding: 5px 10px;
+    word-wrap: break-word;
+}
+
+.files-manage .list-group-item {
+    padding-right: 20px;
+}
+
+.list-group-item .btn-remove {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    /*right: 5px;*/
+    right: 0;
+}
+
+.type-icon {
+    margin-right: 15px;
+}
+
+.header {
+    z-index: 10;
+}
+
+.nav {
+    background-color: #394b58;
+    height: 54px;
+    width: 100%;
+    position: relative;
+    z-index: 9;
+    padding-left: 54px;
+}
+
+.add-lesson {
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    background-color: transparent;
+    color: #8fcfff;
+    border: 1px solid #7ab4de;
+    border-radius: 2px;
+    padding: 3px 4px;
+}
+
+.add-lesson:hover {
+    border: 1px solid #b7f7ff;
+    color: #b7f7ff;
+}
+
+.add-lesson span.glyphicon {
+    margin-right: 6px;
+}
+
+.nav .course {
+    margin: 0;
+    display: block;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    color: #7ab4de;
+    width: 375px;
+    overflow: hidden;
+    height: 54px;
+}
+
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.progress {
+    display: none;
+    height: 10px;
+}
+
+@media (max-width: 768px) {
+    .add-lesson {
+        border: none
+    }
+
+    .add-lesson:hover {
+        border: none
+    }
+}
