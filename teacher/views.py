@@ -14,10 +14,10 @@ from django.http.response import HttpResponseRedirect, JsonResponse, HttpRespons
 from django.core import serializers
 
 from edu_process.models import Group
-from .models import Course, CalendarNote, Module
+from .models import Course, CalendarNote, Module, Lesson, LessonFile
 from .forms import (
     CourseForm, TeacherProfileForm, CalendarNoteForm,
-    ModuleForm, LessonForm, Lesson
+    ModuleForm, LessonForm
 )
 
 
@@ -314,10 +314,30 @@ class ModuleDetail(TeacherRequiredMixin, DetailView):
     template_name = 'teacher/module-settings.html'
     model = Module
     context_object_name = 'Module'
+    form = ModuleForm
+
+    def get_redirect_url(self):
+        return reverse('teacher:module-settings', kwargs={'pk': self.kwargs['pk']})
+
+    def form_valid(self, form):
+        Module.objects.filter(pk=self.kwargs['pk']).update(
+            **form.cleaned_data
+        )
+        return HttpResponseRedirect(self.get_redirect_url())
+
+    def form_invalid(self, form):
+        return HttpResponse('Invalid form data.\n Errors: {}'.format(form.errors))
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         context['lesson_form'] = LessonForm()
+        context['module_form'] = ModuleForm(instance=self.object)
         return context
 
 
@@ -349,12 +369,13 @@ class DeleteModule(TeacherRequiredMixin, RedirectView):
                 obj.delete()
 
     def post(self, request, *args, **kwargs):
-        pk = request.POST.get('pk')
+        pk = kwargs['pk']
         self.course_pk = None
         if pk:
             self.delete_module(pk)
 
-        return super(RedirectView, self).post(request, *args, **kwargs)
+        return HttpResponseRedirect(self.get_redirect_url(*args, **kwargs))
+
 
 class AjaxAddLessonForm(TeacherRequiredMixin, View):
     http_method_names = ('post',)
@@ -424,6 +445,116 @@ class DeleteLesson(TeacherRequiredMixin, RedirectView):
         return super(RedirectView, self).post(request, *args, **kwargs)
 
 
+class AjaxUploadLessonFiles(TeacherRequiredMixin, View):
+    def can_add(self, obj):
+        return obj.module.course.author == self.request.user.profile
+
+    def get_object(self):
+        try:
+            return Lesson.objects.get(pk=self.kwargs['pk'])
+        except Lesson.DoesNotExist:
+            return None
+
+    def post(self, request, *args, **kwargs):
+        self.lesson = self.get_object()
+        if self.lesson and self.can_add(self.lesson):
+            for f in request.FILES.getlist('files'):
+                file = LessonFile(file=f, lesson=self.lesson)
+                file.save()
+
+        return HttpResponse('')
+
+
+class AjaxDeleteLessonFile(TeacherRequiredMixin, View):
+    def can_delete(self, obj):
+        return obj.module.course.author == self.request.user.profile
+
+    def get_lesson(self):
+        try:
+            return Lesson.objects.get(pk=self.kwargs['pk'])
+        except Lesson.DoesNotExist:
+            return None
+
+    def post(self, request, *args, **kwargs):
+        self.lesson = self.get_lesson()
+        if self.lesson and self.can_delete(self.lesson):
+            print(request.POST.get('pk'))
+            self.lesson.lessonfile_set.filter(pk=request.POST.get('pk')).delete()
+
+        return HttpResponse('')
+
+
+# ****************
+# SECURITY PROBLEM
+# ****************
+class LessonUpdate(TeacherRequiredMixin, View):
+    form = LessonForm
+
+    def render_to_json(self, data):
+        return JsonResponse(data)
+
+    def form_valid(self, form):
+        Lesson.objects.filter(pk=self.kwargs['pk']).update(
+            **form.cleaned_data
+        )
+        return self.render_to_json({'success': True})
+
+    def form_invalid(self, form):
+        data = {
+            'success': False,
+            'errors': form.errors.as_json()
+        }
+        return self.render_to_json(data)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(self.request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+
+class JsonLessonDetail(View):
+    def get_queryset(self, pk):
+        return Lesson.objects.filter(pk=pk)
+
+    def render_to_json(self):
+        if self.queryset:
+            json = serializers.serialize(
+                'json',
+                self.queryset,
+            )
+            return HttpResponse(json, content_type='application/json')
+        return HttpResponse('[]', content_type='application/json')
+
+    def get(self, request, *args, **kwargs):
+        lesson_pk = kwargs['pk']
+        self.queryset = self.get_queryset(lesson_pk)
+        return self.render_to_json()
+
+
+class JsonFileList(View):
+    def get_object(self, pk):
+        try:
+            return Lesson.objects.get(pk=pk)
+        except Lesson.DoesNotExist:
+            return None
+
+    def render_to_json(self):
+        if self.object:
+            json = serializers.serialize(
+                'json',
+                self.object.lessonfile_set.all(),
+                fields=('file',)
+            )
+            return HttpResponse(json, content_type='application/json')
+        return HttpResponse('[]', content_type='application/json')
+
+    def get(self, request, *args, **kwargs):
+        lesson_pk = kwargs['pk']
+        self.object = self.get_object(lesson_pk)
+        return self.render_to_json()
+
+
 class HrefCalendar(HTMLCalendar):
     # Якщо в цей день є якісь події/нотатки
     booked_class = 'booked'
@@ -460,11 +591,11 @@ class HrefCalendar(HTMLCalendar):
                                                                    self.booked_class if booked else '',
                                                                    reverse(
                                                                        'teacher:calendar-day',
-                                                                        kwargs={
-                                                                            'year': self.theyear,
-                                                                            'month': self.themonth,
-                                                                            'day': day
-                                                                        }
+                                                                       kwargs={
+                                                                           'year': self.theyear,
+                                                                           'month': self.themonth,
+                                                                           'day': day
+                                                                       }
                                                                    ),
                                                                    day
                                                                    )
@@ -555,7 +686,6 @@ class CalendarRedirect(RedirectView):
 
 
 class CalendarDay(TeacherRequiredMixin, ListView):
-
     def get_queryset(self):
         return CalendarNote.objects.filter(
             author=self.request.user.profile,
@@ -643,7 +773,7 @@ class CalendarNoteDelete(TeacherRequiredMixin, RedirectView):
 
 class CalendarNoteChange(TeacherRequiredMixin, FormView):
     """Повертає html форму для зміни нотатки"""
-    http_method_names = ('get', 'post', )
+    http_method_names = ('get', 'post',)
     template_name = 'teacher/components/calendar-note-form-modal.html'
     model = CalendarNote
     form_class = CalendarNoteForm

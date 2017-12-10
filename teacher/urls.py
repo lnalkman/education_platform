@@ -7,7 +7,9 @@ from .views import (
     CalendarView, CalendarRedirect, CalendarDay,
     CalendarNoteAdd, CalendarNoteDelete, CalendarNoteChange,
     AjaxAddModule, AjaxAddGroupToCourse, AjaxCourseGroups,
-    AjaxRemoveCourseGroups,
+    AjaxRemoveCourseGroups, ModuleDetail, AjaxAddLessonForm,
+    DeleteModule, AjaxUploadLessonFiles, JsonFileList,
+    JsonLessonDetail, LessonUpdate, AjaxDeleteLessonFile
 )
 
 
@@ -28,4 +30,12 @@ urlpatterns = [
     url(r'^calendar/note/add/$', CalendarNoteAdd.as_view(), name='calendar-note-add'),
     url(r'^calendar/note/delete/$', CalendarNoteDelete.as_view(), name='calendar-note-delete'),
     url(r'^calendar/note/change/$', CalendarNoteChange.as_view(), name='calendar-note-change'),
+    url(r'^module/(?P<pk>[0-9]+)/$', ModuleDetail.as_view(), name='module-settings'),
+    url(r'^module/(?P<pk>[0-9]+)/delete/$', DeleteModule.as_view(), name='module-delete'),
+    url(r'^module/(?P<pk>[0-9]+)/lesson/add/$', AjaxAddLessonForm.as_view(), name='lesson-add'),
+    url(r'^lesson/(?P<pk>[0-9]+)/file/upload/$', AjaxUploadLessonFiles.as_view(), name='lesson-file-add'),
+    url(r'^lesson/(?P<pk>[0-9]+)/file/delete/$', AjaxDeleteLessonFile.as_view(), name='lesson-file-add'),
+    url(r'^lesson/(?P<pk>[0-9]+)/files/$', JsonFileList.as_view(), name='lesson-file-list'),
+    url(r'^lesson/(?P<pk>[0-9]+)/json/$', JsonLessonDetail.as_view(), name='lesson-detail-json'),
+    url(r'^lesson/(?P<pk>[0-9]+)/update/$', LessonUpdate.as_view(), name='lesson-update'),
 ]
