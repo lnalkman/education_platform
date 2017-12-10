@@ -90,6 +90,13 @@ class LessonFile(models.Model):
 
     file = models.FileField(verbose_name='Файл', upload_to=lesson_file_upload_path)
 
+    def filename(self):
+        full_path = self.file.name
+        return full_path[full_path.rfind('/') + 1:]
+
+    def __str__(self):
+        return self.file.name
+
 
 class Publication(models.Model):
     """
