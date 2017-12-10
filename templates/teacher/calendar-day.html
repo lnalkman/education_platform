@@ -111,7 +111,7 @@
                             <span class="card-subtitle">{{ note.date.timetuple.tm_hour }}:{{ note.date.timetuple.tm_min }}</span>
                         </h2>
                         {% if note.course %}
-                            <a href="#" class="label label-primary">{{ note.course.name }}</a>
+                            <a href="{% url 'teacher:course-settings' pk=note.course.pk %}" class="label label-primary">{{ note.course }}</a>
                         {% endif %}
                         <p class="note-content">{{ note.content }}</p>
                         <button class="edit" data-toggle="modal" data-target="#edit-note-modal"
@@ -143,6 +143,7 @@
                 <form action="{% url 'teacher:calendar-note-add' %}" class="form-horizontal" method="post">
                     {% csrf_token %}
                     <input type="text" name="next_to" value="{{ day_url }}" hidden>
+                    {{ form_add.author }}
                     <div class="form-group">
                         <label for="{{ form_add.title.id_for_label }}" class="col-sm-2 control-label">Заголовок</label>
                         <div class="col-sm-10">
