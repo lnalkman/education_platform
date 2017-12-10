@@ -2,7 +2,8 @@ from django import forms
 from django.forms.models import ModelForm
 
 from .models import (
-    Course, CalendarNote, Module
+    Course, CalendarNote, Module,
+    Lesson,
 )
 from edu_process.models import Profile
 
@@ -30,6 +31,17 @@ class ModuleForm(ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'cols': 9}),
             'course': forms.HiddenInput()
+        }
+
+
+class LessonForm(ModelForm):
+    """Форма для створення та редагування уроків"""
+    class Meta:
+        model = Lesson
+        fields = ('name', 'short_description',)
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'short_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 9}),
         }
 
 
