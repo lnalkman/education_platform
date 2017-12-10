@@ -1,8 +1,3 @@
-$(".submit-form").click(function () {
-    console.log($(this).parents(".modal"))
-    $(this).parents(".modal").find('form').submit();
-});
-
 $("#delete-note-modal").on("show.bs.modal", function(event) {
    var button = $(event.relatedTarget);
    $("#delete-note-modal input[name=pk]").val(button.data("note-pk"));

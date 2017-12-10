@@ -61,9 +61,9 @@ class CalendarNoteForm(ModelForm):
         model = CalendarNote
         fields = '__all__'
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'required': ''}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'cols': 9}),
-            'lesson': forms.Select(attrs={'class': 'form-control', 'hidden': '1'}),
+            'lesson': forms.Select(attrs={'class': 'form-control', 'hidden': '1', 'required': ''}),
             'date': forms.TextInput(attrs={'class': 'form-control'}),
             'author': forms.HiddenInput(),
         }

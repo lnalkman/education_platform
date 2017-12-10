@@ -111,7 +111,8 @@
                             <span class="card-subtitle">{{ note.date.timetuple.tm_hour }}:{{ note.date.timetuple.tm_min }}</span>
                         </h2>
                         {% if note.course %}
-                            <a href="{% url 'teacher:course-settings' pk=note.course.pk %}" class="label label-primary">{{ note.course }}</a>
+                            <a href="{% url 'teacher:course-settings' pk=note.course.pk %}"
+                               class="label label-primary">{{ note.course }}</a>
                         {% endif %}
                         <p class="note-content">{{ note.content }}</p>
                         <button class="edit" data-toggle="modal" data-target="#edit-note-modal"
@@ -139,8 +140,9 @@
                 </button>
                 <h4 class="modal-title" id="myModalLabel">Додати запис в календар</h4>
             </div>
-            <div class="modal-body">
-                <form action="{% url 'teacher:calendar-note-add' %}" class="form-horizontal" method="post">
+            <form action="{% url 'teacher:calendar-note-add' %}" class="form-horizontal" method="post">
+                <div class="modal-body">
+
                     {% csrf_token %}
                     <input type="text" name="next_to" value="{{ day_url }}" hidden>
                     {{ form_add.author }}
@@ -169,12 +171,13 @@
                             {{ form_add.date }}
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <button type="button" class="btn btn-primary submit-form">Зберегти</button>
-            </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
+                    <button type="submit" class="btn btn-primary submit-form">Зберегти</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -186,7 +189,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">Змінити запис в календарі</h4>
+                <h4 class="modal-title">Змінити запис в календарі</h4>
             </div>
             <div class="modal-body">
             </div>
@@ -199,17 +202,15 @@
 </div>
 
 <!-- Delete Note Modal -->
-<div class="modal fade" id="delete-note-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="delete-note-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">Видалити запис ?</h4>
+                <h4 class="modal-title">Видалити запис ?</h4>
             </div>
             <div class="modal-body">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
             </div>
             <div class="modal-footer">
 
