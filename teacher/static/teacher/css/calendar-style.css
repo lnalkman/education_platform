@@ -1,0 +1,147 @@
+.calendar-block {
+    margin-left: 54px;
+    width: 100%;
+    height: 100%;
+}
+
+.aspect-text {
+    overflow-x: auto;
+    margin-right: 54px;
+    height: 100%;
+}
+
+table.month {
+    margin: auto;
+    margin-top: 100px;
+    min-width: 320px;
+    width: 55%;
+    height: 400px;
+    text-align: center;
+}
+
+th.month {
+    height: 100px;
+    background-color: #1abc9c;
+    color: #fff;
+    position: relative;
+}
+
+th.month:first-letter {
+    text-transform: uppercase;
+}
+
+table.month tbody tr:nth-child(2) {
+    background-color: #dddddd;
+    color: #666666;
+}
+
+table.month tbody {
+    background-color: #eeeeee;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+table.month a {
+    display: inline-block;
+    height:100%;
+    width:100%;
+    text-align: center;
+    color: #777777;
+    padding-top: 10px;
+}
+
+td.booked {
+    border: 1px dashed #008ee2;
+}
+
+table.month a:hover {
+    background-color:#dddddd;
+    text-decoration: none;
+}
+
+table.month a.glyphicon {
+    position: absolute;
+    width: 50px;
+    top: 0;
+    background-color: transparent;
+}
+
+table.month a.glyphicon::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: .7;
+    color: #ffffff;
+}
+
+
+table.month a.glyphicon:hover::before {
+    opacity: 1;
+}
+
+table.month a.glyphicon-chevron-left {
+    left: 0px;
+}
+
+table.month a.glyphicon-chevron-right {
+    right: 0px;
+}
+
+.nav {
+    background-color: #394b58;
+    height: 54px;
+    width: 100%;
+    text-align: center;
+}
+
+.nav .prew-year, .nav .next-year {
+    height: 100%;
+    width: 50px;
+    font-size: 1.5em;
+    color: #7ab4de;
+    vertical-align: middle;
+
+}
+
+.nav .prew-year:hover, .nav .next-year:hover {
+    color: #baebe1;
+}
+
+a.prew-year {
+    float: left;
+    margin-left: 54px;
+}
+
+a.next-year {
+    float: right;
+}
+
+a.prew-year::before, a.next-year::before {
+    position: absolute;
+    top: 47%;
+    transform: translate(-50%, -50%);
+}
+
+.nav form {
+    display: inline-block;
+    height: 100%;
+    padding: 9px 0 9px 30px;
+}
+
+.nav form input {
+    background-color: transparent;
+    border: 1px solid #7ab4de;
+    border-radius: 1px;
+    width: 70px;
+    padding: 0 15px;
+    height: 100%;
+    color: #fff;
+}
+
+.nav form button {
+    background-color: transparent;
+    color: #7ab4de;
+    border: none;
+}
+
+
