@@ -1,13 +1,17 @@
 .calendar-block {
     margin-left: 54px;
+    margin-bottom: 54px;
     width: 100%;
-    height: 100%;
 }
 
 .aspect-text {
     overflow-x: auto;
     margin-right: 54px;
-    height: 100%;
+    padding-bottom: 10px;
+}
+
+th {
+    text-align: center;
 }
 
 table.month {
@@ -16,7 +20,6 @@ table.month {
     min-width: 320px;
     width: 55%;
     height: 400px;
-    text-align: center;
 }
 
 th.month {
@@ -42,19 +45,24 @@ table.month tbody {
 
 table.month a {
     display: inline-block;
-    height:100%;
-    width:100%;
+    height: 100%;
+    width: 100%;
     text-align: center;
     color: #777777;
     padding-top: 10px;
 }
 
 td.booked {
-    border: 1px dashed #008ee2;
+    background-color: #20dab5;
+    font-weight: bold;
+}
+
+td.today {
+    background-color: #d3d8da;
 }
 
 table.month a:hover {
-    background-color:#dddddd;
+    background-color: #dddddd;
     text-decoration: none;
 }
 
@@ -73,7 +81,6 @@ table.month a.glyphicon::before {
     opacity: .7;
     color: #ffffff;
 }
-
 
 table.month a.glyphicon:hover::before {
     opacity: 1;
@@ -144,4 +151,22 @@ a.prew-year::before, a.next-year::before {
     border: none;
 }
 
+@media (max-width: 768px) {
+    .aspect-text {
+        margin: 0;
+    }
 
+    table.month {
+        width: 85%;
+    }
+
+    .calendar-block {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    table.month {
+        width: 100%;
+    }
+}

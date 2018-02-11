@@ -2,20 +2,20 @@ from django.conf.urls import url
 from django.views.generic.base import TemplateView
 
 from .views import (
-    TeacherProfile, AddCourseView, CourseListView,
+    TeacherProfile, CourseListView, DeleteLesson,
     CourseSettings, CourseDelete, AjaxUpdateCourse,
     CalendarView, CalendarRedirect, CalendarDay,
     CalendarNoteAdd, CalendarNoteDelete, CalendarNoteChange,
     AjaxAddModule, AjaxAddGroupToCourse, AjaxCourseGroups,
     AjaxRemoveCourseGroups, ModuleDetail, AjaxAddLessonForm,
     DeleteModule, AjaxUploadLessonFiles, JsonFileList,
-    JsonLessonDetail, LessonUpdate, AjaxDeleteLessonFile
+    JsonLessonDetail, LessonUpdate, AjaxDeleteLessonFile,
 )
 
 
 urlpatterns = [
     url(r'^$', TeacherProfile.as_view(), name='index'),
-    url(r'^course/add/$', AddCourseView.as_view(), name='course-add'),
+    # url(r'^course/add/$', AddCourseView.as_view(), name='course-add'),
     url(r'^courses/$', CourseListView.as_view(), name='course-list'),
     url(r'^course/(?P<pk>[0-9]+)/$', CourseSettings.as_view(), name='course-settings'),
     url(r'^course/(?P<pk>[0-9]+)/delete/$', CourseDelete.as_view(), name='course-delete'),
@@ -38,4 +38,5 @@ urlpatterns = [
     url(r'^lesson/(?P<pk>[0-9]+)/files/$', JsonFileList.as_view(), name='lesson-file-list'),
     url(r'^lesson/(?P<pk>[0-9]+)/json/$', JsonLessonDetail.as_view(), name='lesson-detail-json'),
     url(r'^lesson/(?P<pk>[0-9]+)/update/$', LessonUpdate.as_view(), name='lesson-update'),
+    url(r'^lesson/(?P<pk>[0-9]+)/delete/$', DeleteLesson.as_view(), name='lesson-delete'),
 ]

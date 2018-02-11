@@ -88,3 +88,10 @@ body .content {
     transform: rotate(45deg);
     opacity: 1;
 }
+
+@media (max-width: 768px) {
+    body .content {
+        padding-left: 15px;
+        padding-top: 56px;
+    }
+}

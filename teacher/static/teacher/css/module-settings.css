@@ -1,4 +1,4 @@
-div.content {
+.content {
     padding-left: 69px;
     padding-top: 30px;
 }
@@ -99,5 +99,14 @@ div.content {
 
     .add-lesson:hover {
         border: none
+    }
+
+    .add-lesson span.glyphicon {
+        margin: 9px 9px;
+        font-size: 20px;
+    }
+
+    .content {
+        padding-left: 15px;
     }
 }

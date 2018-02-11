@@ -1,11 +1,10 @@
 from calendar import HTMLCalendar
 from calendar import month_name
-from datetime import datetime, timedelta
-from functools import partial
+from datetime import datetime, timedelta, date
 
 from django.urls import reverse_lazy
 from django.shortcuts import reverse
-from django.views.generic.edit import UpdateView, FormView
+from django.views.generic.edit import UpdateView, FormView, FormMixin
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
@@ -54,24 +53,25 @@ class TeacherProfile(TeacherRequiredMixin, UpdateView):
         return context
 
 
-class AddCourseView(TeacherRequiredMixin, FormView):
-    """View для додавання курсів. Доступний тільки для вчителів."""
-    template_name = 'teacher/course-add.html'
-    form_class = CourseForm
-    success_url = '/teacher/courses/'
-
-    def form_valid(self, form):
-        """Додаємо поле з автором вручну і зберігаємо"""
-        form.cleaned_data['author'] = self.request.user.profile
-        Course.objects.create(**form.cleaned_data)
-        return super(FormView, self).form_valid(form)
-
-
-class CourseListView(TeacherRequiredMixin, ListView):
+class CourseListView(TeacherRequiredMixin, FormMixin, ListView):
     template_name = 'teacher/course-list.html'
+    form_class = CourseForm
+    success_url = reverse_lazy('teacher:course-list')
 
     def get_queryset(self):
         return self.request.user.profile.course_set.all()
+
+    def form_valid(self, form):
+        form.cleaned_data['author'] = self.request.user.profile
+        Course.objects.create(**form.cleaned_data)
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class CourseSettings(TeacherRequiredMixin, UpdateView):
@@ -418,31 +418,34 @@ class AjaxAddLessonForm(TeacherRequiredMixin, View):
 
 class DeleteLesson(TeacherRequiredMixin, RedirectView):
     http_method_names = ('post',)
+    model = Lesson
 
-    def get_redirect_url(self, *args, **kwargs):
+    def get_redirect_url(self, module_pk):
         return reverse(
-            'teacher:lesson-settings',
-            kwargs={'pk': self.kwargs['pk']}
+            'teacher:module-settings',
+            kwargs={'pk': module_pk}
         )
 
     def can_delete(self, obj):
         return obj.module.course.author == self.request.user.profile
 
-    def delete_lesson(self, pk):
+    def delete_object(self, obj):
+        if self.can_delete(obj):
+            obj.delete()
+
+    def get_object(self, pk):
         try:
-            obj = Lesson.objects.get(pk=pk)
-        except Lesson.DoesNotExist:
-            pass
-        else:
-            if self.can_delete(obj):
-                obj.delete()
+            return self.model.objects.get(pk=pk)
+        except self.model.DoesNotExist:
+            return None
 
     def post(self, request, *args, **kwargs):
-        pk = request.POST.get('pk')
-        if pk:
-            self.delete_lesson(pk)
+        obj = self.get_object(kwargs.get('pk'));
+        if obj:
+            module_pk = obj.module.pk
+            self.delete_object(obj)
 
-        return super(RedirectView, self).post(request, *args, **kwargs)
+        return HttpResponseRedirect(self.get_redirect_url(module_pk))
 
 
 class AjaxUploadLessonFiles(TeacherRequiredMixin, View):
@@ -484,20 +487,28 @@ class AjaxDeleteLessonFile(TeacherRequiredMixin, View):
         return HttpResponse('')
 
 
-# ****************
-# SECURITY PROBLEM
-# ****************
 class LessonUpdate(TeacherRequiredMixin, View):
     form = LessonForm
 
     def render_to_json(self, data):
         return JsonResponse(data)
 
+    def can_update(self, obj_pk):
+        try:
+            if Lesson.objects.get(pk=obj_pk).module.course.author != self.request.user.profile:
+                return False
+            else:
+                return True
+        except Lesson.DoesNotExist:
+            pass
+
     def form_valid(self, form):
-        Lesson.objects.filter(pk=self.kwargs['pk']).update(
-            **form.cleaned_data
-        )
-        return self.render_to_json({'success': True})
+        if self.can_update(self.kwargs['pk']):
+            Lesson.objects.filter(pk=self.kwargs['pk']).update(
+                **form.cleaned_data
+            )
+            return self.render_to_json({'success': True})
+        return self.render_to_json({'success': False})
 
     def form_invalid(self, form):
         data = {
@@ -558,6 +569,7 @@ class JsonFileList(View):
 class HrefCalendar(HTMLCalendar):
     # Якщо в цей день є якісь події/нотатки
     booked_class = 'booked'
+    today_class = 'today'
 
     def __init__(self, theyear, themonth, prew_url='#', next_url='#', booked_days=None):
         """:booked_days -> контейнер в якому зберігаються дні в місяці в яких є якісь нотатки"""
@@ -567,6 +579,7 @@ class HrefCalendar(HTMLCalendar):
         self.prew_url = prew_url
         self.next_url = next_url
         self.booked_days = booked_days
+        self.today = date.today()
 
     def formatmonthname(self, theyear, themonth, withyear=True):
         """
@@ -587,18 +600,25 @@ class HrefCalendar(HTMLCalendar):
         if day == 0:
             return '<td class="noday">&nbsp;</td>'  # day outside month
         else:
-            return '<td class="%s %s"><a href="%s">%d</a></td>' % (self.cssclasses[weekday],
-                                                                   self.booked_class if booked else '',
-                                                                   reverse(
-                                                                       'teacher:calendar-day',
-                                                                       kwargs={
-                                                                           'year': self.theyear,
-                                                                           'month': self.themonth,
-                                                                           'day': day
-                                                                       }
-                                                                   ),
-                                                                   day
-                                                                   )
+            if (self.theyear == self.today.year
+                and self.themonth == self.today.month
+                and day == self.today.day):
+                today = self.today_class
+            else:
+                today = ''
+            return '<td class="%s %s %s"><a href="%s">%d</a></td>' % (self.cssclasses[weekday],
+                                                                      self.booked_class if booked else '',
+                                                                      today,
+                                                                      reverse(
+                                                                          'teacher:calendar-day',
+                                                                          kwargs={
+                                                                              'year': self.theyear,
+                                                                              'month': self.themonth,
+                                                                              'day': day
+                                                                          }
+                                                                      ),
+                                                                      day
+                                                                      )
 
     def formatweek(self, theweek):
         """

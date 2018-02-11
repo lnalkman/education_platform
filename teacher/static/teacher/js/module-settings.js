@@ -179,3 +179,8 @@ $('.edit-lesson-form').submit(function (e) {
 
     })
 });
+
+$('#delete-lesson-modal').on('show.bs.modal', function (e) {
+    var button = $(e.relatedTarget);
+    $('#delete-lesson-modal').find('form').attr('action', button.data('url'));
+});
