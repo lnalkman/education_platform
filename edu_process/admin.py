@@ -5,12 +5,12 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from .models import (
-    Profile, Group, TemporaryUser,
+    Profile, Group, TemporaryUser, Message
 )
 
 admin.site.unregister(User)
 admin.site.register((
-    Group, TemporaryUser
+    Group, TemporaryUser, Message
 ))
 
 

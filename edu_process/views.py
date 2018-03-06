@@ -1,13 +1,20 @@
 from django.core import serializers
 from django.contrib.auth import login
+from django.contrib.auth.models import User
 from django.shortcuts import reverse
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
-from django.http.response import HttpResponseRedirect, HttpResponse
+from django.http.response import (
+    HttpResponseRedirect, HttpResponse, JsonResponse,
+    HttpResponseBadRequest, HttpResponseNotFound
+)
 from django.urls import reverse_lazy
+from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.base import TemplateView
 
-from .models import Profile, Group
+from .models import Profile, Group, Message, get_user_messages
 
 
 class IndexView(FormView):
@@ -74,4 +81,99 @@ class SearchGroup(View):
             val = self.returned_object_count
 
         queryset = self.get_objects(q, val)
+        return self.render_to_json(queryset)
+
+
+class MessageView(LoginRequiredMixin, TemplateView):
+    template_name = 'edu_process/messages.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context['self_id'] = self.request.user.pk
+        return context
+
+
+class MessagesApiView(LoginRequiredMixin, View):
+
+    def get_messages(self, user_pk, last_message_pk=None, count=15):
+        if count > 30 or count < 1:
+            count = 15
+
+        if last_message_pk and last_message_pk < 0:
+            last_message_pk = 0
+
+        user1 = self.request.user
+        try:
+            user2 = User.objects.get(pk=user_pk)
+        except User.DoesNotExist:
+            return []
+
+        if not last_message_pk:
+            # Повідомлення між користувачами
+            msg_condition = (Q(sender=user1) & Q(receiver=user2)) | (Q(sender=user2) & Q(receiver=user1))
+        else:
+            # Повідомлення між користувачами pk яких менше за last_message_pk
+            msg_condition = (
+                Q(id__lt=last_message_pk)
+                & ((Q(sender=user1) & Q(receiver=user2)) | (Q(sender=user2) & Q(receiver=user1)))
+            )
+
+        return Message.objects.filter(msg_condition)[:count]
+
+    def render_to_json(self, queryset):
+        return HttpResponse(
+            serializers.serialize('json', queryset),
+            content_type='application/json'
+        )
+
+    def get(self, request, *args, **kwargs):
+        try:
+            last_message_pk = int(request.GET.get('last_message_pk', 0))
+            count = int(request.GET.get('count', 15))
+            user_pk = int(request.GET.get('id'))
+        except TypeError:
+            return HttpResponseBadRequest("last_message_pk, count, user_pk variables should be integer digits")
+
+        queryset = self.get_messages(user_pk, last_message_pk, count)
+        return self.render_to_json(queryset)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            receiver_pk = int(request.POST.get('receiver_pk'))
+        except ValueError:
+            return HttpResponseBadRequest("user_pk variable should be integer digit")
+        message = request.POST.get('message')
+        if not message:
+            return HttpResponseBadRequest("message can't be empty")
+
+        try:
+            receiver = User.objects.get(pk=receiver_pk)
+        except User.DoesNotExist:
+            return HttpResponseNotFound("user with pk=%s doesn't exists" % receiver_pk)
+
+        msg = Message.objects.create(
+            sender=request.user,
+            receiver=receiver,
+            text=message
+        )
+
+        return HttpResponse(msg.sended)
+
+
+class MessageUserApiView(LoginRequiredMixin, View):
+    http_method_names = ['get']
+
+    def render_to_json(self, queryset):
+        return JsonResponse(
+            queryset,
+            safe=False,
+        )
+
+    def get_queryset(self, id):
+        return get_user_messages(id)
+
+    def get(self, request, *args, **kwargs):
+        id = request.user.pk
+
+        queryset = self.get_queryset(id)
         return self.render_to_json(queryset)

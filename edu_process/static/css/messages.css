@@ -1,0 +1,94 @@
+.content {
+    padding: 54px 26px 0 56px;
+}
+
+.choosen {
+    transition: margin-left 0.7s;
+    margin-left: 20px;
+}
+
+.user {
+    height: 64px;
+    cursor: pointer;
+}
+
+.user img {
+    height: 100%;
+    margin-right: 5px;
+}
+
+span.badge {
+    background-color: #337ab7;
+}
+
+.message-bar {
+    border: 1px solid #eee;
+    padding-bottom: 20px;
+    border-radius: 4px;
+}
+
+.message-bar-header {
+    height: 50px;
+    position: relative;
+}
+
+.receiver {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    font-size: 18px;
+    color: #333;
+}
+
+.receiver:hover {
+    color: #ccc;
+    text-decoration: none;
+}
+
+.message-window {
+    height: 450px;
+    padding: 10px 90px 10px 90px;
+    overflow: auto;
+}
+
+.load-banner {
+    text-align: center;
+    height: 450px;
+}
+
+.send-message {
+    position: absolute;
+    transform: translateY(50%);
+    bottom: 50%;
+    font-size: 28px;
+}
+
+.send-message:focus {
+    border: none;
+}
+
+.message {
+    padding: 5px 10px;
+    border-radius: 14px;
+    margin: 4px 0;
+    background-color: #f9f579;
+    max-width: 250px;
+}
+
+.from {
+    float: right;
+    clear: both;
+}
+
+.to {
+    float: left;
+    clear: both;
+}
+
+
+@media (max-width: 768px) {
+    .content {
+        padding-left: 0;
+    }
+}

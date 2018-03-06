@@ -25,8 +25,9 @@
     <!-- iOS Safari -->
     <meta name="apple-mobile-web-app-status-bar-style" content="#000">
 
+    <link rel="stylesheet" href="{% static 'css/all.css' %}">
     <link rel="stylesheet" href="{% static 'teacher/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'teacher/css/calendar-day.css' %}">
+    <link rel="stylesheet" href="{% static 'css/messages.css' %}">
 </head>
 
 <body>
@@ -60,7 +61,7 @@
             <span class="tooltip">Курси</span>
         </li>
         <li>
-            <a href="{% url 'messages' %}">
+            <a href="{% url 'messages' %}" class="active">
                 <svg viewBox="0 0 368.625 368.625">
                     <path d="M356.125,50.318H12.5c-6.903,0-12.5,5.597-12.5,12.5v242.988c0,6.902,5.597,12.5,12.5,12.5h343.625 c6.902,0,12.5-5.598,12.5-12.5V62.818C368.625,55.916,363.027,50.318,356.125,50.318z M343.625,293.307H25V75.318h318.625V293.307 z"/>
                     <path d="M57.755,134.201l120,73.937c2.01,1.239,4.283,1.858,6.557,1.858s4.547-0.619,6.557-1.858l120-73.937 c5.877-3.621,7.707-11.322,4.086-17.199s-11.324-7.707-17.199-4.085l-113.444,69.896L70.869,112.917 c-5.875-3.619-13.576-1.793-17.199,4.085C50.048,122.878,51.877,130.58,57.755,134.201z"/>
@@ -69,7 +70,7 @@
             <span class="tooltip">Листи</span>
         </li>
         <li>
-            <a href="{% url 'teacher:calendar-redirect' %}" class="active">
+            <a href="{% url 'teacher:calendar-redirect' %}">
                 <svg viewBox="0 0 488.152 488.152">
                     <path d="M177.854,269.311c0-6.115-4.96-11.069-11.08-11.069h-38.665c-6.113,0-11.074,4.954-11.074,11.069v38.66 c0,6.123,4.961,11.079,11.074,11.079h38.665c6.12,0,11.08-4.956,11.08-11.079V269.311L177.854,269.311z"/>
                     <path d="M274.483,269.311c0-6.115-4.961-11.069-11.069-11.069h-38.67c-6.113,0-11.074,4.954-11.074,11.069v38.66 c0,6.123,4.961,11.079,11.074,11.079h38.67c6.108,0,11.069-4.956,11.069-11.079V269.311z"/>
@@ -94,146 +95,21 @@
         </li>
     </ul>
 </header>
-<div class="nav">
-    <a href="{{ month_url }}"><span class="glyphicon glyphicon-menu-left"></span><span
-            class="hidden-xs">Назад</span></a>
-    <h4 class="date">{{ day_date.date }}</h4>
-    <button type="button" class="add-note" data-toggle="modal" data-target="#add-note-modal"><span
-            class="glyphicon glyphicon-pencil"></span><span class="hidden-xs">Додати запис</span>
-    </button>
-</div>
-<div class="content">
-    {% if not object_list %}
-        <h3 class="no-notes">В цей день відсутні події</h3>
-    {% else %}
-        <div class="container">
-            <div class="row">
-                {% for note in object_list %}
-                    <div class="card col-md-5 col-md-offset-{% cycle '0' '1' %} col-sm-offset-1 col-sm-10">
-                        <h2 class="card-title">
-                            {{ note.title|truncatechars:21 }}
-                            <span class="card-subtitle">{{ note.date.timetuple.tm_hour|stringformat:"02d" }}:{{ note.date.timetuple.tm_min|stringformat:"02d" }}</span>
-                        </h2>
-                        {% if note.course %}
-                            <a href="{% url 'teacher:course-settings' pk=note.course.pk %}"
-                               class="label label-primary">{{ note.course }}</a>
-                        {% endif %}
-                        <p class="note-content">{{ note.content }}</p>
-                        <button class="edit" data-toggle="modal" data-target="#edit-note-modal"
-                                data-note-pk="{{ note.pk }}"
-                                data-form-get-url="{% url 'teacher:calendar-note-change' %}">Редагувати
-                        </button>
-                        <button class="delete" data-toggle="modal" data-target="#delete-note-modal"
-                                data-note-pk="{{ note.pk }}">Видалити
-                        </button>
-                    </div>
-                    {% autoescape off %}{% cycle '' '<div class="clearfix"></div>' %}{% endautoescape %}
-                {% endfor %}
 
-            </div>
-        </div>
-    {% endif %}
-</div>
-
-<!-- Add Note Modal -->
-<div class="modal fade" id="add-note-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="myModalLabel">Додати запис в календар</h4>
-            </div>
-            <form action="{% url 'teacher:calendar-note-add' %}" class="form-horizontal" method="post">
-                <div class="modal-body">
-
-                    {% csrf_token %}
-                    <input type="text" name="next_to" value="{{ day_url }}" hidden>
-                    {{ form_add.author }}
-                    <div class="form-group">
-                        <label for="{{ form_add.title.id_for_label }}" class="col-sm-2 control-label">Заголовок</label>
-                        <div class="col-sm-10">
-                            {{ form_add.title }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form_add.course.id_for_label }}" class="col-sm-2 control-label">Курс</label>
-                        <div class="col-sm-10">
-                            {{ form_add.course }}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="{{ form_add.content.id_for_label }}" class="col-sm-2 control-label">Нотатка</label>
-                        <div class="col-sm-10">
-                            {{ form_add.content }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form_add.date.id_for_label }}" class="col-sm-2 control-label">Дата-час</label>
-                        <div class="col-sm-4">
-                            {{ form_add.date }}
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                    <button type="submit" class="btn btn-primary submit-form">Зберегти</button>
-                </div>
-            </form>
-        </div>
+<div class="content" id="app" data-self-id="{{ self_id }}">
+    {% csrf_token %}
+    <div class="row">
+        <users-bar class="col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-5 col-lg-4"></users-bar>
+        <message-bar class="col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-7 col-lg-8"></message-bar>
     </div>
 </div>
 
-<!-- Edit Note Modal -->
-<div class="modal fade" id="edit-note-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Змінити запис в календарі</h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <button type="button" class="btn btn-primary submit-form">Зберегти</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Delete Note Modal -->
-<div class="modal fade" id="delete-note-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Видалити запис ?</h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <form method="post" action="{% url 'teacher:calendar-note-delete' %}">
-                    {% csrf_token %}
-                    <input type="text" name="next_to" value="{{ day_url }}" hidden>
-                    <input type="text" name="pk" hidden>
-                    <button type="submit" class="btn btn-danger">Видалити</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<link rel="stylesheet" href="{% static 'css/all.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
 <script src="{% static 'js/common.js' %}"></script>
 <script src="{% static 'teacher/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'teacher/js/calendar-day.js' %}"></script>
+<script src="{% static 'js/messages.js' %}"></script>
 </body>
 </html>

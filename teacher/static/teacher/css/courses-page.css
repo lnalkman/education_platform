@@ -1,0 +1,54 @@
+.nav {
+    background-color: #394b58;
+    height: 54px;
+    width: 100%;
+    position: relative;
+    z-index: 9;
+    margin-bottom: 50px;
+}
+
+.add-course {
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    background-color: transparent;
+    color: #8fcfff;
+    border: 1px solid #7ab4de;
+    border-radius: 2px;
+    padding: 3px 4px;
+}
+
+.add-course:hover {
+    border: 1px solid #b7f7ff;
+    color: #b7f7ff;
+}
+
+.add-course span.glyphicon {
+    margin-right: 6px;
+}
+
+.nav .sub-header {
+    margin: 0;
+    display: block;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    color: #7ab4de;
+}
+
+@media (max-width: 768px) {
+    .add-course {
+        border: none;
+    }
+
+    .add-course span.glyphicon {
+        margin: 9px 9px;
+        font-size: 20px;
+    }
+
+    .add-course:hover {
+        border: none;
+    }
+}

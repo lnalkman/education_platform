@@ -1,0 +1,225 @@
+@font-face {
+    font-family: roboto-example;
+    font-weight: 400;
+    font-style: normal;
+    src: url(../fonts/RobotoRegular/RobotoRegular.eot);
+    src: url(../fonts/RobotoRegular/RobotoRegular.eot?#iefix) format("embedded-opentype"), url(../fonts/RobotoRegular/RobotoRegular.woff) format("woff"), url(../fonts/RobotoRegular/RobotoRegular.ttf) format("truetype")
+}
+
+@font-face {
+    font-family: roboto-example;
+    font-weight: 700;
+    font-style: normal;
+    src: url(../fonts/RobotoBold/RobotoBold.eot);
+    src: url(../fonts/RobotoBold/RobotoBold.eot?#iefix) format("embedded-opentype"), url(../fonts/RobotoBold/RobotoBold.woff) format("woff"), url(../fonts/RobotoBold/RobotoBold.ttf) format("truetype")
+}
+
+::-webkit-input-placeholder {
+    color: #666;
+    opacity: 1
+}
+
+:-moz-placeholder {
+    color: #666;
+    opacity: 1
+}
+
+::-moz-placeholder {
+    color: #666;
+    opacity: 1
+}
+
+:-ms-input-placeholder {
+    color: #666;
+    opacity: 1
+}
+
+body input:focus:required:invalid,
+body textarea:focus:required:invalid {
+    color: #666
+}
+
+body input:required:valid,
+body textarea:required:valid {
+    color: #666
+}
+
+body,
+html {
+    height: 100%
+}
+
+body {
+    font-size: 16px;
+    min-width: 320px;
+    position: relative;
+    line-height: 1.75;
+    font-family: roboto-example, sans-serif;
+    overflow-x: hidden
+}
+
+.img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto
+}
+
+.header {
+    background-color: #394b58;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 54px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    transition: background-color 0.3s ease 0.45s, height 1s;
+    /*overflow: hidden;*/
+}
+
+.header li,
+.header ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none
+}
+
+.header li {
+    position: relative
+}
+
+.header li .tooltip {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    padding: 2px 12px;
+    color: #fff;
+    font-size: 14px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    background-color: #008ee2;
+    -webkit-transition: all .5s ease;
+    -o-transition: all .5s ease;
+    transition: all .5s ease;
+    opacity: 0;
+    cursor: default;
+    z-index: -1;
+}
+
+.header li .tooltip::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-right: 6px solid #008ee2;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    left: -6px
+}
+
+.header li a {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    -webkit-transition: all .3s ease;
+    -o-transition: all .3s ease;
+    transition: all .3s ease;
+    position: relative
+}
+
+.header li a img {
+    width: 60%
+}
+
+.header li a svg {
+    vertical-align: middle;
+    width: 50%
+}
+
+.header li a svg path {
+    fill: #fff
+}
+
+.header li a:hover:not(.logo):not(.active) {
+    background-color: #2e3c46
+}
+
+.header li a:hover:not(.logo):not(.active)~.tooltip {
+    left: 60px;
+    opacity: 1
+}
+
+.header li .logo {
+    padding: 30px 0
+}
+
+.header li .logo img {
+    width: 80%
+}
+
+.header li .active {
+    background-color: #fff
+}
+
+.header li .active svg path {
+    fill: #008ee2
+}
+
+/*.page-content {*/
+    /*padding-left: 84px;*/
+    /*padding-top: 30px;*/
+    /*padding-right: 30px;*/
+    /*width: 100%;*/
+    /*-webkit-box-sizing: border-box;*/
+    /*box-sizing: border-box*/
+/*}*/
+
+.navbar-opener {
+    position:fixed;
+    width: 54px;
+    height: 54px;
+    font-size: 28px;
+    z-index:30;
+    /*background-color: rgba(57, 75, 88, 0.85);*/
+    display: none;
+    top: 0;
+    cursor: pointer;
+    color: #7ab4de;
+}
+.navbar-opener span {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 27px;
+    left: 27px;
+    /*color: #7ab4de;*/
+    font-weight: 700;
+}
+
+
+@media (max-width: 768px) {
+    .header {
+        background-color: transparent;
+        height: 0;
+        padding: 54px 0 0 0;
+        overflow: hidden;
+    }
+
+    .navbar-opener {
+        display: block;
+    }
+
+    .responsive {
+        height: 100%;
+        background-color: #394b58;
+        transition: height 1s;
+    }
+}

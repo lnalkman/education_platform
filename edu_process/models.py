@@ -1,7 +1,7 @@
 import os
 
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, connection
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -123,3 +123,80 @@ class TemporaryUser(models.Model):
         null=True,
         )
     password = models.CharField(verbose_name='Тимчасовий пароль', max_length=32)
+
+
+class Message(models.Model):
+    class Meta:
+        ordering = ('-id',)
+
+    sender = models.ForeignKey(User, related_name='sended_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+
+    text = models.TextField(verbose_name='Текст повідомлення', max_length=512)
+    sended = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.text[:36]
+
+
+def get_user_messages(id):
+    """
+    Повертає масив словників з усіма користувачами з якими спілкувався користувач з id
+    Структура queryset:
+    1) au.id id,
+    2) msg.text text,
+    3) msg.who who [вам прислали повідомлення чи ви відіслали],
+    4) msg.sended sended,
+    5) au.first_name first_name,
+    6) au.last_name last_name
+    7) epp.photo photo
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+        select
+        au.id id,
+        msg.text message,
+        msg.who who,
+        msg.sended sended,
+        au.first_name first_name,
+        au.last_name last_name,
+        epp.photo image
+        FROM (
+          SELECT
+            id,
+            text,
+            CASE WHEN receiver_id = %(id)s
+              THEN sender_id
+            WHEN sender_id = %(id)s
+              THEN receiver_id END AS user,
+            CASE WHEN receiver_id = %(id)s
+              THEN "from"
+            WHEN sender_id = %(id)s
+              THEN "you" END      AS who,
+            sended
+          FROM edu_process_message epm
+          WHERE (receiver_id = %(id)s OR sender_id = %(id)s)
+                AND id IN
+                    (SELECT max(id)
+                     FROM (SELECT
+                             id,
+                             CASE WHEN receiver_id = %(id)s
+                               THEN sender_id
+                             WHEN sender_id = %(id)s
+                               THEN receiver_id END AS user
+                           FROM edu_process_message epm
+                           WHERE (receiver_id = %(id)s OR sender_id = %(id)s)
+                          ) t
+                     GROUP BY user
+                    )
+        ) msg
+        inner join auth_user au on msg.user = au.id
+        inner join edu_process_profile epp on au.id = epp.user_id
+        order by msg.id desc""" % ({'id': id}))
+
+        columns = [col[0] for col in cursor.description]
+        return [
+            dict(zip(columns, row))
+            for row in cursor.fetchall()
+        ]
