@@ -20,9 +20,35 @@ div.light {
     padding-bottom: 5px;
 }
 
-.image > img {
+.image-block {
+    position: relative;
+}
+
+.image-block:hover > img {
+  opacity: 0.3;
+}
+
+.image-block:hover .middle {
+  opacity: 1;
+}
+
+.image-block > img {
+    opacity: 1;
+    display: block;
     width: 100%;
     height: auto;
+    transition: .5s ease;
+    backface-visibility: hidden;
+}
+
+.middle {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%)
 }
 
 .avatar {
@@ -30,11 +56,11 @@ div.light {
 }
 
 .events-opener {
-    position:fixed;
+    position: fixed;
     width: 54px;
     height: 54px;
     font-size: 28px;
-    z-index:30;
+    z-index: 30;
     background-color: transparent;
     display: none;
     top: 0;
@@ -49,7 +75,6 @@ div.light {
     top: 27px;
     right: 27px;
 }
-
 
 .events {
     position: fixed;
@@ -97,6 +122,50 @@ a.to-post {
     margin-top: 20px;
 }
 
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+#photo-wrap {
+  display: inline-block;
+  margin: 5px 8px;
+  max-width: 100%;
+  position: relative;
+}
+
+#photo-wrap img {
+  max-width: 100%;
+}
+
+@keyframes rBlock {
+    0%   {border-color: #fff;}
+    25%  {border-color: #00ff00;}
+    75%  {border-color: #1d004e;}
+    100%   {border-color: #fff;}
+}
+
+#resize-block {
+  border: 2px solid #1d004e;
+  width: 100px;
+  height: 100px;
+  top:40%;
+  left: 40%;
+  position:absolute;
+  animation-name: rBlock;
+  animation-duration: 8s;
+  animation-iteration-count: infinite;
+}
+
 @media (max-width: 768px) {
     .page-content {
         padding: 54px 0 0 0;
@@ -118,7 +187,7 @@ a.to-post {
 
     .events {
         right: -100%;
-        width:100%;
+        width: 100%;
         padding: 30px 30px 0 30px;
     }
 

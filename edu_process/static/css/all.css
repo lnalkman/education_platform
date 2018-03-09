@@ -86,7 +86,7 @@ body {
 }
 
 .header li {
-    position: relative
+    position: relative;
 }
 
 .header li .tooltip {
@@ -133,7 +133,7 @@ body {
     -webkit-transition: all .3s ease;
     -o-transition: all .3s ease;
     transition: all .3s ease;
-    position: relative
+    position: relative;
 }
 
 .header li a img {
@@ -221,5 +221,11 @@ body {
         height: 100%;
         background-color: #394b58;
         transition: height 1s;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    .mobile-scrollable {
+        overflow-y: auto !important;
     }
 }
