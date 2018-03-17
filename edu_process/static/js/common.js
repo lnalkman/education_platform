@@ -8,11 +8,13 @@ $(function () {
     });
 
     $('.header').on('transitionend', function () {
-       var navbar = $(this);
-       if (navbar.hasClass('responsive')) {
-           navbar.addClass('mobile-scrollable');
-       }
+        var navbar = $(this);
+        if (navbar.hasClass('responsive')) {
+            navbar.addClass('mobile-scrollable');
+        }
     });
 
-
+    $('.errorlist .exit').click(function () {
+        $(this).parent().remove();
+    });
 });

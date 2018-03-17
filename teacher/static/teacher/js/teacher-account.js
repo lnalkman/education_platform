@@ -1,8 +1,8 @@
 function PhotoManager(input) {
     // input => string or jquery to input[type=file]
-    MODAL_SELECTOR = "#change-photo-modal"
-    DISMISS_BTN_SELECTOR = "#change-photo-modal[data-dismiss=modal]"
-    this.PHOTO_WRAP = "photo-wrap"
+    MODAL_SELECTOR = "#change-photo-modal";
+    DISMISS_BTN_SELECTOR = "#change-photo-modal[data-dismiss=modal]";
+    this.PHOTO_WRAP = "photo-wrap";
 
     this.STATE = {
         NOT_LOADED: 0,
@@ -10,8 +10,8 @@ function PhotoManager(input) {
     };
 
     // Modal body jQuery object
-    this._modal = $(MODAL_SELECTOR + ' .modal-body')
-    this.dismiss = $(DISMISS_BTN_SELECTOR)
+    this._modal = $(MODAL_SELECTOR + ' .modal-body');
+    this.dismiss = $(DISMISS_BTN_SELECTOR);
 
     this._photoURI = '';
     this._state = this.STATE.NOT_LOADED;
@@ -212,7 +212,11 @@ $(function () {
     });
 
     $('.save-photo').click(function () {
-        alert(a.getRealPhotoArea());
+        var areaSize = a.getRealPhotoArea();
+        $('[name="offset_top1"]').val(areaSize[0]);
+        $('[name="offset_left1"]').val(areaSize[1]);
+        $('[name="offset_top2"]').val(areaSize[2]);
+        $('[name="offset_left2"]').val(areaSize[3])
     });
 
 });

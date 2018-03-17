@@ -1,3 +1,5 @@
+import uuid
+
 from django.core import serializers
 from django.contrib.auth import login
 from django.contrib.auth.models import User
@@ -13,6 +15,9 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.base import TemplateView
+from django.core.files.base import ContentFile
+from django.contrib import messages
+from PIL import Image
 
 from .models import Profile, Group, Message, get_user_messages
 
@@ -48,6 +53,157 @@ class IndexView(FormView):
             return reverse('teacher:index')
         elif user_type == Profile.STUDENT:
             return reverse('student-profile')
+
+
+class UserAvatarView(LoginRequiredMixin, View):
+    MIN_IMAGE_SIZE = (256, 256)
+    MAX_IMAGE_SIZE = (4096, 4096)
+    THUMBNAIL_SIZE = (512, 512)
+
+    def get(self):
+        pass
+
+    def get_image(self):
+        """
+        Отримує фотографію з post запросу. Повертає None, якщо в запросі немає фотографії.
+        Генерує IOError якщо неможливо розпізнати фотогрфію
+        Генерує ValueError якщо фотографія не відповідає розміру self.MIN_IMAGE_SIZE
+        :return: Image object
+        """
+        if self.request.FILES:
+            img = Image.open(self.request.FILES['photo'])
+
+            if img.size[0] < self.MIN_IMAGE_SIZE[0] or img.size[1] < self.MIN_IMAGE_SIZE[1]:
+                raise ValueError(
+                    "Занадто мала фотографія. Роздільна здатність фотографії повинна бути в межах {} - {}".format(
+                        self.MIN_IMAGE_SIZE,
+                        self.MAX_IMAGE_SIZE
+                    )
+                )
+
+            if img.size[0] > self.MAX_IMAGE_SIZE[0] or img.size[1] > self.MAX_IMAGE_SIZE[1]:
+                raise ValueError(
+                    "Занадто велика фотографія. Роздільна здатність фотографії повинна бути в межах {} - {}".format(
+                        self.MIN_IMAGE_SIZE,
+                        self.MAX_IMAGE_SIZE
+                    )
+                )
+
+            return img
+
+    def get_square_area(self, image):
+        """
+        Бере кординати крайніх точок діагоналі квадрата (по факту прямокутника через неточність)
+        з post запросу і змінює їх у меншу сторону, щоб утворилась квадратна територія
+        (з цілочисельними кориданатами).
+        Генерує ValueError: якщо кординати неправильні
+        Повертає квадратну територію по якій має бути обрізана фотографія
+        (
+            відступ зліва верхньої точки,
+            відступ зверху лівої верхньої точки,
+            відступ зліва нижньої правої точки,
+            відступ зверху нижньої правої точки
+         )
+        :return: (int, int, int, int)
+        """
+        offset_left1 = int(float(self.request.POST.get('offset_left1', -1)))
+        offset_top1 = int(float(self.request.POST.get('offset_top1', -1)))
+        offset_left2 = int(float(self.request.POST.get('offset_left2', -1)))
+        offset_top2 = int(float(self.request.POST.get('offset_top2', -1)))
+
+        # Якщо кординати правої нижньої точки виходять за межі фотографії
+        # зменшуємо їх до відповідних крайніх кординат фотографії
+        if offset_left2 > image.size[0]:
+            offset_left2 = image.size[0]
+
+        if offset_top2 > image.size[1]:
+            offset_top2 = image.size[1]
+
+        # Перевірка чи кординати більші за 0 і права нижня точка знаходиться відповідно
+        # нижче і правіше лівої верхньої точки
+        if offset_left1 < 0 or offset_top1 < 0 or offset_left2 < offset_left1 or offset_top2 < offset_top1:
+            raise ValueError(
+                'Невірні кординати квадрату (%d, %d %d, %d)' % (offset_top1, offset_left1, offset_top2, offset_left2)
+            )
+
+        width = offset_left2 - offset_left1
+        height = offset_top2 - offset_top1
+
+        # Якщо через неточність з'явився прямокутник
+        # зменшуємо більшу сторону, щоб утворився квадрат
+        if height < width:
+            offset_left2 -= width - height
+        elif width < height:
+            offset_top2 -= height - width
+
+        return offset_left1, offset_top1, offset_left2, offset_top2
+
+    def post(self, request, *args, **kwargs):
+        if request.FILES:
+            try:
+                # Отримуємо об'єкт фотографії з запросу
+                img = self.get_image()
+            except IOError as e:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    'Невдалось відкрити фотографію. Можливо файл невідомого формату або пошкоджений'
+                )
+                messages.add_message(
+                    request,
+                    messages.DEBUG,
+                    'DEBUG: %s' % e
+                )
+            except ValueError as e:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    'Неможливо зберегти фотографію. %s' % e
+                )
+            else:
+                if img:
+                    try:
+                        # Отримуємо обрізану по області виділення фотографію
+                        cropped_image = img.crop((self.get_square_area(img)))
+                    except ValueError as e:
+                        messages.add_message(
+                            request,
+                            messages.WARNING,
+                            'Невдалось зберегти фотографію. Невірно задана область виділення.'
+                        )
+                        messages.add_message(
+                            request,
+                            messages.DEBUG,
+                            'DEBUG: %s' % e
+                        )
+                    else:
+                        cropped_image.thumbnail(self.THUMBNAIL_SIZE)
+
+                        # Прив'язуємо оброблену фотографію до профілю користувача
+                        bin_img = ContentFile(b'')
+
+                        # Рандоминий uuid, щоб браузери не кешували фотографію
+                        bin_img.name = str(uuid.uuid4()) + '.' + img.format
+                        cropped_image.save(bin_img, format=img.format)
+
+                        # Прив'язуємо фотографію до користувача
+                        user_profile = request.user.profile
+                        user_profile.photo = bin_img
+                        user_profile.save()
+
+                        cropped_image.close()
+                        img.close()
+
+                        messages.add_message(
+                            request,
+                            messages.SUCCESS,
+                            'Фотографію успішно змінено'
+                        )
+
+            return HttpResponseRedirect(reverse('index'))
+
+    def delete(self):
+        pass
 
 
 class SearchGroup(View):
