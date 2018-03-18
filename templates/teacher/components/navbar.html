@@ -1,40 +1,24 @@
 {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
+{# Компонент навігаційної панелі викладача(без стилів). Для нормального відображення потрібні стилі з "all.css" #}
 
-    <meta charset="utf-8">
+{# Щоб виділити активну секцію при підключенні потрібно передавати контекстні змінні до компоненту: #}
+{#     account=True     -> Секція Профіль буде активною #}
+{#     courses=True     -> Секція Курси буде активною #}
+{#     messages=True    -> Секція Повідомлення буде активною #}
+{#     blog=True        -> Секція Блог буде активною #}
 
-    <title>Title</title>
-    <meta name="description" content="">
+{# Приклад підключення: #}
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+{#     <!-- Навігаційна панель з виділеною секцією 'Календар' -->#}
+{#     {% include 'teacher/components/navbar.html' with calendar=True only %} #}
 
-    <meta property="og:image" content="path/to/image.jpg">
-    <link rel="shortcut icon" href="{% static 'img/favicon/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{% static 'img/favicon/apple-touch-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/favicon/apple-touch-icon-72x72.png' %}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/favicon/apple-touch-icon-114x114.png' %}">
+{#     <!-- Навігаційна панель з виділеною секцією 'Профіль' --> #}
+{#     {% include 'teacher/components/navbar.html' with account=True only %} #}
 
-    <!-- Chrome, Firefox OS and Opera -->
-    <meta name="theme-color" content="#000">
-    <!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#000">
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="#000">
-
-    <link rel="stylesheet" href="{% static 'css/all.css' %}">
-    <link rel="stylesheet" href="{% static 'teacher/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/messages.css' %}">
-</head>
-
-<body>
-
-<div class="navbar-opener">
-    <span class="glyphicon glyphicon-menu-down"></span>
-</div>
+{# Примітка: #}
+{#     Якщо передати кілька істиних контекстних змінних, буде виділено кілька секцій, щоб #}
+{#     запобігти конфлікту імен, краще застосовувати only в include тегах. #}
 
 <header class="header">
     <ul>
@@ -44,13 +28,13 @@
             </a>
         </li>
         <li>
-            <a href="{% url 'teacher:index' %}">
+            <a href="{% url 'teacher:index' %}" {{ account|yesno:'class=active,' }}>
                 <img src="{% static 'img/menu/account.png' %}" alt="Account">
             </a>
             <span class="tooltip">Профіль</span>
         </li>
         <li>
-            <a href="{% url 'teacher:course-list' %}">
+            <a href="{% url 'teacher:course-list' %}" {{ courses|yesno:'class=active,' }}>
                 <svg viewBox="0 0 297 297">
                     <path d="M287.631,15.459H157.869v-6.09c0-5.174-4.195-9.369-9.369-9.369s-9.369,4.195-9.369,9.369v6.09H9.369   c-5.174,0-9.368,4.195-9.368,9.369v30.918c0,5.174,4.194,9.369,9.368,9.369h6.09v160.68c0,5.174,4.195,9.369,9.369,9.369h104.934   L94.628,282.01c-3.104,4.139-2.266,10.012,1.874,13.116c1.685,1.265,3.657,1.874,5.614,1.874c2.848,0,5.661-1.294,7.502-3.748   l29.513-39.35v33.729c0,5.174,4.195,9.369,9.369,9.369s9.369-4.195,9.369-9.369v-33.729l29.513,39.35   c1.841,2.454,4.653,3.748,7.502,3.748c1.957,0,3.929-0.61,5.614-1.874c4.14-3.104,4.979-8.978,1.874-13.116l-35.134-46.846h104.934   c5.174,0,9.368-4.195,9.368-9.369V65.115h6.091c5.174,0,9.368-4.195,9.368-9.369V24.828   C296.999,19.654,292.805,15.459,287.631,15.459z M18.738,46.377v-12.18h259.523v12.18H18.738z M262.803,216.426H34.197V65.115   h228.605V216.426z"/>
                     <path d="M71.205,142.411h139.131c5.174,0,9.369-4.195,9.369-9.369c0-5.174-4.195-9.369-9.369-9.369H71.205   c-5.174,0-9.369,4.195-9.369,9.369C61.836,138.216,66.031,142.411,71.205,142.411z"/>
@@ -61,7 +45,7 @@
             <span class="tooltip">Курси</span>
         </li>
         <li>
-            <a href="{% url 'messages' %}" class="active">
+            <a href="{% url 'messages' %}" {{ messages|yesno:'class=active,' }}>
                 <svg viewBox="0 0 368.625 368.625">
                     <path d="M356.125,50.318H12.5c-6.903,0-12.5,5.597-12.5,12.5v242.988c0,6.902,5.597,12.5,12.5,12.5h343.625 c6.902,0,12.5-5.598,12.5-12.5V62.818C368.625,55.916,363.027,50.318,356.125,50.318z M343.625,293.307H25V75.318h318.625V293.307 z"/>
                     <path d="M57.755,134.201l120,73.937c2.01,1.239,4.283,1.858,6.557,1.858s4.547-0.619,6.557-1.858l120-73.937 c5.877-3.621,7.707-11.322,4.086-17.199s-11.324-7.707-17.199-4.085l-113.444,69.896L70.869,112.917 c-5.875-3.619-13.576-1.793-17.199,4.085C50.048,122.878,51.877,130.58,57.755,134.201z"/>
@@ -70,7 +54,7 @@
             <span class="tooltip">Листи</span>
         </li>
         <li>
-            <a href="{% url 'teacher:calendar-redirect' %}">
+            <a href="{% url 'teacher:calendar-redirect' %}" {{ calendar|yesno:'class=active,' }}>
                 <svg viewBox="0 0 488.152 488.152">
                     <path d="M177.854,269.311c0-6.115-4.96-11.069-11.08-11.069h-38.665c-6.113,0-11.074,4.954-11.074,11.069v38.66 c0,6.123,4.961,11.079,11.074,11.079h38.665c6.12,0,11.08-4.956,11.08-11.079V269.311L177.854,269.311z"/>
                     <path d="M274.483,269.311c0-6.115-4.961-11.069-11.069-11.069h-38.67c-6.113,0-11.074,4.954-11.074,11.069v38.66 c0,6.123,4.961,11.079,11.074,11.079h38.67c6.108,0,11.069-4.956,11.069-11.079V269.311z"/>
@@ -86,7 +70,7 @@
             <span class="tooltip">Календар</span>
         </li>
         <li>
-            <a href="#">
+            <a href="#" {{ blog|yesno:'class=active,' }}>
                 <svg viewBox="0 0 64 64">
                     <path d="m.057,59.515c0.124,0.582 0.591,1.206 1.119,1.487 0.351,0.187 0.753,0.281 1.192,0.281 2.611,0 13.219-5.48 19.842-9.045 3.482,1.109 5.677,1.162 9.613,1.162h0.228c17.618,0 31.949-11.251 31.949-25.081 0-13.829-14.331-25.08-31.949-25.08-17.614,0-31.948,11.251-31.948,25.08 0,6.521 3.26,12.812 8.997,17.466-0.876,1.31-2.628,3.528-3.886,5.121-4.533,5.739-5.477,7.112-5.157,8.609zm8.349-6.122c4.382-5.547 5.384-6.99 5.183-8.443-0.076-0.539-0.439-1.161-0.881-1.484-5.512-4.014-8.549-9.395-8.549-15.146 0-11.607 12.514-21.052 27.892-21.052 15.38,0 27.892,9.444 27.892,21.052 0,11.609-12.512,21.054-27.892,21.054h-0.228c-3.988,0-5.739-0.048-9.139-1.225-0.543-0.188-1.137-0.141-1.641,0.135-4.91,2.655-10.486,5.492-14.318,7.25 0.581-0.749 1.172-1.497 1.681-2.141z"/>
                 </svg>
@@ -96,34 +80,16 @@
         <li class="logout">
             <a href="{% url 'logout' %}">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                         viewBox="0 0 471.2 471.2" xml:space="preserve">
-                            <path d="M227.619,444.2h-122.9c-33.4,0-60.5-27.2-60.5-60.5V87.5c0-33.4,27.2-60.5,60.5-60.5h124.9c7.5,0,13.5-6,13.5-13.5
-                                s-6-13.5-13.5-13.5h-124.9c-48.3,0-87.5,39.3-87.5,87.5v296.2c0,48.3,39.3,87.5,87.5,87.5h122.9c7.5,0,13.5-6,13.5-13.5
-                                S235.019,444.2,227.619,444.2z"/>
-                            <path d="M450.019,226.1l-85.8-85.8c-5.3-5.3-13.8-5.3-19.1,0c-5.3,5.3-5.3,13.8,0,19.1l62.8,62.8h-273.9c-7.5,0-13.5,6-13.5,13.5
-                                s6,13.5,13.5,13.5h273.9l-62.8,62.8c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4l85.8-85.8
-                                C455.319,239.9,455.319,231.3,450.019,226.1z"/>
+                     viewBox="0 0 471.2 471.2" xml:space="preserve">
+                        <path d="M227.619,444.2h-122.9c-33.4,0-60.5-27.2-60.5-60.5V87.5c0-33.4,27.2-60.5,60.5-60.5h124.9c7.5,0,13.5-6,13.5-13.5
+                            s-6-13.5-13.5-13.5h-124.9c-48.3,0-87.5,39.3-87.5,87.5v296.2c0,48.3,39.3,87.5,87.5,87.5h122.9c7.5,0,13.5-6,13.5-13.5
+                            S235.019,444.2,227.619,444.2z"/>
+                        <path d="M450.019,226.1l-85.8-85.8c-5.3-5.3-13.8-5.3-19.1,0c-5.3,5.3-5.3,13.8,0,19.1l62.8,62.8h-273.9c-7.5,0-13.5,6-13.5,13.5
+                            s6,13.5,13.5,13.5h273.9l-62.8,62.8c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4l85.8-85.8
+                            C455.319,239.9,455.319,231.3,450.019,226.1z"/>
                 </svg>
             </a>
             <span class="tooltip">Вихід</span>
         </li>
     </ul>
 </header>
-
-<div class="content" id="app" data-self-id="{{ self_id }}">
-    {% csrf_token %}
-    <div class="row">
-        <users-bar class="col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-5 col-lg-4"></users-bar>
-        <message-bar class="col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-7 col-lg-8"></message-bar>
-    </div>
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
-<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
-<script src="{% static 'js/common.js' %}"></script>
-<script src="{% static 'teacher/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/messages.js' %}"></script>
-</body>
-</html>

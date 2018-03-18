@@ -1,7 +1,7 @@
 import uuid
 
 from django.core import serializers
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
 from django.contrib.auth.forms import AuthenticationForm
@@ -53,6 +53,14 @@ class IndexView(FormView):
             return reverse('teacher:index')
         elif user_type == Profile.STUDENT:
             return reverse('student-profile')
+
+
+class LogoutView(View):
+    logout_url = reverse_lazy('index')
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponseRedirect(self.logout_url)
 
 
 class UserAvatarView(LoginRequiredMixin, View):
