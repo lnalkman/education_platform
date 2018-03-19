@@ -23,7 +23,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include('edu_process.urls')),
     url(r'^teacher/', include('teacher.urls', namespace='teacher')),
-    url(r'^staff/', include('staff.urls', namespace='staff')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

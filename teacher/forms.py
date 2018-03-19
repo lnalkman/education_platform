@@ -23,7 +23,7 @@ class CourseForm(ModelForm):
 
 
 class ModuleForm(ModelForm):
-    """Форма для створення та редагування модулів"""
+    """Форма для створення та редагування розділів"""
     class Meta:
         model = Module
         fields = '__all__'

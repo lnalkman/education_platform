@@ -173,7 +173,7 @@ class AjaxAddModule(TeacherRequiredMixin, View):
         if self.can_add(obj):
             obj.save()
             return self.render_to_json({'success': True})
-        form.add_error(field=None, error='У вас немає прав додавати модуль до цього курсу')
+        form.add_error(field=None, error='У вас немає прав додавати розділ до цього курсу')
         return self.form_invalid(form)
 
     def form_invalid(self, form):
@@ -397,7 +397,7 @@ class AjaxAddLessonForm(TeacherRequiredMixin, View):
             )
             return self.render_to_json({'status': 1})
         else:
-            form.add_error(None, 'У вас немає прав на додавання уроків до цього модулю')
+            form.add_error(None, 'У вас немає прав на додавання уроків до цього розділу')
         return self.form_invalid(form)
 
     def form_invalid(self, form):

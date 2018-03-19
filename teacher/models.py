@@ -31,16 +31,16 @@ class Course(models.Model):
 
 class Module(models.Model):
     class Meta:
-        verbose_name = 'Модуль'
-        verbose_name_plural = 'Модулі'
+        verbose_name = 'Розділ'
+        verbose_name_plural = 'Розділи'
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(
-        verbose_name='Назва модулю',
+        verbose_name='Назва розділу',
         max_length=128
     )
     description = models.TextField(
-        verbose_name='Опис модулю',
+        verbose_name='Опис розділу',
         max_length=4096
     )
     visible = models.BooleanField(default=True)

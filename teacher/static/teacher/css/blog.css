@@ -1,0 +1,70 @@
+.page {
+    padding-left: 64px;
+    padding-right: 10px;
+    padding-bottom: 300px;
+}
+
+.nav {
+    background-color: #394b58;
+    height: 54px;
+    width: 100%;
+    position: relative;
+    z-index: 9;
+    margin-bottom: 50px;
+}
+
+.search-box {
+    transform: translateY(-50%);
+    position: absolute;
+    top: 50%;
+    right: 0;
+}
+
+
+.nav .sub-header {
+    margin: 0;
+    display: block;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    color: #7ab4de;
+}
+
+.post {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.post hr {
+    margin: 5px 0 12px 0;
+}
+
+.post .post-header {
+    margin-bottom: 3px;
+}
+
+.post .read-more {
+    margin-left: -12px;
+}
+
+.post .post-header button {
+    font-size: 16px;
+}
+
+.post .post-header button:hover {
+    text-decoration: none;
+}
+
+.pagination-block {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
