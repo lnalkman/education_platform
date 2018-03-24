@@ -13,10 +13,13 @@ from django.http.response import HttpResponseRedirect, JsonResponse, HttpRespons
 from django.core import serializers
 
 from edu_process.models import Group
-from .models import Course, CalendarNote, Module, Lesson, LessonFile
+from .models import (
+    Course, CalendarNote, Module,
+    Lesson, LessonFile, Publication
+)
 from .forms import (
     CourseForm, TeacherProfileForm, CalendarNoteForm,
-    ModuleForm, LessonForm
+    ModuleForm, LessonForm, PublicationForm
 )
 
 
@@ -832,4 +835,38 @@ class CalendarNoteChange(TeacherRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super(FormView, self).get_context_data(**kwargs)
         context['pk'] = self.request.GET.get('pk')
+        return context
+
+
+class BlogView(ListView, TeacherRequiredMixin):
+    """View для додавання/перегляду публікацій викладачем"""
+    template_name = 'teacher/blog.html'
+    context_object_name = 'publications'
+    form_class = PublicationForm
+
+    paginate_by = 3
+    paginate_orphans = 1
+    allow_empty = True
+
+    def get_queryset(self):
+        teacher = self.request.user.profile
+        return teacher.publication_set.all().order_by('-change_date')
+
+    def form_valid(self, form):
+        form.cleaned_data['author'] = self.request.user.profile
+        Publication.objects.create(**form.cleaned_data)
+        return HttpResponseRedirect(reverse('teacher:blog'))
+
+    def post(self, request, *args, **kwargs):
+        self.form = self.form_class(request.POST)
+        if self.form.is_valid():
+            return self.form_valid(self.form)
+        return super(ListView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ListView, self).get_context_data(**kwargs)
+        if hasattr(self, 'form'):
+            context['form'] = self.form
+        else:
+            context['form'] = self.form_class
         return context

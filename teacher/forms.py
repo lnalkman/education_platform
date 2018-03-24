@@ -3,7 +3,7 @@ from django.forms.models import ModelForm
 
 from .models import (
     Course, CalendarNote, Module,
-    Lesson,
+    Lesson, Publication
 )
 from edu_process.models import Profile
 
@@ -80,3 +80,13 @@ class CalendarNoteForm(ModelForm):
                 initial=date,
                 widget=forms.TextInput(attrs={'class': 'form-control'})
             )
+
+
+class PublicationForm(ModelForm):
+    class Meta:
+        model = Publication
+        exclude = ('author',)
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'required': ''}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'cols': 6}),
+        }

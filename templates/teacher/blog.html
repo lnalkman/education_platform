@@ -35,120 +35,94 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Додати публікацію</h3>
                 </div>
-                <div class="panel-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="post-title">Заголовок</label>
-                            <input type="email" class="form-control" id="post-title" placeholder="">
+                <div id="add-publication-panel" class="panel-body" aria-expanded="false">
+                    <form action="{% url 'teacher:blog' %}" method="post">{% csrf_token %}
+                        <div class="form-group {% if form.title.errors %}has-error{% endif %}">
+                            <label for="{{ form.title.id_for_label }}" class="control-label">Заголовок</label>
+                            {{ form.title }}
+                            <ul class="help-block">
+                                {% for error in form.title.errors %}
+                                    <li><strong>{{ error }}</strong></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="form-group {% if form.content.errors %}has-error{% endif %}">
+                            <label for="{{ form.content.id_for_label }}" class="control-label">Текст публікації</label>
+                            {{ form.content }}
+                            <ul class="help-block">
+                                {% for error in form.content.errors %}
+                                    <li><strong>{{ error }}</strong></li>
+                                {% endfor %}
+                            </ul>
                         </div>
                         <div class="form-group">
-                            <label>Тип публікації</label>
-                            <select class="form-control">
-                                <option>Звичайний текст</option>
-                                <option>Markdown розмітка</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputFile">Тест публікації</label>
-                            <textarea class="form-control" rows="5"></textarea>
+                            {{ form.markdown }}Markdown<br>
                         </div>
                         <button type="submit" class="btn btn-default">Додати</button>
+                        <ol>
+                            {% for error in form.non_field_errors %}
+                                <li><strong>{{ error }}</strong></li>
+                            {% endfor %}
+                        </ol>
                     </form>
                 </div>
             </div>
         </div>
 
+        {% with title_max_length=54 %}
+            {% for publication in publications %}
+                <div class="post col-xs-12 col-md-8 col-md-offset-2">
+                    <h3 class="post-header">
+                        {% if publication.title|length > title_max_length %}
+                            {% with truncated_text=publication.title|truncatechars:title_max_length word_count=truncated_text|wordcount|add:'-1' %}
+                                {{ truncated_text|truncatewords:word_count }}
+                            {% endwith %}
+                        {% else %}
+                            {{ publication.title }}
+                        {% endif %}
 
-        <div class="post col-xs-12 col-md-8 col-md-offset-2">
-            <h3 class="post-header">
-                {% with char_limit=54 test_word="Post short header (До 48 ми знаків на короткий заголовок) Post short header (До 48 ми знаків на короткий заголовок)" %}
-                    {% if test_word|length > char_limit %}
-                        {% with truncated_text=test_word|truncatechars:char_limit word_count=truncated_text|wordcount|add:'-1' %}
-                            {{ truncated_text|truncatewords:word_count }}
-                        {% endwith %}
-                    {% endif %}
-                {% endwith %}
-                <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        Дія <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Редагувати</a></li>
-                        <li><a href="#">Оновити дату</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Видалити</a></li>
-                    </ul>
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                Дія <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Редагувати</a></li>
+                                <li><a href="#">Оновити дату</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Видалити</a></li>
+                            </ul>
+                        </div>
+                    </h3>
+                    <small class="post-date text-muted">{{ publication.change_date }}</small>
+                    <hr class="header-devider">
+                    <p>
+                        {{ publication.get_first_paragraph|truncatechars:350 }}
+                    </p>
+                    <a class="btn btn-link read-more" href="#">Читати далі...</a>
                 </div>
-            </h3>
-            <small class="post-date text-muted">12.12.2012 12:12</small>
-            <hr class="header-devider">
-            <p>{% lorem 1 %}</p>
-            <button class="btn btn-link read-more" href="#">Читати далі...</button>
-        </div>
-
-    <div class="post col-xs-12 col-md-8 col-md-offset-2">
-            <h3 class="post-header">
-                {% with char_limit=54 test_word="Post short header (До 48 ми знаків на короткий заголовок) Post short header (До 48 ми знаків на короткий заголовок)" %}
-                    {% if test_word|length > char_limit %}
-                        {% with truncated_text=test_word|truncatechars:char_limit word_count=truncated_text|wordcount|add:'-1' %}
-                            {{ truncated_text|truncatewords:word_count }}
-                        {% endwith %}
-                    {% endif %}
-                {% endwith %}
-                <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        Дія <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Редагувати</a></li>
-                        <li><a href="#">Оновити дату</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Видалити</a></li>
-                    </ul>
-                </div>
-            </h3>
-            <small class="post-date text-muted">12.12.2012 12:12</small>
-            <hr class="header-devider">
-            <p>{% lorem 1 %}</p>
-            <button class="btn btn-link read-more" href="#">Читати далі...</button>
-        </div>
-
-    <div class="post col-xs-12 col-md-8 col-md-offset-2">
-            <h3 class="post-header">
-                {% with char_limit=54 test_word="Post short header (До 48 ми знаків на короткий заголовок) Post short header (До 48 ми знаків на короткий заголовок)" %}
-                    {% if test_word|length > char_limit %}
-                        {% with truncated_text=test_word|truncatechars:char_limit word_count=truncated_text|wordcount|add:'-1' %}
-                            {{ truncated_text|truncatewords:word_count }}
-                        {% endwith %}
-                    {% endif %}
-                {% endwith %}
-                <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        Дія <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Редагувати</a></li>
-                        <li><a href="#">Оновити дату</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Видалити</a></li>
-                    </ul>
-                </div>
-            </h3>
-            <small class="post-date text-muted">12.12.2012 12:12</small>
-            <hr class="header-devider">
-            <p>{% lorem 1 %}</p>
-            <button class="btn btn-link read-more" href="#">Читати далі...</button>
-        </div>
+            {% endfor %}
+        {% endwith %}
 
 
         <div class="pagination-block col-xs-12 col-md-8 col-md-offset-2">
             <nav aria-label="...">
                 <ul class="pager">
-                    <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Попередні</a></li>
-                    <li class="next"><a href="#">Наступні <span aria-hidden="true">&rarr;</span></a></li>
+                    {% if page_obj.has_previous %}
+                        <li class="previous"><a
+                                href="{% url 'teacher:blog' %}?page={{ page_obj.previous_page_number }}"><span
+                                aria-hidden="true">&larr;</span> Попередні</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Попередні</a></li>
+                    {% endif %}
+
+                    {% if page_obj.has_next %}
+                        <li class="next"><a href="{% url 'teacher:blog' %}?page={{ page_obj.next_page_number }}">Наступні
+                            <span aria-hidden="true">&rarr;</span></a></li>
+                    {% else %}
+                        <li class="next disabled"><a>Наступні <span aria-hidden="true">&rarr;</span></a></li>
+                    {% endif %}
+
                 </ul>
             </nav>
         </div>

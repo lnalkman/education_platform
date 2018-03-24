@@ -110,8 +110,14 @@ class Publication(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     title = models.CharField(verbose_name='Заголовок', max_length=64)
-    photo = models.FileField(verbose_name='Фотографія', blank=True, null=True)
     content = models.TextField(verbose_name='Контент', max_length=8192)
+    markdown = models.BooleanField(verbose_name='Markdown', default=True)
+
+    pub_date = models.DateTimeField(auto_now_add=True)
+    change_date = models.DateTimeField(auto_now=True)
+
+    def get_first_paragraph(self):
+        return self.content[:self.content.find('\n\n')]
 
     def __str__(self):
         author_user = self.author.user
