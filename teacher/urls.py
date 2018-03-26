@@ -41,4 +41,5 @@ urlpatterns = [
     url(r'^lesson/(?P<pk>[0-9]+)/update/$', LessonUpdate.as_view(), name='lesson-update'),
     url(r'^lesson/(?P<pk>[0-9]+)/delete/$', DeleteLesson.as_view(), name='lesson-delete'),
     url(r'^blog/$', BlogView.as_view(), name='blog'),
+    url(r'^blog/post/add/$', TemplateView.as_view(template_name='teacher/blog-post-add.html'), name='blog-post-add'),
 ]

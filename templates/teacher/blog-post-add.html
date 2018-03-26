@@ -1,0 +1,27 @@
+{% extends 'skeleton.html' %}
+{% load staticfiles %}
+{% block head %}
+    <title>Додати публікацію | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'teacher/css/blog-post-add.css' %}">
+{% endblock %}
+
+{% block body %}
+    {# Кнопка, яка відкриває навігаційну панель на мобільних #}
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% include 'teacher/components/navbar.html' with blog=True only %}
+
+    {#  CONTENT HERE  #}
+
+{% endblock %}
+
+{% block footer %}
+
+{#  Додаткові скрипти тут  #}
+
+{% endblock %}
