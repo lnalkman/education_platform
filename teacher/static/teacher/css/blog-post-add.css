@@ -1,0 +1,77 @@
+.btn {
+	-webkit-transition: all .3s ease;
+	-o-transition: all .3s ease;
+	transition: all .3s ease;
+}
+.content {
+	padding: 25px 0 0 69px;
+}
+.content .panel {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+.content .panel .form-group label{
+	padding-top: 2px;
+	cursor: pointer;
+	font-size: 14px;
+}
+.content .panel .form-group textarea {
+	resize: vertical;
+	height: 480px;
+}
+
+.image-preview-input {
+		position: relative;
+	overflow: hidden;
+	margin: 0px;    
+		color: #333;
+		background-color: #fff;
+		border-color: #ccc;    
+}
+.image-preview-input input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+.image-preview-input-title {
+		margin-left:2px;
+}
+#view .blog-view-inner {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+#view .blog-image {
+	width: 100%;
+}
+#view label{
+	padding-top: 2px;
+	cursor: pointer;
+}
+#view h2 {
+	margin-top: 30px;
+	margin-bottom: 10px;
+}
+.form-horizontal .form-group {
+	margin-right: 0;
+	margin-left: 0;
+}
+@media (max-width: 768px) {
+	body .content {
+		padding-left: 15px;
+		padding-top: 56px;
+	}
+	.content .panel .form-group textarea {
+		height: 320px;
+	}
+	#view h2 {
+		font-size: 28px;
+		margin-top: 20px;
+		margin-bottom: 0;
+	}
+}

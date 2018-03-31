@@ -1,27 +1,150 @@
 {% extends 'skeleton.html' %}
 {% load staticfiles %}
 {% block head %}
-    <title>Додати публікацію | KPI EDU</title>
-    <meta name="description" content="">
+	<title>Додати публікацію | KPI EDU</title>
+	<meta name="description" content="">
 
-    <link rel="stylesheet" href="{% static 'teacher/css/blog-post-add.css' %}">
+	<link rel="stylesheet" href="{% static 'teacher/css/blog-post-add.css' %}">
 {% endblock %}
 
 {% block body %}
-    {# Кнопка, яка відкриває навігаційну панель на мобільних #}
-    <div class="navbar-opener">
-        <span class="glyphicon glyphicon-menu-down"></span>
-    </div>
+	{# Кнопка, яка відкриває навігаційну панель на мобільних #}
+	<div class="navbar-opener">
+		<span class="glyphicon glyphicon-menu-down"></span>
+	</div>
 
-    {#   NAVBAR   #}
-    {% include 'teacher/components/navbar.html' with blog=True only %}
+	{#   NAVBAR   #}
+	{% include 'teacher/components/navbar.html' with blog=True only %}
 
-    {#  CONTENT HERE  #}
+	{#  CONTENT HERE  #}
+	<div class="container-fluid content">
+		<div class="row">
+			<div class="col-md-offset-1 col-md-10">
+				<ul class="nav nav-tabs" role="tablist">
+					<li role="presentation" class="active"><a href="#add" aria-controls="modules" role="tab" data-toggle="tab">Редагування публікації</a></li>
+					<li role="presentation"><a href="#view" aria-controls="settings" role="tab" data-toggle="tab">Попередній вигляд публікації</a></li>
+				</ul>
+			</div>
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="add">
+					<div class="col-md-offset-2 col-md-8 col-sm-12">
+						<div class="panel panel-info">
+							<div class="panel-heading">Необхідна інформація</div>
+							<div class="panel-body">
+								<form class="form-horizontal update-course">
+									<div class="row">
+										<div class="form-group">
+											<label class="col-sm-3 control-label" for="header">Заголовок публікації</label>
+											<div class="col-sm-8">
+												<input id="header" class="form-control" type="text" name="name" maxlength="128" required>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-3 control-label" for="image">Фотокартка публікації</label>
+											<div class="col-sm-8">
+												<div class="input-group image-preview">
+													<input type="text" class="form-control image-preview-filename" disabled="disabled"> <!-- don't give a name === doesn't send on POST/GET -->
+													<span class="input-group-btn">
+														<!-- image-preview-clear button -->
+														<button type="button" class="btn btn-default image-preview-clear" style="display:none;">
+															<span class="glyphicon glyphicon-remove"></span> Видалити
+														</button>
+														<!-- image-preview-input -->
+														<div class="btn btn-default image-preview-input">
+															<span class="glyphicon glyphicon-folder-open"></span>
+															<span class="image-preview-input-title">Обрати</span>
+															<input type="file" accept="image/png, image/jpeg, image/gif" name="image" id="image"/> <!-- rename it -->
+														</div>
+													</span>
+												</div>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-3 control-label" for="publication">Вміст публікації</label>
+											<div class="col-sm-8">
+												<textarea id="publication" class="form-control" name="description" cols="9" rows="10" maxlength="8000" required></textarea>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<label>
+													<input type="checkbox" name="publish" checked> Опублікувати
+												</label>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-offset-3 col-sm-8">
+												<button type="submit" class="btn btn-info">Зберегти запис</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div role="tabpanel" class="tab-pane" id="view">
+					<div class="col-md-offset-2 col-md-8 col-sm-12">
+						<div class="blog-view-inner">
+							<img class="blog-image" src="https://www.chiefcourses.com/wp-content/themes/olam332/index/img/bg.jpg" alt="">
+							<h2>Заголовок публікації</h2>
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod tenetur ullam impedit quibusdam vitae eveniet, eos ex perferendis necessitatibus consequatur facere voluptatum ipsa placeat dolore, dolor aperiam blanditiis, id laudantium voluptate natus cumque amet eaque hic! Dolorum laborum aspernatur earum quia maiores ipsa, consectetur dicta vero esse deserunt, facere dolores, iure. Placeat aspernatur vero, pariatur quasi, molestias dignissimos totam omnis nobis animi, quas quaerat. Dolorum assumenda, officia rem repellat modi aperiam vero dolores rerum animi ut odio inventore at, tempora optio soluta fugiat, nesciunt eveniet perferendis laudantium quo ea! Soluta, dicta iste expedita qui totam libero quod voluptatum ad cumque accusamus pariatur veniam culpa, dolore a, porro fuga fugiat suscipit asperiores, aspernatur ex quis ea. Ducimus molestias earum sunt tenetur ea mollitia repudiandae veniam delectus, nesciunt incidunt! Tempore possimus eveniet quasi. Consequatur in fugit eius quod omnis molestiae, dolorem dolor non aliquam quos, facere quaerat, quo inventore eligendi sapiente. Obcaecati quisquam aut, voluptatibus fugit nam alias est officiis similique. Explicabo temporibus ducimus officiis at ullam dolorem, facere, odio quam, eaque non dolorum quibusdam maiores eius placeat ratione. Necessitatibus illo obcaecati aut nostrum tenetur dolorem omnis, maxime eum officiis sit, voluptate animi ad iusto quisquam in rerum! Sapiente ipsa sit sequi ratione eos voluptate fugit iure? Possimus illum ad dolore eos nihil facere facilis eum natus, accusamus, repellat sequi, quas odio qui molestiae numquam. Illo asperiores ea veniam nobis vel unde delectus autem? Animi similique mollitia id saepe magni facere harum tempore sapiente porro voluptatibus quisquam nisi, illo dolorem impedit exercitationem atque. Sed, nulla amet quasi praesentium ea sapiente necessitatibus sint quisquam dolores, molestiae laborum doloremque vel consectetur repudiandae at iure veritatis, earum obcaecati impedit provident in perferendis temporibus. Ducimus dignissimos architecto debitis placeat, suscipit repudiandae maiores velit cum quae doloremque quam iusto rem soluta nesciunt enim officiis voluptate obcaecati et maxime sint accusantium dolores, inventore, amet doloribus. Repellendus reprehenderit quos velit beatae debitis deleniti rem excepturi impedit repudiandae quasi illum, voluptate non. Animi assumenda a quibusdam omnis minima. Minima inventore enim aliquid nulla aut commodi vitae, officiis tempore rerum deserunt amet sapiente corporis alias iure aspernatur, molestiae totam perferendis culpa expedita aliquam. Cum corporis unde quibusdam laboriosam. Veniam assumenda quaerat magnam placeat repellendus similique vel a accusamus rerum quos necessitatibus, possimus numquam ex vero laborum minima perspiciatis nihil. Sapiente laboriosam molestias in facilis quaerat, mollitia dolore impedit provident sint hic temporibus sed saepe ut. Adipisci repellat expedita ea voluptas eligendi autem minus hic ipsum ullam et? Ratione suscipit quae, rem eveniet fugiat delectus eius mollitia recusandae assumenda adipisci corporis illo, consequuntur iste voluptates doloremque ab repudiandae nisi est. Sunt quis iusto quas possimus reiciendis minus, mollitia. Ipsa ad nihil deleniti, debitis sunt voluptates reprehenderit quaerat totam dignissimos doloribus culpa vitae, aut, dolores soluta enim officia beatae, sit incidunt deserunt officiis non esse eius praesentium tempora iure? Sint explicabo aspernatur nesciunt, amet inventore magni ut, doloribus quidem harum nihil cumque quis asperiores maiores voluptatum nostrum fugit vel ab impedit dolorum in similique doloremque repellendus omnis quo id! Optio suscipit voluptates odit cumque et obcaecati est neque assumenda voluptatum, pariatur nobis repudiandae accusamus molestiae odio vel voluptatem quibusdam possimus quae modi. Qui ex itaque est atque voluptatum hic nihil voluptates vero sapiente, delectus fugit laudantium, consequuntur, facere repellendus accusamus aut suscipit quia minus quo mollitia cupiditate ipsam in. Accusantium, soluta, possimus. Magnam itaque possimus sunt quos modi ut veniam facilis quod ipsa ratione doloribus minima est recusandae voluptate praesentium nihil voluptatum enim inventore libero deserunt delectus, laboriosam vitae repellat consequatur? Aut quia dicta, doloremque vero itaque, voluptas similique fuga sint id ab labore tenetur culpa praesentium aperiam. Sunt placeat voluptate tempora ipsam voluptates, eaque omnis rem, temporibus assumenda asperiores cupiditate eum et! Et impedit, molestiae fuga fugit quidem numquam, voluptatibus labore distinctio, enim nemo accusamus eaque. Eos fuga, aliquid eligendi nulla quas cumque esse quo numquam cum perspiciatis beatae dolore sequi error voluptatibus, aperiam vitae, dolorum ex a consectetur dignissimos assumenda necessitatibus molestias exercitationem! Vero incidunt, neque consectetur, culpa velit non veniam soluta quas rerum voluptates quos, reprehenderit suscipit, dolorum necessitatibus earum? Soluta commodi obcaecati unde impedit repudiandae alias laudantium, architecto atque quibusdam vitae modi, nobis quas neque doloribus eius reiciendis ratione. Soluta, aut. Tempore earum fugit voluptas, reprehenderit consequatur a consectetur dolorem vel ea architecto quisquam accusantium, quibusdam sequi aut delectus placeat! Quidem doloribus quas asperiores, quibusdam aspernatur amet impedit, saepe illo sint corrupti quaerat, omnis voluptates laudantium delectus. Quia aliquam sit est. Quaerat quisquam deserunt fugit facere odit rerum quidem aperiam voluptatibus nam, magni accusamus, accusantium quas id similique impedit itaque sed, numquam perferendis consequatur, illum velit deleniti debitis vel. Cupiditate sit, ex nam ducimus facere, quam quae iste voluptatem quibusdam harum nihil veniam ea dolorum ipsa iusto laudantium? Optio reiciendis inventore quam incidunt nisi officia laboriosam praesentium provident sequi repellat voluptas similique veritatis accusantium harum expedita vel, quasi vitae dignissimos, unde ullam commodi ratione modi? Culpa natus maiores ea esse eius odio explicabo, dignissimos cupiditate. Qui doloremque incidunt, ipsa, natus et culpa itaque veniam repellat animi sint similique aspernatur. Voluptatum laudantium quas odio voluptatem alias architecto, voluptas quasi sequi eveniet quam totam quod quos harum autem nostrum quidem! Vel neque consequuntur harum. Cum repellendus aperiam nihil pariatur dicta quae unde esse cumque assumenda qui cupiditate ipsum totam rerum quos, earum consequatur consequuntur dolores, aut libero quaerat quia excepturi iure possimus. Repellendus at error totam dignissimos ullam repellat rem laboriosam debitis voluptatem quos perferendis vitae accusantium alias adipisci, unde iure. Unde asperiores nobis repellendus magni adipisci enim, labore, tenetur, error cum modi esse beatae quaerat. Et, temporibus ullam laudantium cum voluptate accusantium quae autem blanditiis quas distinctio dolorem reprehenderit labore iusto minima, exercitationem pariatur explicabo non, quod. Odio sint accusamus cum ex saepe ea. Possimus laudantium debitis a earum! Aliquam dolores unde obcaecati quidem reprehenderit ex omnis sunt vel voluptas rerum soluta voluptate eos odit tenetur veritatis, deleniti cupiditate harum, delectus minima tempora velit accusantium nesciunt aperiam exercitationem. Cum odit laborum corporis earum ea voluptates aperiam voluptatem molestias ipsa, aut culpa consequatur omnis impedit et consectetur. Soluta quae delectus nostrum error labore quas magnam, deleniti accusantium ipsam blanditiis! Doloremque porro totam inventore ab voluptatem impedit asperiores consequatur voluptates magnam itaque quos unde officiis facere iure minima hic obcaecati tempore, beatae, aliquid molestias eum eius optio explicabo quis. Quas corporis maxime reiciendis nisi sint magni ipsam expedita in voluptatum dolore. Explicabo in nostrum provident a similique sunt dicta illo, voluptates modi nesciunt impedit vel consequuntur ea minus, voluptatum ratione unde animi deleniti commodi optio quis. Asperiores voluptates neque architecto accusamus, doloremque amet quisquam ex earum tempore beatae delectus et natus nobis consectetur vel veniam velit ratione hic eaque a sit, explicabo. Cumque nostrum, vitae. Quo laudantium ratione similique veritatis, labore iusto, delectus debitis dicta officia omnis aut non voluptate mollitia odio veniam illum magnam. Nam rem, repellat doloribus tempore quos, officiis quam sed eveniet, nobis, recusandae ullam totam distinctio. Dolores dolorum molestias obcaecati debitis quod eos fuga, reprehenderit assumenda in ab ea, blanditiis mollitia id illo officiis exercitationem enim cupiditate adipisci rerum, fugiat earum ipsam nisi iure nam. Quo, facilis, id. Aliquid voluptatem ipsa fugiat deserunt animi labore numquam cum quas earum ratione recusandae impedit sapiente aperiam distinctio rerum error, voluptatum architecto? Eaque nihil debitis doloremque veniam, quibusdam aliquid. Dolore ad quasi minus amet rem, officia ducimus iste a labore numquam dolorum sequi totam sit tempora placeat iusto voluptas facilis consequatur. Ipsam, delectus, ducimus. Doloremque maxime vitae et. Et a vel consequatur ipsa porro error minus corrupti hic, eligendi voluptate facilis incidunt odio veritatis impedit, fugiat quasi reiciendis at necessitatibus aliquid beatae, asperiores, voluptatem! Vel deserunt animi dignissimos, voluptatem quas perspiciatis laboriosam dicta, minima voluptas repudiandae dolorem blanditiis accusamus quia doloribus sequi qui eos, unde recusandae optio eligendi ab molestiae est labore? Maxime error, omnis in nostrum aliquid ea quidem! Dolorum modi cupiditate aliquid nemo placeat, sapiente corrupti, sequi beatae accusantium assumenda quas, aliquam aut consequuntur incidunt. Doloremque blanditiis facilis sapiente animi suscipit minus quibusdam ducimus. Temporibus, dolorum et labore, numquam iste iure cumque. Praesentium libero quod, autem omnis quam ad et a modi fuga quae numquam quo hic sit, suscipit magnam ab illo vel maiores cum? Aliquam repellat harum in voluptas dolore reprehenderit, blanditiis eius? Obcaecati facere sed optio vero molestiae, provident minus nulla vitae aspernatur labore nostrum autem praesentium veritatis, repellendus repellat. Eaque iure, eveniet saepe quia mollitia dolor qui pariatur minus iste quam accusamus tenetur, nisi totam. Ullam necessitatibus minus nobis, id officia, consequatur, perspiciatis, ab dolorum ad quod cum. Perferendis obcaecati natus delectus repellat, in eum, dicta soluta accusamus beatae officia, nemo. Dolores nostrum ut consequuntur, earum natus cum nam nesciunt odio, autem excepturi labore ipsa esse perspiciatis, magni reprehenderit sapiente iste facere blanditiis aperiam rerum itaque neque nemo cumque sint! Quas quia officiis, eius officia quae, corrupti laborum tenetur, maxime at molestiae nemo dolore, perspiciatis quibusdam explicabo omnis. Autem et expedita, architecto, tenetur sunt blanditiis adipisci dolorum cum eaque, aliquam iste alias explicabo dolore deserunt. Ad reiciendis labore dolorem quibusdam in voluptas beatae molestias! Laudantium delectus quis ratione vel facilis voluptate magni, temporibus voluptas a in.</p>
+							<form action="">
+								<div class="row">
+									<div class="col-sm-offset-3 col-sm-3">
+										<label>
+											<input type="checkbox" name="publish" checked> Опублікувати
+										</label>
+									</div>
+									<div class="col-sm-3">
+										<button type="submit" class="btn btn-info">Зберегти запис</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
 
 {% endblock %}
 
 {% block footer %}
 
 {#  Додаткові скрипти тут  #}
+<script>
+
+$(function() {
+	// Clear event
+	$('.image-preview-clear').click(function(){
+		$('.image-preview-filename').val("");
+		$('.image-preview-clear').hide();
+		$('.image-preview-input input:file').val("");
+		$(".image-preview-input-title").text("Обрати"); 
+	}); 
+	// Create the preview image
+	$(".image-preview-input input:file").change(function (){     
+		var img = $('<img/>', {
+			id: 'dynamic',
+			width:250,
+			height:200
+		});
+		var file = this.files[0];
+		var reader = new FileReader();
+		// Set preview image into the popover data-content
+		reader.onload = function (e) {
+			$(".image-preview-input-title").text("Змінити");
+			$(".image-preview-clear").show();
+			$(".image-preview-filename").val(file.name);            
+			img.attr('src', e.target.result);
+		}        
+		reader.readAsDataURL(file);
+	});  
+});
+</script>
 
 {% endblock %}
