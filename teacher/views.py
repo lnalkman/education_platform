@@ -839,10 +839,9 @@ class CalendarNoteChange(TeacherRequiredMixin, FormView):
 
 
 class BlogView(ListView, TeacherRequiredMixin):
-    """View для додавання/перегляду публікацій викладачем"""
+    """View для перегляду публікацій викладачем"""
     template_name = 'teacher/blog.html'
     context_object_name = 'publications'
-    form_class = PublicationForm
 
     paginate_by = 3
     paginate_orphans = 1
@@ -852,21 +851,12 @@ class BlogView(ListView, TeacherRequiredMixin):
         teacher = self.request.user.profile
         return teacher.publication_set.all().order_by('-change_date')
 
+
+class AddPostView(TeacherRequiredMixin, FormView):
+    template_name = 'teacher/blog-post-add.html'
+    form_class = PublicationForm
+
     def form_valid(self, form):
         form.cleaned_data['author'] = self.request.user.profile
         Publication.objects.create(**form.cleaned_data)
         return HttpResponseRedirect(reverse('teacher:blog'))
-
-    def post(self, request, *args, **kwargs):
-        self.form = self.form_class(request.POST)
-        if self.form.is_valid():
-            return self.form_valid(self.form)
-        return super(ListView, self).get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(ListView, self).get_context_data(**kwargs)
-        if hasattr(self, 'form'):
-            context['form'] = self.form
-        else:
-            context['form'] = self.form_class
-        return context

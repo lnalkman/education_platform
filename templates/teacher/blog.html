@@ -30,43 +30,8 @@
     </div>
 
     <div class="page">
-        <div class="col-xs-12 col-md-8 col-md-offset-2">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Додати публікацію</h3>
-                </div>
-                <div id="add-publication-panel" class="panel-body" aria-expanded="false">
-                    <form action="{% url 'teacher:blog' %}" method="post">{% csrf_token %}
-                        <div class="form-group {% if form.title.errors %}has-error{% endif %}">
-                            <label for="{{ form.title.id_for_label }}" class="control-label">Заголовок</label>
-                            {{ form.title }}
-                            <ul class="help-block">
-                                {% for error in form.title.errors %}
-                                    <li><strong>{{ error }}</strong></li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="form-group {% if form.content.errors %}has-error{% endif %}">
-                            <label for="{{ form.content.id_for_label }}" class="control-label">Текст публікації</label>
-                            {{ form.content }}
-                            <ul class="help-block">
-                                {% for error in form.content.errors %}
-                                    <li><strong>{{ error }}</strong></li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="form-group">
-                            {{ form.markdown }}Markdown<br>
-                        </div>
-                        <button type="submit" class="btn btn-default">Додати</button>
-                        <ol>
-                            {% for error in form.non_field_errors %}
-                                <li><strong>{{ error }}</strong></li>
-                            {% endfor %}
-                        </ol>
-                    </form>
-                </div>
-            </div>
+        <div class="col-xs-12 col-md-8 col-md-offset-2 text-center">
+            <a href="{% url 'teacher:blog-post-add' %}" id="add-post" class="btn btn-default">Додати публікацію</a>
         </div>
 
         {% with title_max_length=54 %}
@@ -101,31 +66,36 @@
                     </p>
                     <a class="btn btn-link read-more" href="#">Читати далі...</a>
                 </div>
+            {% empty %}
+                <div class="col-xs-12 text-center no-posts">
+                    <h2>У вас поки немає публікацій</h2>
+                </div>
             {% endfor %}
         {% endwith %}
 
+        {% if page_obj.has_previous or page_obj.has_next %}
+            <div class="pagination-block col-xs-12 col-md-8 col-md-offset-2">
+                <nav aria-label="...">
+                    <ul class="pager">
+                        {% if page_obj.has_previous %}
+                            <li class="previous"><a
+                                    href="{% url 'teacher:blog' %}?page={{ page_obj.previous_page_number }}"><span
+                                    aria-hidden="true">&larr;</span> Попередні</a></li>
+                        {% else %}
+                            <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Попередні</a></li>
+                        {% endif %}
 
-        <div class="pagination-block col-xs-12 col-md-8 col-md-offset-2">
-            <nav aria-label="...">
-                <ul class="pager">
-                    {% if page_obj.has_previous %}
-                        <li class="previous"><a
-                                href="{% url 'teacher:blog' %}?page={{ page_obj.previous_page_number }}"><span
-                                aria-hidden="true">&larr;</span> Попередні</a></li>
-                    {% else %}
-                        <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Попередні</a></li>
-                    {% endif %}
+                        {% if page_obj.has_next %}
+                            <li class="next"><a href="{% url 'teacher:blog' %}?page={{ page_obj.next_page_number }}">Наступні
+                                <span aria-hidden="true">&rarr;</span></a></li>
+                        {% else %}
+                            <li class="next disabled"><a>Наступні <span aria-hidden="true">&rarr;</span></a></li>
+                        {% endif %}
 
-                    {% if page_obj.has_next %}
-                        <li class="next"><a href="{% url 'teacher:blog' %}?page={{ page_obj.next_page_number }}">Наступні
-                            <span aria-hidden="true">&rarr;</span></a></li>
-                    {% else %}
-                        <li class="next disabled"><a>Наступні <span aria-hidden="true">&rarr;</span></a></li>
-                    {% endif %}
-
-                </ul>
-            </nav>
-        </div>
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
     </div>
 
 {% endblock %}

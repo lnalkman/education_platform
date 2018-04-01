@@ -111,7 +111,7 @@ class Publication(models.Model):
 
     title = models.CharField(verbose_name='Заголовок', max_length=64)
     content = models.TextField(verbose_name='Контент', max_length=8192)
-    markdown = models.BooleanField(verbose_name='Markdown', default=True)
+    image = models.ImageField(verbose_name='Фотокартка публікації', blank=True, null=True)
 
     pub_date = models.DateTimeField(auto_now_add=True)
     change_date = models.DateTimeField(auto_now=True)

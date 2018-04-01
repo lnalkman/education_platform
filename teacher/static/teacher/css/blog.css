@@ -62,9 +62,21 @@
     font-size: 14px;
 }
 
+#add-post, .no-posts > h2 {
+    margin-left: -54px;
+}
+
+.no-posts {
+    margin-top: 75px;
+}
+
 @media (max-width: 768px) {
     .page {
         padding-left: 0;
         padding-right: 0;
+    }
+
+    #add-post, .no-posts > h2 {
+        margin-left: 0;
     }
 }
