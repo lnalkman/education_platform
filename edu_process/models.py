@@ -171,9 +171,9 @@ def get_user_messages(id):
             WHEN sender_id = %(id)s
               THEN receiver_id END AS user,
             CASE WHEN receiver_id = %(id)s
-              THEN "from"
+              THEN 'from'
             WHEN sender_id = %(id)s
-              THEN "you" END      AS who,
+              THEN 'you' END      AS who,
             sended
           FROM edu_process_message epm
           WHERE (receiver_id = %(id)s OR sender_id = %(id)s)
