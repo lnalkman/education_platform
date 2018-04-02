@@ -37,7 +37,7 @@ $(function() {
 
 		// Якщо немає фотографії ігноруємо помилку
         try {
-            var photoURI = window.URL.createObjectURL($('.image-input input')[0].files[0]);
+            var photoURI = window.URL.createObjectURL($('.image-input .image-preview-input input')[0].files[0]);
             $('#preview_image').attr('src', photoURI);
         } catch (e) {}
 

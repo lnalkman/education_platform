@@ -55,7 +55,7 @@
                                 <li><a href="#">Редагувати</a></li>
                                 <li><a href="#">Оновити дату</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#">Видалити</a></li>
+                                <li><a href="#" data-delete-href="{% url 'teacher:blog-post-delete' pk=publication.pk %}" data-toggle="modal" data-target="#delete-post-modal">Видалити</a></li>
                             </ul>
                         </div>
                     </h3>
@@ -64,7 +64,8 @@
                     <p>
                         {{ publication.get_first_paragraph|truncatechars:350 }}
                     </p>
-                    <a class="btn btn-link read-more" href="#">Читати далі...</a>
+                    <a class="btn btn-link read-more" href="{% url 'teacher:blog-post' pk=publication.pk %}">Читати
+                        далі...</a>
                 </div>
             {% empty %}
                 <div class="col-xs-12 text-center no-posts">
@@ -98,9 +99,37 @@
         {% endif %}
     </div>
 
+
+    <div id="delete-post-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Видалити публікацію ?</h4>
+                </div>
+                <div class="modal-body text-center">
+                    Видалену публікацію неможливо відновити !
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Відмінити</button>
+                    <form id="delete-post-form" action="" method="post">{% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Видалити</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block footer %}
+
+    <script>
+        $('#delete-post-modal').on('show.bs.modal', function (e) {
+            $('#delete-post-form').attr('action', $(e.relatedTarget).data('delete-href'));
+        });
+    </script>
 
 {% endblock %}
 

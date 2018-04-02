@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, date
 
 from django.urls import reverse_lazy
 from django.shortcuts import reverse
-from django.views.generic.edit import UpdateView, FormView, FormMixin
+from django.views.generic.edit import UpdateView, FormView, FormMixin, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
@@ -860,3 +860,30 @@ class AddPostView(TeacherRequiredMixin, FormView):
         form.cleaned_data['author'] = self.request.user.profile
         Publication.objects.create(**form.cleaned_data)
         return HttpResponseRedirect(reverse('teacher:blog'))
+
+
+class PublicationView(DetailView):
+    template_name = 'teacher/blog-post.html'
+
+    model = Publication
+    context_object_name = 'publication'
+
+
+class DeletePostView(TeacherRequiredMixin, DeleteView):
+    success_url = reverse_lazy('teacher:blog')
+
+    def get_queryset(self):
+        post_pk = self.kwargs['pk']
+        return Publication.objects.filter(pk=post_pk)
+
+    def test_func(self):
+        parent_test = super(DeletePostView, self).test_func()
+        if parent_test:
+            try:
+                self.object = self.get_queryset().get()
+                test = self.object.author.user == self.request.user
+            except Publication.DoesNotExist:
+                test = True
+
+            return test
+        return False

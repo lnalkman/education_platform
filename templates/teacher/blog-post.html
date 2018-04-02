@@ -1,0 +1,72 @@
+{% extends "skeleton.html" %}
+{% load staticfiles %}
+{% block head %}
+    <title>{{ publication.title }} | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'teacher/css/blog-post.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% include 'teacher/components/navbar.html' with blog=True only %}
+
+    <div class="page container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+                <h1 class="title">{{ publication.title }}</h1>
+                <small class="text-muted change-date">Оновлено: {{ publication.change_date }}</small>
+                <hr/>
+            </div>
+
+            {% if publication.image %}
+                <div class="post-image col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+                    <img class="img-responsive img-thumbnail" src="{{ publication.image.url }}">
+                </div>
+            {% endif %}
+
+            <div class="content col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">{{ publication.content }}</div>
+
+            <div class="author col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+                <hr>
+                <div class="row">
+                    {% with author=publication.author %}
+                        <div class="col-xs-12 col-sm-3">
+                            <img class="img-responsive img-circle center-block" src="{{ author.photo.url }}" />
+                        </div>
+                        <div class="col-xs-12 col-sm-9">
+                            <h3 class="author-name"><a href="#">{{ author.user.first_name }} {{ author.user.last_name }}</a></h3>
+                            <div class="other-publications"><a href="#">Інші публікації користувача</a></div>
+                            <p class="about-author">
+                                {% if author.about_me %}
+                                    {{ author.about_me }}
+                                {% else %}
+                                    <span class="text-muted">Інформація відсутня</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    {% endwith %}
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    <script src="{% static 'js/markdown.min.js' %}"></script>
+    <script>
+        $(function () {
+            var content = $('.content');
+            content.html(
+                markdown.toHTML(content.text())
+            )
+        });
+    </script>
+{% endblock %}

@@ -119,6 +119,9 @@ class Publication(models.Model):
     def get_first_paragraph(self):
         return self.content[:self.content.find('\n\n')]
 
+    def get_absolute_url(self):
+        return reverse('teacher:blog-post', kwargs={'pk': self.pk})
+
     def __str__(self):
         author_user = self.author.user
         return '%(post_title)s (by: %(author)s)' % ({

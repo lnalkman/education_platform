@@ -1,0 +1,52 @@
+.page {
+    padding-left: 64px;
+    padding-bottom: 100px;
+}
+
+.title {
+    margin-bottom: 0;
+}
+
+.change-date + hr {
+    margin-top: 10px;
+}
+
+.post-image {
+    margin-bottom: 20px;
+}
+
+.author-name {
+    margin-bottom: 0;
+    margin-top: 10px;
+}
+
+.author-name > a:hover {
+    text-decoration: none;
+}
+
+.other-publications {
+    font-size: 12px;
+}
+
+.about-author {
+    margin: 15px 0;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 54px 10px 0 10px;
+    }
+
+    .author-name {
+        text-align: center;
+    }
+
+    .other-publications {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .about-author {
+        text-align: center;
+    }
+}
