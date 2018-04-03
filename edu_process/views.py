@@ -28,7 +28,7 @@ class IndexView(FormView):
     form_class = AuthenticationForm
     user_type_urls = {
         Profile.TEACHER: reverse_lazy('teacher:index'),
-        Profile.STUDENT: reverse_lazy('student-profile'),
+        Profile.STUDENT: reverse_lazy('student:profile'),
     }
 
     def get(self, request, *args, **kwargs):
@@ -52,7 +52,7 @@ class IndexView(FormView):
         if user_type == Profile.TEACHER:
             return reverse('teacher:index')
         elif user_type == Profile.STUDENT:
-            return reverse('student-profile')
+            return reverse('student:profile')
 
 
 class LogoutView(View):

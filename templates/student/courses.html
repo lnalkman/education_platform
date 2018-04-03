@@ -1,0 +1,27 @@
+{% extends 'skeleton.html' %}
+{% load staticfiles %}
+{% block head %}
+    <title>Ваші курси | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'student/css/courses.css' %}">
+{% endblock %}
+
+{% block body %}
+    {# Кнопка, яка відкриває навігаційну панель на мобільних #}
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% include 'student/components/navbar.html' with courses=True only %}
+
+    {#  CONTENT HERE  #}
+
+{% endblock %}
+
+{% block footer %}
+
+{#  Додаткові скрипти тут  #}
+
+{% endblock %}
