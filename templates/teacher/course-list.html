@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load edu_extras %}
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -64,7 +65,7 @@
                             <dd>{{ course.pub_date }}</dd>
                             <br>
                             <dt>Опис курсу:</dt>
-                            <dd>{{ course.description|linebreaksbr }}</dd>
+                            <dd>{{ course.description|cut_extra_indent|linebreaksbr }}</dd>
                         </dl>
                         <a href="{% url 'teacher:course-settings' pk=course.pk %}" class="btn btn-default">
                             Панель управління

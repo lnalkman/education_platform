@@ -117,7 +117,7 @@ class Publication(models.Model):
     change_date = models.DateTimeField(auto_now=True)
 
     def get_first_paragraph(self):
-        return self.content[:self.content.find('\n\n')]
+        return self.content[:self.content.find('\r\n\r\n')]
 
     def get_absolute_url(self):
         return reverse('teacher:blog-post', kwargs={'pk': self.pk})

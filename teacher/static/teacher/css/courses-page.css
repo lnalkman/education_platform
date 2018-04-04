@@ -38,6 +38,10 @@
     color: #7ab4de;
 }
 
+.lesson {
+    word-wrap: break-word;
+}
+
 @media (max-width: 768px) {
     .add-course {
         border: none;
