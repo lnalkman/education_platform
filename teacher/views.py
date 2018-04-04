@@ -887,3 +887,50 @@ class DeletePostView(TeacherRequiredMixin, DeleteView):
 
             return test
         return False
+
+
+class EditPostView(TeacherRequiredMixin, UpdateView):
+    """View для редагування публікацій викладачем"""
+
+    # Сторінка додавання та редагування публікації розміщені в шаблоні додавання публікації
+    template_name = 'teacher/blog-post-add.html'
+    form_class = PublicationForm
+    model = Publication
+    context_object_name = 'publication'
+
+    def test_func(self):
+        """Перевірка автора публікації"""
+        parent_test = super(EditPostView, self).test_func()
+        if parent_test:
+            try:
+                object = self.model.objects.get(pk=self.kwargs.get('pk'))
+                test = object.author.user == self.request.user
+            except Publication.DoesNotExist:
+                test = True
+
+            return test
+        return False
+
+    def get_success_url(self):
+        return reverse('teacher:blog-post', kwargs={'pk': self.kwargs['pk']})
+
+    def get_form_kwargs(self):
+        """
+        Щоб запобігти появі віджету ClearableFileInput (псує дизайн)
+        робимо поле image пустим, а для видалення фотографії задамо вручну
+        в шаблоні input[name='delete-post-photo'] та в self.form_valid перевіримо чи
+        він заданий.
+        """
+        kwargs = super(EditPostView, self).get_form_kwargs()
+        kwargs['initial']['image'] = None
+        return kwargs
+
+    def form_valid(self, form):
+        res = super(EditPostView, self).form_valid(form)
+
+        # Якщо checkbox на видалення фотографії натиснутий - видаляємо фотографію
+        if self.request.POST.get('delete-post-photo'):
+            self.object.image = None
+            self.object.save()
+
+        return res

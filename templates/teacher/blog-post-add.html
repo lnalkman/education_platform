@@ -51,18 +51,24 @@
 											<label class="col-sm-3 control-label" for="image">Фотокартка публікації</label>
 											<div class="col-sm-8">
 												<div class="input-group image-preview">
-													<input type="text" class="form-control image-preview-filename" disabled="disabled"> <!-- don't give a name === doesn't send on POST/GET -->
+                                                    {% if publication.image %}
+                                                        <span class="input-group-addon">
+                                                                <input type="checkbox" name="delete-post-photo">
+                                                                Видалити
+                                                        </span>
+                                                    {% endif %}
+													<input type="text" value="{{ publication.image.name }}" class="form-control image-preview-filename" disabled="disabled"> <!-- don't give a name === doesn't send on POST/GET -->
 													<span class="input-group-btn">
 														<!-- image-preview-clear button -->
 														<button type="button" class="btn btn-default image-preview-clear" style="display:none;">
 															<span class="glyphicon glyphicon-remove"></span> Видалити
 														</button>
 														<!-- image-preview-input -->
-														<div class="btn btn-default image-preview-input">
+														<button class="btn btn-default image-preview-input">
 															<span class="glyphicon glyphicon-folder-open"></span>
 															<span class="image-preview-input-title">Обрати</span>
                                                             {{ form.image }}
-														</div>
+														</button>
 													</span>
 												</div>
                                                 <ul class="help-block">
@@ -104,7 +110,7 @@
 				<div role="tabpanel" class="tab-pane" id="view">
 					<div class="col-xs-12 col-sm-10 col-sm-offset-1">
 						<div class="blog-view-inner">
-							<img id="preview_image" class="blog-image" src="" alt="" />
+							<img id="preview_image" class="blog-image" src="{{ publication.image.url }}" alt="" />
                             <div class="col-xs-12">
                                 <h1 id="preview_title"></h1>
                                 <p id="preview_content"></p>

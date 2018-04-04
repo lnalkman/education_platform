@@ -52,10 +52,10 @@
                                 Дія <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Редагувати</a></li>
-                                <li><a href="#">Оновити дату</a></li>
+                                <li><a href="{% url 'teacher:blog-post-edit' pk=publication.pk %}">Редагувати</a></li>
+                                {# <li><a href="#">Оновити дату</a></li> #}
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#" data-delete-href="{% url 'teacher:blog-post-delete' pk=publication.pk %}" data-toggle="modal" data-target="#delete-post-modal">Видалити</a></li>
+                                <li class="bg-danger"><a href="#" data-delete-href="{% url 'teacher:blog-post-delete' pk=publication.pk %}" data-toggle="modal" data-target="#delete-post-modal">Видалити</a></li>
                             </ul>
                         </div>
                     </h3>

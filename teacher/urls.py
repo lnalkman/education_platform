@@ -11,7 +11,7 @@ from .views import (
     DeleteModule, AjaxUploadLessonFiles, JsonFileList,
     JsonLessonDetail, LessonUpdate, AjaxDeleteLessonFile,
     BlogView, PublicationView, AddPostView,
-    DeletePostView,
+    DeletePostView, EditPostView
 )
 
 
@@ -45,4 +45,5 @@ urlpatterns = [
     url(r'^blog/post/(?P<pk>[0-9]+)/$', PublicationView.as_view(), name='blog-post'),
     url(r'^blog/post/add/$', AddPostView.as_view(), name='blog-post-add'),
     url(r'^blog/post/(?P<pk>[0-9]+)/delete/$', DeletePostView.as_view(), name='blog-post-delete'),
+    url(r'^blog/post/(?P<pk>[0-9]+)/edit/$', EditPostView.as_view(), name='blog-post-edit'),
 ]
