@@ -184,8 +184,12 @@ body {
     fill: #008ee2
 }
 
-.header li.logout {
-    margin-top: 30px;
+.header li.search {
+    margin-top: 25px;
+}
+
+.header li.search path {
+    fill: #00ced1;
 }
 
 .header li.logout path {

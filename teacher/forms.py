@@ -90,3 +90,13 @@ class PublicationForm(ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control', 'required': ''}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'cols': 6}),
         }
+
+    @classmethod
+    def make_thumbnail(cls, image):
+        """
+        TODO: Метод має зменшувати фотографію, та повертати її.
+        Застосувати його в методі save форми.
+        :param image: PIL.Image object
+        :return: PIL.Image object -> зменшена фотографія
+        """
+        pass

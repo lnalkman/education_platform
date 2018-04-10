@@ -1,0 +1,37 @@
+{% extends 'teacher/blog.html' %}
+{% load static %}
+
+{% block pre_result %}
+    <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <h2>По пошуковому запиту: "{{ search_query }}", знайдено {{ paginator.count }} публікацій</h2>
+    </div>
+{% endblock %}
+
+{% block pagination %}
+            {% if page_obj.has_previous or page_obj.has_next %}
+                <div class="pagination-block col-xs-12 col-md-8 col-md-offset-2">
+                    <nav aria-label="...">
+                        <ul class="pager">
+                            {% if page_obj.has_previous %}
+                                <li class="previous"><a
+                                        href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}"><span
+                                        aria-hidden="true">&larr;</span> Попередні</a></li>
+                            {% else %}
+                                <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Попередні</a>
+                                </li>
+                            {% endif %}
+
+                            {% if page_obj.has_next %}
+                                <li class="next"><a
+                                        href="?q={{ search_query }}&page={{ page_obj.next_page_number }}">Наступні
+                                    <span aria-hidden="true">&rarr;</span></a></li>
+                            {% else %}
+                                <li class="next disabled"><a>Наступні <span aria-hidden="true">&rarr;</span></a></li>
+                            {% endif %}
+
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+            </div>
+        {% endblock %}

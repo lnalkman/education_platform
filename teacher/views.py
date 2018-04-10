@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views.generic.base import TemplateView, RedirectView, View
 from django.http.response import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.core import serializers
+from django.db.models import Q
 
 from edu_process.models import Group
 from .models import (
@@ -934,3 +935,26 @@ class EditPostView(TeacherRequiredMixin, UpdateView):
             self.object.save()
 
         return res
+
+
+class BlogPostSearchView(ListView):
+    template_name = 'teacher/blog-post-search.html'
+
+    context_object_name = 'publications'
+
+    paginate_by = 3
+    paginate_orphans = 1
+    allow_empty = True
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        teacher = self.request.user.profile
+
+        return teacher.publication_set.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        ).order_by('-change_date')
+
+    def get_context_data(self, **kwargs):
+        context = super(BlogPostSearchView, self).get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
