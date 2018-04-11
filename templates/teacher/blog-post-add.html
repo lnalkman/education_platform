@@ -57,8 +57,12 @@
                                                                 Видалити
                                                         </span>
                                                     {% endif %}
-													<input type="text" value="{{ publication.image.name }}" class="form-control image-preview-filename" disabled="disabled"> <!-- don't give a name === doesn't send on POST/GET -->
-													<span class="input-group-btn">
+                                                    {% if publication.image %}
+													    <input type="text" value="{{ publication.image.name }}" class="form-control image-preview-filename" disabled="disabled"> <!-- don't give a name === doesn't send on POST/GET -->
+													{% else %}
+                                                        <input type="text" class="form-control image-preview-filename" disabled="disabled"> <!-- don't give a name === doesn't send on POST/GET -->
+                                                    {% endif %}
+                                                    <span class="input-group-btn">
 														<!-- image-preview-clear button -->
 														<button type="button" class="btn btn-default image-preview-clear" style="display:none;">
 															<span class="glyphicon glyphicon-remove"></span> Видалити
@@ -110,7 +114,11 @@
 				<div role="tabpanel" class="tab-pane" id="view">
 					<div class="col-xs-12 col-sm-10 col-sm-offset-1">
 						<div class="blog-view-inner">
-							<img id="preview_image" class="blog-image" src="{{ publication.image.url }}" alt="" />
+                            {% if publication.image %}
+							    <img id="preview_image" class="blog-image" src="{{ publication.image.url }}" alt="" />
+                            {% else %}
+                                <img id="preview_image" class="blog-image" src="" alt="" />
+                            {% endif %}
                             <div class="col-xs-12">
                                 <h1 id="preview_title"></h1>
                                 <p id="preview_content"></p>
