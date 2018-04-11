@@ -40,8 +40,16 @@ class TeacherProfile(TeacherRequiredMixin, UpdateView):
         form.save()
         return super(UpdateView, self).form_valid()
 
+    def get_queryset(self):
+        return self.request.user.profile.publication_set.all()
+
     def get_object(self, queryset=None):
         return self.request.user.profile
+
+    def get_last_publications(self):
+        return Publication.objects.filter(
+            author=self.request.user.profile
+        )[:3]
 
     def get_upcoming_events(self):
         now = datetime.now().date()
@@ -53,7 +61,9 @@ class TeacherProfile(TeacherRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
+        print(context)
         context['upcoming_events'] = self.get_upcoming_events()
+        context['last_publications'] = self.get_last_publications()
         return context
 
 

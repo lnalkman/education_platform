@@ -27,9 +27,7 @@
         <div class="profile-info">
             <div class="image-block col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-md-3 col-md-offset-0 col-lg-2">
                 <img class='avatar'
-                     src="
-
-                             {% if object.photo %}{{ object.photo.url }}{% else %}{% static 'img/profile.jpg' %}{% endif %}"
+                     src="{% if object.photo %}{{ object.photo.url }}{% else %}{% static 'img/profile.jpg' %}{% endif %}"
                      alt="Profile">
                 <div class="middle">
                     <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
@@ -39,61 +37,43 @@
             </div>
             <div class="info col-xs-12 col-sm-10 col-md-8 col-lg-9">
                 <div class="name"><h2>{{ object.user.first_name }} {{ object.user.last_name }}</h2></div>
-                <div class="personal-info">{% if object.about_me %}{{ object.about_me }}{% else %}
-                    <span style="color:#bbb">Інформація відсутня</span>{% endif %}</div>
+                <div class="personal-info">
+                    {% if object.about_me %}
+                        {{ object.about_me }}
+                    {% else %}
+                        <span class="text-muted">Інформація відсутня</span>
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="clearfix"></div>
         <h3 class="text-center title-posts">Останні публікації</h3>
         <div class="posts">
-            <div class="post col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-5 col-lg-4">
-                <div class="thumbnail">
-                    <div class="caption clearfix">
-                        <h3>Thumbnail label</h3>
-                        <div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam
-                            quibusdam
-                            sit
-                            magni beatae suscipit aspernatur, numquam odit provident non. Delectus magnam labore
-                            blanditiis
-                            ad
-                            asperiores officiis ipsa fugit voluptatum quia.
+            {% for publication in last_publications %}
+                <div class="post col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-5 col-lg-4">
+                    <div class="thumbnail">
+                        <div class="caption clearfix">
+                            <h3>
+                                {% if publication.title|length > title_max_length %}
+                                    {% with truncated_text=publication.title|truncatechars:title_max_length word_count=truncated_text|wordcount|add:'-1' %}
+                                        {{ truncated_text|truncatewords:word_count }}
+                                    {% endwith %}
+                                {% else %}
+                                    {{ publication.title }}
+                                {% endif %}
+                            </h3>
+                            <div class="description">
+                                {{ publication.get_first_paragraph|truncatechars:350 }}
+                            </div>
+                            <a href="{{ publication.get_absolute_url }}"
+                               class="to-post center-block btn btn-info btn-sm">Читати</a>
                         </div>
-                        <a href="#" class="to-post center-block btn btn-info btn-sm">Читати</a>
                     </div>
                 </div>
-            </div>
-            <div class="post col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-2 col-md-5 col-lg-offset-0 col-lg-4">
-                <div class="thumbnail">
-                    <div class="caption clearfix">
-                        <h3>Thumbnail label</h3>
-                        <div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam
-                            quibusdam
-                            sit
-                            magni beatae suscipit aspernatur, numquam odit provident non. Delectus magnam labore
-                            blanditiis
-                            ad
-                            asperiores officiis ipsa fugit voluptatum quia.
-                        </div>
-                        <a href="#" class="to-post center-block btn btn-info btn-sm">Читати</a>
-                    </div>
-                </div>
-            </div>
-            <div class="post col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-5 col-lg-4">
-                <div class="thumbnail">
-                    <div class="caption clearfix">
-                        <h3>Thumbnail label</h3>
-                        <div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam
-                            quibusdam
-                            sit
-                            magni beatae suscipit aspernatur, numquam odit provident non. Delectus magnam labore
-                            blanditiis
-                            ad
-                            asperiores officiis ipsa fugit voluptatum quia.
-                        </div>
-                        <a href="#" class="to-post center-block btn btn-info btn-sm">Читати</a>
-                    </div>
-                </div>
-            </div>
+            {% empty %}
+                <p class="text-center text-muted">Публікації відсутні</p>
+
+            {% endfor %}
         </div>
     </div>
 
