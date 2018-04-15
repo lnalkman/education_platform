@@ -3,6 +3,7 @@ import os
 from django.contrib.auth.models import User
 from django.db import models, connection
 from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
 
 
 class Group(models.Model):
@@ -98,6 +99,13 @@ class Profile(models.Model):
 
         # Зберігаємо нову фотографію
         super(Profile, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        if self.is_teacher():
+            return reverse('teacher:profile', kwargs={'pk': self.pk})
+        elif self.is_student():
+            return reverse('student:profile', kwargs={'pk': self.pk})
+        return ''
 
     def __str__(self):
         return '%s %s (%s)' % (self.user.first_name,

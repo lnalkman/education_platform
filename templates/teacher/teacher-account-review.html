@@ -1,0 +1,137 @@
+{% extends 'skeleton.html' %}
+{% load staticfiles %}
+{% block head %}
+    <title>Профіль | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'teacher/css/teacher-account.css' %}">
+    <link rel="stylesheet" href="{% static 'teacher/css/jquery-ui.min.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    <div class="events-opener">
+        <span class="glyphicon glyphicon-calendar"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% include 'teacher/components/navbar.html' with account=True only %}
+
+
+    <div class="page-content container-fluid">
+        <h2 class="profile-type">Викладацький профіль</h2>
+        <div class="profile-info">
+            <div class="image-block col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-md-3 col-md-offset-0 col-lg-2">
+                <img class='avatar'
+                     src="{% if object.photo %}{{ object.photo.url }}{% else %}{% static 'img/profile.jpg' %}{% endif %}"
+                     alt="Profile">
+{#                <div class="middle">#}
+{#                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal"#}
+{#                            data-target="#change-photo-modal">Змінити#}
+{#                    </button>#}
+{#                </div>#}
+            </div>
+            <div class="info col-xs-12 col-sm-10 col-md-8 col-lg-9">
+                <div class="name"><h2>{{ object.user.first_name }} {{ object.user.last_name }}</h2></div>
+                <div class="personal-info">
+                    {% if object.about_me %}
+                        {{ object.about_me }}
+                    {% else %}
+                        <span class="text-muted">Інформація відсутня</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <h3 class="text-center title-posts">Останні публікації</h3>
+        <div class="posts">
+            {% for publication in last_publications %}
+                <div class="post col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-0 col-md-5 col-lg-4">
+                    <div class="thumbnail">
+                        <div class="caption clearfix">
+                            <h3>
+                                {% if publication.title|length > title_max_length %}
+                                    {% with truncated_text=publication.title|truncatechars:title_max_length word_count=truncated_text|wordcount|add:'-1' %}
+                                        {{ truncated_text|truncatewords:word_count }}
+                                    {% endwith %}
+                                {% else %}
+                                    {{ publication.title }}
+                                {% endif %}
+                            </h3>
+                            <div class="description">
+                                {{ publication.get_first_paragraph|truncatechars:350 }}
+                            </div>
+                            <a href="{{ publication.get_absolute_url }}"
+                               class="to-post center-block btn btn-info btn-sm">Читати</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center text-muted">Публікації відсутні</p>
+
+            {% endfor %}
+        </div>
+    </div>
+
+
+{#    <div class="events">#}
+{#        <h2>Найближчі події</h2>#}
+{#        {% for event in upcoming_events %}#}
+{#            <a href="{{ event.get_day_url }}" class="event">#}
+{#                <div class="date">#}
+{#                    <span class="number">{{ event.date.day }}.</span><span class="month">{{ event.date.month }}</span>#}
+{#                </div>#}
+{#                <div class="name">{{ event.title|truncatechars:14 }}</div>#}
+{#            </a>#}
+{#        {% empty %}#}
+{#            <p class="text-muted">На найближчі 7 днів не заплановано ніяких подій</p>#}
+{#        {% endfor %}#}
+{#    </div>#}
+
+
+{#    <!-- Modal -->#}
+{#    <div class="modal fade" id="change-photo-modal" tabindex="-1" role="dialog">#}
+{#        <div class="modal-dialog modal-lg" role="document">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span#}
+{#                            aria-hidden="true">&times;</span>#}
+{#                    </button>#}
+{#                    <h4 class="modal-title">Додати нову фотографію</h4>#}
+{#                </div>#}
+{#                <form action="{% url 'user-avatar' %}" method="post" enctype="multipart/form-data">{% csrf_token %}#}
+{#                    <div class="modal-body text-center">#}
+{#                        <input type="hidden" name="offset_top1">#}
+{#                        <input type="hidden" name="offset_left1">#}
+{#                        <input type="hidden" name="offset_top2">#}
+{#                        <input type="hidden" name="offset_left2">#}
+{##}
+{#                        <!-- Фотографія тут -->#}
+{##}
+{#                        <div class="clearfix"></div>#}
+{#                        <div class="upload-btn-wrapper">#}
+{#                            <button class="btn btn-default">Обрати фотографію</button>#}
+{#                            <input type="file" name="photo" accept=".jpg, .jpeg, .png"/>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-default delete-photo" data-dismiss="modal">Відмінити#}
+{#                        </button>#}
+{#                        <button type="submit" class="btn btn-primary save-photo" disabled="disabled">Зберегти зміни#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </form>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+

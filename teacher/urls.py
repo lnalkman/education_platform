@@ -16,7 +16,7 @@ from .views import (
 
 
 urlpatterns = [
-    url(r'^$', TeacherProfile.as_view(), name='index'),
+    url(r'^id-(?P<pk>[0-9]+)/$', TeacherProfile.as_view(), name='profile'),
     # url(r'^course/add/$', AddCourseView.as_view(), name='course-add'),
     url(r'^courses/$', CourseListView.as_view(), name='course-list'),
     url(r'^course/(?P<pk>[0-9]+)/$', CourseSettings.as_view(), name='course-settings'),

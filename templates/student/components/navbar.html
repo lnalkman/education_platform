@@ -23,12 +23,12 @@
 <header class="header">
     <ul>
         <li>
-            <a class="logo" href="{% url 'teacher:index' %}">
+            <a class="logo" href="{% url 'index' %}">
                 <img src="{% static 'img/logo.png' %}" alt="KPI">
             </a>
         </li>
         <li>
-            <a href="{% url 'student:profile' %}" {{ account|yesno:'class=active,' }}>
+            <a href="{% url 'index' %}" {{ account|yesno:'class=active,' }}>
                 <img src="{% static 'img/menu/account.png' %}" alt="Account">
             </a>
             <span class="tooltip">Профіль</span>

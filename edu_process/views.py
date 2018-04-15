@@ -27,33 +27,22 @@ class IndexView(FormView):
     http_method_names = ('get', 'post',)
     template_name = 'edu_process/index.html'
     form_class = AuthenticationForm
-    user_type_urls = {
-        Profile.TEACHER: reverse_lazy('teacher:index'),
-        Profile.STUDENT: reverse_lazy('student:profile'),
-    }
 
     def get(self, request, *args, **kwargs):
         """Якщо користувач вже авторизований, то перенаправляємо його в особистий кабінет"""
         if self.request.user.is_authenticated():
-            # Отримуємо адресу на особистий кабінет
-            url = self.user_type_urls.get(
-                self.request.user.profile.user_type,
-                None
-            )
+            url = self.request.user.profile.get_absolute_url()
             if url:
                 return HttpResponseRedirect(url)
-        return super(FormView, self).get(request, *args, **kwargs)
+
+        return super(IndexView, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
         login(self.request, form.get_user())
-        return super(FormView, self).form_valid(form)
+        return super(IndexView, self).form_valid(form)
 
     def get_success_url(self):
-        user_type = self.request.user.profile.user_type
-        if user_type == Profile.TEACHER:
-            return reverse('teacher:index')
-        elif user_type == Profile.STUDENT:
-            return reverse('student:profile')
+        return self.request.user.profile.get_absolute_url()
 
 
 class LogoutView(View):
@@ -376,16 +365,16 @@ class CourseListJsonView(LoginRequiredMixin, View):
         author_id = get_data.get('author_id')
         if author_id:
             if author_id == 'self':
-                queryset = queryset.filter(author_id=self.request.user.id)
+                queryset = queryset.filter(author__id=self.request.user.profile.id)
             else:
-                queryset = queryset.filter(author_id=author_id)
+                queryset = queryset.filter(author__id=author_id)
 
         student_id = get_data.get('student_id')
         if student_id:
             if student_id == 'self':
-                queryset = queryset.filter(student_id=self.request.user.id)
+                queryset = queryset.filter(students__id=self.request.user.profile.id)
             else:
-                queryset = queryset.filter(student_id=student_id)
+                queryset = queryset.filter(students__id=student_id)
 
         # Рядок пошуку по імені і опису курсу.
         q = get_data.get('q')

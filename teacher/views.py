@@ -12,8 +12,9 @@ from django.views.generic.base import TemplateView, RedirectView, View
 from django.http.response import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.core import serializers
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
-from edu_process.models import Group
+from edu_process.models import Group, Profile
 from .models import (
     Course, CalendarNote, Module,
     Lesson, LessonFile, Publication
@@ -32,23 +33,29 @@ class TeacherRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         return self.request.user.profile.is_teacher()
 
 
-class TeacherProfile(TeacherRequiredMixin, UpdateView):
-    template_name = 'teacher/teacher-account.html'
-    form_class = TeacherProfileForm
+class TeacherProfile(LoginRequiredMixin, ListView):
+    account_owner_template_name = 'teacher/teacher-account.html'
+    review_account_template_name = 'teacher/teacher-account-review.html'
 
-    def form_valid(self, form):
-        form.save()
-        return super(UpdateView, self).form_valid()
+    def user_account_owner(self):
+        """ Перевіряє чи належить профіль сторінки на яку зайшли тому, хто зайшов на неї """
+        return self.request.user.profile.pk == int(self.kwargs['pk'])
+
+    def get_template_names(self):
+        if self.user_account_owner():
+            return self.account_owner_template_name
+        return self.review_account_template_name
 
     def get_queryset(self):
-        return self.request.user.profile.publication_set.all()
+        return self.profile.publication_set.all()
 
-    def get_object(self, queryset=None):
-        return self.request.user.profile
+    def get_object(self):
+        """ ПОвертає профіль користувача на сторінку якого зайшли або 404 """
+        return get_object_or_404(Profile, pk=self.kwargs['pk'])
 
     def get_last_publications(self):
         return Publication.objects.filter(
-            author=self.request.user.profile
+            author=self.profile
         )[:3]
 
     def get_upcoming_events(self):
@@ -59,10 +66,17 @@ class TeacherProfile(TeacherRequiredMixin, UpdateView):
             date__date__lte=now + timedelta(days=7)
         )[:4]
 
+    def get(self, request, *args, **kwargs):
+        # Профіль користувача, на сторінку якого зайшли
+        self.profile = self.get_object()
+        return super(TeacherProfile, self).get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        print(context)
-        context['upcoming_events'] = self.get_upcoming_events()
+        context = super(TeacherProfile, self).get_context_data(**kwargs)
+        if self.user_account_owner():
+            context['upcoming_events'] = self.get_upcoming_events()
+        context['object'] = self.profile
+
         context['last_publications'] = self.get_last_publications()
         return context
 
