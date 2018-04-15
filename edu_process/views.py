@@ -20,6 +20,7 @@ from django.contrib import messages
 from PIL import Image
 
 from .models import Profile, Group, Message, get_user_messages
+from teacher.models import Course
 
 
 class IndexView(FormView):
@@ -341,3 +342,71 @@ class MessageUserApiView(LoginRequiredMixin, View):
 
         queryset = self.get_queryset(id)
         return self.render_to_json(queryset)
+
+
+class CourseListJsonView(LoginRequiredMixin, View):
+    """
+    View для пошуку курсів.
+    Достпупні поля:
+        author_id  -> int (Курси автором яких є користувач з id профілю author_id)
+        student_id -> int (Курси, на які напряму підписаний студент з id профілю student_id)
+        q          -> str (Курси назва чи опис яких містить рядок пошуку q)
+        offset     -> int (Скільки курсів буде пропущено при повернені списку знайдених курсів, потрібно для пагінації)
+    """
+    http_method_names = ('get',)
+
+    # Максимальна кількість занять, яку повертає view
+    MAX_COURSES_RETURN = 10
+
+    def render_to_json(self, queryset):
+        print(dir(queryset))
+        data = {
+            'queryset:': list(queryset.values()),
+            'result_count': queryset.count(),
+        }
+        return JsonResponse(
+            data,
+            safe=False,
+        )
+
+    def get_queryset(self):
+        queryset = Course.objects.all()
+        get_data = self.request.GET
+
+        author_id = get_data.get('author_id')
+        if author_id:
+            if author_id == 'self':
+                queryset = queryset.filter(author_id=self.request.user.id)
+            else:
+                queryset = queryset.filter(author_id=author_id)
+
+        student_id = get_data.get('student_id')
+        if student_id:
+            if student_id == 'self':
+                queryset = queryset.filter(student_id=self.request.user.id)
+            else:
+                queryset = queryset.filter(student_id=student_id)
+
+        # Рядок пошуку по імені і опису курсу.
+        q = get_data.get('q')
+        if q:
+            queryset = queryset.filter(
+                Q(name__icontains=q) | Q(description__icontains=q)
+            )
+
+        try:
+            offset = int(get_data.get('offset', 0))
+        except (ValueError, TypeError):
+            raise ValueError('Invalid offset parameter value')
+
+        return queryset[offset: offset + 10]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+        except ValueError as e:
+            return HttpResponseBadRequest(e)
+
+        return self.render_to_json(
+            queryset
+        )

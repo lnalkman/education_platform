@@ -22,6 +22,8 @@ class Course(models.Model):
     description = models.TextField(verbose_name='Опис курсу', max_length=4096)
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
 
+    students = models.ManyToManyField(Profile, related_name='subscribed_courses')
+
     draft = models.BooleanField(default=False)
     pub_date = models.DateTimeField(auto_now_add=True)
 

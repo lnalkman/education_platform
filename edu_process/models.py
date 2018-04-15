@@ -56,11 +56,6 @@ class Profile(models.Model):
         blank=True,
         null=True
     )
-    course_number = models.PositiveSmallIntegerField(
-        verbose_name='Номер курсу',
-        blank=True,
-        null=True
-    )
 
     photo = models.FileField(
         verbose_name='Фото',
