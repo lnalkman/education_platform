@@ -337,10 +337,13 @@ class CourseListJsonView(LoginRequiredMixin, View):
     """
     View для пошуку курсів.
     Достпупні поля:
-        author_id  -> int (Курси автором яких є користувач з id профілю author_id)
-        student_id -> int (Курси, на які напряму підписаний студент з id профілю student_id)
-        q          -> str (Курси назва чи опис яких містить рядок пошуку q)
-        offset     -> int (Скільки курсів буде пропущено при повернені списку знайдених курсів, потрібно для пагінації)
+        author_id   -> int or 'self' (Курси автором яких є користувач з id профілю author_id)
+                       якщо self то за id буде взято id користувача, який робить запрос
+        student_id  -> int or 'self' (Курси, на які напряму підписаний студент з id профілю student_id)
+                       якщо self то за id буде взято id користувача, який робить запрос
+        q           -> str (Курси назва чи опис яких містить рядок пошуку q)
+        offset      -> int (Скільки курсів буде пропущено при повернені списку знайдених курсів, потрібно для пагінації)
+        category_id -> int or null (Курси з id = category_id, якщо null, отримаємо курси без кетогорії
     """
     http_method_names = ('get',)
 
@@ -348,7 +351,6 @@ class CourseListJsonView(LoginRequiredMixin, View):
     MAX_COURSES_RETURN = 10
 
     def render_to_json(self, queryset):
-        print(dir(queryset))
         data = {
             'queryset:': list(queryset.values()),
             'result_count': queryset.count(),
@@ -375,6 +377,13 @@ class CourseListJsonView(LoginRequiredMixin, View):
                 queryset = queryset.filter(students__id=self.request.user.profile.id)
             else:
                 queryset = queryset.filter(students__id=student_id)
+
+        category_id = get_data.get('category_id')
+        if category_id:
+            if category_id != 'null':
+                queryset = queryset.filter(category__id=category_id, category__isnull=False)
+            else:
+                queryset = queryset.filter(category__isnull=True)
 
         # Рядок пошуку по імені і опису курсу.
         q = get_data.get('q')

@@ -21,6 +21,7 @@ class Course(models.Model):
     name = models.CharField(verbose_name='Назва курсу', max_length=128)
     description = models.TextField(verbose_name='Опис курсу', max_length=4096)
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True)
 
     students = models.ManyToManyField(Profile, related_name='subscribed_courses')
 
@@ -29,6 +30,17 @@ class Course(models.Model):
 
     def __str__(self):
         return textwrap.shorten(self.name, width=24, placeholder='...')
+
+
+class Category(models.Model):
+    class Meta:
+        verbose_name = 'Категорія'
+        verbose_name_plural = 'Категорії'
+
+    name = models.CharField(
+        verbose_name='Назва категорії',
+        max_length=64
+    )
 
 
 class Module(models.Model):
