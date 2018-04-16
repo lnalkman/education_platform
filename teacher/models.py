@@ -39,7 +39,8 @@ class Category(models.Model):
 
     name = models.CharField(
         verbose_name='Назва категорії',
-        max_length=64
+        max_length=64,
+        unique=True
     )
 
 
