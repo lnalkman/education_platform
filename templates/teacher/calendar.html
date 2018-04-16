@@ -37,7 +37,7 @@
 </div>
 
 {#   NAVBAR   #}
-{% include 'teacher/components/navbar.html' with calendar=True only %}
+{% include 'teacher/components/navbar.html' with calendar=True %}
 
 <div class="nav">
     <a href="{% url 'teacher:calendar' year=year|add:"-1" month=month %}"

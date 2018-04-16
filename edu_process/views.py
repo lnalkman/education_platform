@@ -23,6 +23,9 @@ from .models import Profile, Group, Message, get_user_messages
 from teacher.models import Course
 
 
+LoginRequiredMixin.login_url = reverse_lazy('index')
+
+
 class IndexView(FormView):
     http_method_names = ('get', 'post',)
     template_name = 'edu_process/index.html'

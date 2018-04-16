@@ -24,6 +24,9 @@ from .forms import (
     ModuleForm, LessonForm, PublicationForm
 )
 
+# Для авторизації переходимо на індекс
+LoginRequiredMixin.login_url = reverse_lazy('index')
+
 
 class TeacherRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     """Надає доступ до сторінки тільки викладачам"""
@@ -863,7 +866,7 @@ class CalendarNoteChange(TeacherRequiredMixin, FormView):
         return context
 
 
-class BlogView(ListView, TeacherRequiredMixin):
+class BlogView(LoginRequiredMixin, ListView):
     """View для перегляду публікацій викладачем"""
     template_name = 'teacher/blog.html'
     context_object_name = 'publications'
@@ -873,8 +876,14 @@ class BlogView(ListView, TeacherRequiredMixin):
     allow_empty = True
 
     def get_queryset(self):
-        teacher = self.request.user.profile
+        teacher = get_object_or_404(Profile, pk=self.kwargs['pk'])
         return teacher.publication_set.all().order_by('-change_date')
+
+    def get_context_data(self, **kwargs):
+        context = super(BlogView, self).get_context_data(**kwargs)
+        context['is_owner'] = self.request.user.profile.pk == int(self.kwargs['pk'])
+        context['owner'] = Profile.objects.get(pk=self.kwargs['pk'])
+        return context
 
 
 class AddPostView(TeacherRequiredMixin, FormView):
@@ -981,4 +990,6 @@ class BlogPostSearchView(ListView):
     def get_context_data(self, **kwargs):
         context = super(BlogPostSearchView, self).get_context_data(**kwargs)
         context['search_query'] = self.request.GET.get('q', '')
+        context['is_owner'] = self.request.user.profile.pk == int(self.kwargs['pk'])
+        context['owner'] = Profile.objects.get(pk=self.kwargs['pk'])
         return context

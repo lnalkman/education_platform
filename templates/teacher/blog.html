@@ -14,10 +14,24 @@
     </div>
 
     {#   NAVBAR   #}
-    {% include 'teacher/components/navbar.html' with blog=True only %}
-    <form method="get" action="{% url 'teacher:blog-post-search' %}">
+    {% if request.user.profile.is_student %}
+        {% include 'student/components/navbar.html' with blog=True %}
+    {% elif request.user.profile.is_teacher %}
+        {% include 'teacher/components/navbar.html' with blog=True %}
+    {% endif %}
+
+    <form method="get" action="{% url 'teacher:blog-post-search' pk=owner.pk %}">
         <div class="nav">
-            <h4 class="sub-header text-center hidden-xs">Публікації</h4>
+            <h4 class="sub-header text-center hidden-xs">
+                {% if is_owner %}
+                    Ваші публікації
+                {% else %}
+                    Публікації користувача<br>
+                    {{ owner.user.first_name }} {{ owner.user.last_name }}
+                {% endif %}
+
+
+            </h4>
             <div class="col-xs-10 col-sm-3 col-md-2 search-box">
                 <div class="input-group pull-right">
 
@@ -35,13 +49,15 @@
     </form>
 
     <div class="page">
-        {% block pre_result %}
-            <div class="col-xs-12 col-md-8 col-md-offset-2 text-center">
-                <a href="{% url 'teacher:blog-post-add' %}" id="add-post" class="btn btn-default">Додати публікацію</a>
-            </div>
-        {% endblock %}
+        {% block content %}
+            {% if is_owner %}
+                <div class="col-xs-12 col-md-8 col-md-offset-2 text-center">
+                    <a href="{% url 'teacher:blog-post-add' %}" id="add-post" class="btn btn-default">Додати
+                        публікацію</a>
+                </div>
+            {% endif %}
 
-        {% block result %}
+
             {% with title_max_length=54 %}
                 {% for publication in publications %}
                     <div class="post col-xs-12 col-md-8 col-md-offset-2">
@@ -53,23 +69,24 @@
                             {% else %}
                                 {{ publication.title }}
                             {% endif %}
-
-                            <div class="btn-group pull-right">
-                                <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false">
-                                    Дія <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{% url 'teacher:blog-post-edit' pk=publication.pk %}">Редагувати</a>
-                                    </li>
-                                    {# <li><a href="#">Оновити дату</a></li> #}
-                                    <li role="separator" class="divider"></li>
-                                    <li class="bg-danger"><a href="#"
-                                                             data-delete-href="{% url 'teacher:blog-post-delete' pk=publication.pk %}"
-                                                             data-toggle="modal" data-target="#delete-post-modal">Видалити</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            {% if is_owner %}
+                                <div class="btn-group pull-right">
+                                    <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                        Дія <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="{% url 'teacher:blog-post-edit' pk=publication.pk %}">Редагувати</a>
+                                        </li>
+                                        <li role="separator" class="divider"></li>
+                                        <li class="bg-danger"><a href="#"
+                                                                 data-delete-href="{% url 'teacher:blog-post-delete' pk=publication.pk %}"
+                                                                 data-toggle="modal" data-target="#delete-post-modal">Видалити</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {% endif %}
                         </h3>
                         <small class="post-date text-muted">{{ publication.change_date }}</small>
                         <hr class="header-devider">
@@ -81,43 +98,45 @@
                     </div>
                 {% empty %}
                     <div class="col-xs-12 text-center no-posts">
-                        <h2>У вас поки немає публікацій</h2>
+                        <h2>
+                            У {{ is_owner|yesno:"Вас, користувача" }} поки немає публікацій
+                        </h2>
                     </div>
                 {% endfor %}
             {% endwith %}
         {% endblock %}
 
-        {% block pagination %}
-            {% if page_obj.has_previous or page_obj.has_next %}
-                <div class="pagination-block col-xs-12 col-md-8 col-md-offset-2">
-                    <nav aria-label="...">
-                        <ul class="pager">
-                            {% if page_obj.has_previous %}
-                                <li class="previous"><a
-                                        href="?page={{ page_obj.previous_page_number }}"><span
-                                        aria-hidden="true">&larr;</span> Попередні</a></li>
-                            {% else %}
-                                <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Попередні</a>
-                                </li>
-                            {% endif %}
 
-                            {% if page_obj.has_next %}
-                                <li class="next"><a
-                                        href="?page={{ page_obj.next_page_number }}">Наступні
-                                    <span aria-hidden="true">&rarr;</span></a></li>
-                            {% else %}
-                                <li class="next disabled"><a>Наступні <span aria-hidden="true">&rarr;</span></a></li>
-                            {% endif %}
+        {% if page_obj.has_previous or page_obj.has_next %}
+            <div class="pagination-block col-xs-12 col-md-8 col-md-offset-2">
+                <nav aria-label="...">
+                    <ul class="pager">
+                        {% if page_obj.has_previous %}
+                            <li class="previous"><a
+                                    href="?page={{ page_obj.previous_page_number }}"><span
+                                    aria-hidden="true">&larr;</span> Попередні</a></li>
+                        {% else %}
+                            <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Попередні</a>
+                            </li>
+                        {% endif %}
 
-                        </ul>
-                    </nav>
-                </div>
-            {% endif %}
+                        {% if page_obj.has_next %}
+                            <li class="next"><a
+                                    href="?page={{ page_obj.next_page_number }}">Наступні
+                                <span aria-hidden="true">&rarr;</span></a></li>
+                        {% else %}
+                            <li class="next disabled"><a>Наступні <span aria-hidden="true">&rarr;</span></a></li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
             </div>
-        {% endblock %}
+        {% endif %}
+    </div>
+{% endblock %}
 
 
-
+{% if is_owner %}
     <div id="delete-post-modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
@@ -138,8 +157,9 @@
             </div>
         </div>
     </div>
+{% endif %}
 
-{% endblock %}
+
 
 {% block footer %}
 

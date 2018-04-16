@@ -1,37 +1,64 @@
 {% extends 'teacher/blog.html' %}
-{% load static %}
+{% load staticfiles %}
 
-{% block pre_result %}
+{% block content %}
     <div class="col-xs-12 col-md-8 col-md-offset-2">
-        <h2>По пошуковому запиту: "{{ search_query }}", знайдено {{ paginator.count }} публікацій</h2>
+        <h2>По пошуковому запиту: "{{ search_query }}",
+            {% if paginator.count %}
+                знайдено {{ paginator.count }}
+                {% with last_digit=paginator.count|get_digit:"1" %}
+                    {% if last_digit == 1 %}публікацію
+                    {% elif last_digit == 2 or last_digit == 3 or last_digit == 4 %}публакації
+                    {% else %}публікацій
+                    {% endif %}
+                {% endwith %}
+
+            {% endif %}
+
+        </h2>
     </div>
+
+    {% with title_max_length=54 %}
+        {% for publication in publications %}
+            <div class="post col-xs-12 col-md-8 col-md-offset-2">
+                <h3 class="post-header">
+                    {% if publication.title|length > title_max_length %}
+                        {% with truncated_text=publication.title|truncatechars:title_max_length word_count=truncated_text|wordcount|add:'-1' %}
+                            {{ truncated_text|truncatewords:word_count }}
+                        {% endwith %}
+                    {% else %}
+                        {{ publication.title }}
+                    {% endif %}
+                    {% if is_owner %}
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                Дія <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{% url 'teacher:blog-post-edit' pk=publication.pk %}">Редагувати</a>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li class="bg-danger"><a href="#"
+                                                         data-delete-href="{% url 'teacher:blog-post-delete' pk=publication.pk %}"
+                                                         data-toggle="modal"
+                                                         data-target="#delete-post-modal">Видалити</a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </h3>
+                <small class="post-date text-muted">{{ publication.change_date }}</small>
+                <hr class="header-devider">
+                <p>
+                    {{ publication.get_first_paragraph|truncatechars:350 }}
+                </p>
+                <a class="btn btn-link read-more" href="{% url 'teacher:blog-post' pk=publication.pk %}">Читати
+                    далі...</a>
+            </div>
+        {% endfor %}
+    {% endwith %}
+
 {% endblock %}
 
-{% block pagination %}
-            {% if page_obj.has_previous or page_obj.has_next %}
-                <div class="pagination-block col-xs-12 col-md-8 col-md-offset-2">
-                    <nav aria-label="...">
-                        <ul class="pager">
-                            {% if page_obj.has_previous %}
-                                <li class="previous"><a
-                                        href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}"><span
-                                        aria-hidden="true">&larr;</span> Попередні</a></li>
-                            {% else %}
-                                <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Попередні</a>
-                                </li>
-                            {% endif %}
-
-                            {% if page_obj.has_next %}
-                                <li class="next"><a
-                                        href="?q={{ search_query }}&page={{ page_obj.next_page_number }}">Наступні
-                                    <span aria-hidden="true">&rarr;</span></a></li>
-                            {% else %}
-                                <li class="next disabled"><a>Наступні <span aria-hidden="true">&rarr;</span></a></li>
-                            {% endif %}
-
-                        </ul>
-                    </nav>
-                </div>
-            {% endif %}
-            </div>
-        {% endblock %}
