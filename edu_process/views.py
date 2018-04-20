@@ -20,6 +20,7 @@ from django.contrib import messages
 from PIL import Image
 
 from .models import Profile, Group, Message, get_user_messages
+from .serializers import CourseSerializer
 from teacher.models import Course
 
 
@@ -355,7 +356,7 @@ class CourseListJsonView(LoginRequiredMixin, View):
 
     def render_to_json(self, queryset):
         data = {
-            'queryset:': list(queryset.values()),
+            'queryset:': CourseSerializer(queryset, many=True).data,
             'result_count': queryset.count(),
         }
         return JsonResponse(

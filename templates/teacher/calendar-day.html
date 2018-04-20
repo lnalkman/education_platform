@@ -37,7 +37,7 @@
 </div>
 
 {#   NAVBAR   #}
-{% include 'teacher/components/navbar.html' with calendar=True only %}
+{% include 'teacher/components/navbar.html' with calendar=True %}
 
 <div class="nav">
     <a href="{{ month_url }}"><span class="glyphicon glyphicon-menu-left"></span><span
@@ -140,12 +140,7 @@
                 </button>
                 <h4 class="modal-title">Змінити запис в календарі</h4>
             </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <button type="button" class="btn btn-primary submit-form">Зберегти</button>
-            </div>
+            <div class="xhr-content"></div>
         </div>
     </div>
 </div>

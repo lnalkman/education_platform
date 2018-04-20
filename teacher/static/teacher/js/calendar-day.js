@@ -21,7 +21,7 @@ $("#edit-note-modal").on("show.bs.modal", function(event) {
            return true;
        },
        success: function (data, textStatus, jqXHR) {
-           $("#edit-note-modal").find(".modal-body").html(data);
+           $("#edit-note-modal").find(".xhr-content").html(data);
        }
    })
 });
