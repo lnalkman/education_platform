@@ -3,7 +3,8 @@
 {% block head %}
     <title>Ваші курси | KPI EDU</title>
     <meta name="description" content="">
-
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'student/css/courses.css' %}">
 {% endblock %}
 
@@ -14,7 +15,7 @@
     </div>
 
     {#   NAVBAR   #}
-    {% include 'student/components/navbar.html' with courses=True %}
+    {% include 'student/components/navbar.html' with courses=True only %}
 
     {#  CONTENT HERE  #}
 
@@ -33,26 +34,26 @@
                             <div class="row">
                                 <div class="col-sm-10">
                                     <form action="">
-                                        <input type="search" placeholder="Введіть назву курса">
+                                        <input type="search" v-model="searchString" placeholder="Введіть текст для пошуку">
                                         <button class="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                                     </form>
                                 </div>
-                                <div class="col-sm-2 results"><span>114</span> результатів</div>
+                                <div class="col-sm-2 results">Знайдено <span>(( searchResultCount ))</span></div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="categories">
-                                        <a href="#" class="active">Всі</a>
-                                        <a href="#">Програмування</a>
-                                        <a href="#">Системна адміністрація</a>
-                                        <a href="#">Фізика</a>
-                                        <a href="#">Математика</a>
-                                        <a href="#">Алгоритмізація</a>
-                                        <a href="#">Програмування</a>
-                                        <a href="#">Системна адміністрація</a>
-                                        <a href="#">Фізика</a>
-                                        <a href="#">Математика</a>
-                                        <a href="#">Алгоритмізація</a>
+                                        <div class="btn-link active" v-on:click="activeCategory=''">Всі</div>
+                                        <div class="btn-link"v-on:click="searchCategory()">Програмування</div>
+                                        <div class="btn-link">Системна адміністрація</div>
+                                        <div class="btn-link" v-on:click="set_active_category">Фізика</div>
+                                        <div class="btn-link">Математика</div>
+                                        <div class="btn-link">Алгоритмізація</div>
+                                        <div class="btn-link">Програмування</div>
+                                        <div class="btn-link">Системна адміністрація</div>
+                                        <div class="btn-link">Фізика</div>
+                                        <div class="btn-link">Математика</div>
+                                        <div class="btn-link">Алгоритмізація</div>
                                     </div>
                                 </div>
                             </div>
@@ -63,45 +64,40 @@
                         </div>
                         <div class="items">
                             <div class="row">
-                                <div class="item clearfix">
+
+                               {# Рендерінг курсів, що знаходяться у filteredCourses #}
+                                
+                                <div class="item clearfix" v-for="(course, index) in filteredCourses" v-show="index < limit">
                                     <div class="col-sm-3">
                                         <a href="#">
-                                            <img src="https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg" alt="">
+                                            <img   src="{% static 'img/post.jpg' %}"
+                                            alt="Profile">
                                         </a>
                                     </div>
                                     <div class="col-sm-9">
-                                        <a href="#"><h3>Заголовок</h3></a>
-                                        <a href="#" class="author">Ім'я Фамілія</a>
-                                        <div class="tags"><a href="#">Програмування</a><a href="#">Математика</a></div>
-                                        <div class="date-register">22.03.2018 <span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> 12 зареєструвалось</div>
-                                        <div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum.</div>
+
+                                        <a href="#" class="name"><h3 >(( course.name | short(55) )) </h3></a>
+                                        
+
+                                        <a href="#" class="author" >Ім'я Прізвище</a>
+                                        <div class="tags">
+
+                                            {# Рендерінг тегів #}
+                                            <a href="#"  v-for="(tag) in course.categories" >(( tag ))</a>
+
+                                        </div>
+                                        <div class="date-register">(( locale_pub_date(course.pub_date) ))<span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> 12 зареєструвалось</div>
+                                        <div class="description">(( course.description | short(310) ))</div>
                                     </div>
                                     <div class="col-sm-12">
-                                        <div class="buttons"><a href="#" class="button-more"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>Детальніше</a><a href="#" class="button-try"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Записатися</a></div>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <div class="col-sm-3">
-                                        <a href="#">
-                                            <img src="https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <a href="#"><h3>Заголовок</h3></a>
-                                        <a href="#" class="author">Ім'я Фамілія</a>
-                                        <div class="tags"><a href="#">Програмування</a><a href="#">Математика</a></div>
-                                        <div class="date-register">22.03.2018 <span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> 12 зареєструвалось</div>
-                                        <div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum.</div>
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <div class="buttons"><a href="#" class="button-more"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>Детальніше</a><a href="#" class="button-try"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Записатися</a></div>
+                                        <div class="buttons" ><a href="#" class="button-more"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>Детальніше</a><a href="#" class="button-try"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Записатися</a></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="button-wrap">
-                                        <a href="#" class="button-more">Більше</a>
+                                        <div class="button-more" v-show="limit < searchResultCount" v-on:click="limit +=2 "> Більше</div>
                                     </div>
-                                </div>
+                                </div> 
                             </div>
                         </div>
                     </div>
@@ -113,7 +109,11 @@
 {% endblock %}
 
 {% block footer %}
-
+<script src="{% static 'student/js/search-filter.js' %}"></script>
+<script>
+    
+</script>
 {#  Додаткові скрипти тут  #}
+
 
 {% endblock %}
