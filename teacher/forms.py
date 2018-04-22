@@ -57,6 +57,13 @@ class TeacherProfileForm(ModelForm):
 
 
 class CalendarNoteForm(ModelForm):
+    date = forms.DateTimeField(
+        input_formats=('%Y-%m-%dT%H:%M',),
+        widget=forms.DateTimeInput(
+            attrs={'class': 'form-control', 'type': 'datetime-local'},
+            format="%Y-%m-%dT%H:%M"
+        ))
+
     class Meta:
         model = CalendarNote
         fields = '__all__'
@@ -64,7 +71,6 @@ class CalendarNoteForm(ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control', 'required': ''}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'cols': 9}),
             'lesson': forms.Select(attrs={'class': 'form-control', 'hidden': '1', 'required': ''}),
-            'date': forms.TextInput(attrs={'class': 'form-control'}),
             'author': forms.HiddenInput(),
         }
 
