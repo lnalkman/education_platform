@@ -35,9 +35,7 @@ class IndexView(FormView):
     def get(self, request, *args, **kwargs):
         """Якщо користувач вже авторизований, то перенаправляємо його в особистий кабінет"""
         if self.request.user.is_authenticated():
-            url = self.request.user.profile.get_absolute_url()
-            if url:
-                return HttpResponseRedirect(url)
+            return HttpResponseRedirect(self.get_success_url())
 
         return super(IndexView, self).get(request, *args, **kwargs)
 
@@ -46,7 +44,21 @@ class IndexView(FormView):
         return super(IndexView, self).form_valid(form)
 
     def get_success_url(self):
-        return self.request.user.profile.get_absolute_url()
+        try:
+            url = self.request.user.profile.get_absolute_url()
+            if url:
+                return url
+        except Profile.DoesNotExist:
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                'За вашим акаунтом не закріплений профіль викладача чи студента'
+            )
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                return reverse('admin:index')
+            else:
+                logout(self.request)
+        return reverse('index')
 
 
 class LogoutView(View):
