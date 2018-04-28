@@ -13,9 +13,10 @@ class CourseForm(ModelForm):
     Форма для створення та редагування курсів.
     Поле автора має бути визначене у відображеннях (views)
     """
+
     class Meta:
         model = Course
-        exclude = ('author',)
+        exclude = ('author', 'categories', 'students')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'cols': 9}),
@@ -24,6 +25,7 @@ class CourseForm(ModelForm):
 
 class ModuleForm(ModelForm):
     """Форма для створення та редагування розділів"""
+
     class Meta:
         model = Module
         fields = '__all__'
@@ -36,6 +38,7 @@ class ModuleForm(ModelForm):
 
 class LessonForm(ModelForm):
     """Форма для створення та редагування уроків"""
+
     class Meta:
         model = Lesson
         fields = ('name', 'short_description',)
@@ -49,6 +52,7 @@ class TeacherProfileForm(ModelForm):
     """
     Форма з полями, які може редагувати викладач у своєму профілі.
     """
+
     class Meta:
         model = Profile
         fields = (
@@ -84,8 +88,11 @@ class CalendarNoteForm(ModelForm):
         if not self.is_bound and date:
             self.fields['date'] = forms.DateTimeField(
                 initial=date,
-                widget=forms.TextInput(attrs={'class': 'form-control'})
-            )
+                input_formats=('%Y-%m-%dT%H:%M',),
+                widget=forms.DateTimeInput(
+                    attrs={'class': 'form-control', 'type': 'datetime-local'},
+                    format="%Y-%m-%dT%H:%M"
+                ))
 
 
 class PublicationForm(ModelForm):

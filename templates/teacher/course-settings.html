@@ -1,350 +1,331 @@
+{% extends 'skeleton.html' %}
 {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
-
-    <meta charset="utf-8">
-
-    <title>Title</title>
+{% block head %}
+    <title>Налаштування курсу | KPI EDU</title>
     <meta name="description" content="">
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-    <meta property="og:image" content="path/to/image.jpg">
-    <link rel="shortcut icon" href="{% static 'img/favicon/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{% static 'img/favicon/apple-touch-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/favicon/apple-touch-icon-72x72.png' %}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/favicon/apple-touch-icon-114x114.png' %}">
-
-    <!-- Chrome, Firefox OS and Opera -->
-    <meta name="theme-color" content="#000">
-    <!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#000">
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="#000">
-
-    <link rel="stylesheet" href="{% static 'css/all.css' %}">
-    <link rel="stylesheet" href="{% static 'teacher/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'teacher/css/course-settings.css' %}">
-</head>
+{% endblock %}
 
-<body>
+{% block body %}
 
-<div class="navbar-opener">
-    <span class="glyphicon glyphicon-menu-down"></span>
-</div>
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
 
-{#   NAVBAR   #}
-{% include 'teacher/components/navbar.html' with courses=True %}
+    {#   NAVBAR   #}
+    {% include 'teacher/components/navbar.html' with courses=True %}
 
-<div class="container-fluid content">
-    <div class="row">
-        <div class="col-md-offset-1 col-md-10">
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#modules" aria-controls="modules" role="tab"
-                                                          data-toggle="tab">Розділи</a>
-                </li>
-                <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">
-                    Налаштування</a>
-                </li>
-                <li role="presentation" class="pull-right"><a href="#settings" aria-controls="settings" role="tab"
-                                                              data-toggle="tab">
-                    <span class="glyphicon glyphicon-question-sign"></span></a>
-                </li>
-            </ul>
+    <div class="container-fluid content">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#modules" aria-controls="modules" role="tab"
+                                                              data-toggle="tab">Розділи</a>
+                    </li>
+                    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">
+                        Налаштування</a>
+                    </li>
+                    <li role="presentation" class="pull-right"><a href="#settings" aria-controls="settings" role="tab"
+                                                                  data-toggle="tab">
+                        <span class="glyphicon glyphicon-question-sign"></span></a>
+                    </li>
+                </ul>
 
-            <!-- Tab panes -->
-            <div class="tab-content">
-                <!-- MODULES -->
-                <div role="tabpanel" class="tab-pane active" id="modules">
-                    <div class="row">
-                        <div class="col-sm-7">
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- MODULES -->
+                    <div role="tabpanel" class="tab-pane active" id="modules">
+                        <div class="row">
+                            <div class="col-sm-7">
+                                <div class="panel panel-info">
+                                    <!-- Default panel contents -->
+                                    <div class="panel-heading">
+                                        Список розділів
+                                        <button type="button" class="btn btn-sm btn-info pull-right" data-toggle="modal"
+                                                data-target="#add-module-modal">
+                                            <span class="hidden-xs">Додати розділ</span> <span
+                                                class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                    </div>
+                                    <div class="list-group">
+                                        {% for module in module_list %}
+                                            <a href="{% url 'teacher:module-settings' pk=module.pk %}"
+                                               class="list-group-item">
+                                                <h4 class="list-group-item-heading ">{{ module.name }}</h4>
+                                                <p class="list-group-item-text">
+                                                    {{ module.description|truncatechars:150 }}
+                                                </p>
+                                            </a>
+                                        {% empty %}
+                                            <h4 class="text-center">У цьому курсі немає розділів</h4>
+                                        {% endfor %}
+                                        {#                                    <a href="#" class="list-group-item">#}
+                                        {#                                        <h4 class="list-group-item-heading ">Модуль 1</h4>#}
+                                        {#                                        <p class="list-group-item-text">{% lorem 20 w random %}#}
+                                        {#                                        </p>#}
+                                        {#                                    </a>#}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="panel panel-default">
+                                    <!-- Default panel contents -->
+                                    <div class="panel-heading">Загальні відомості</div>
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <td>Статус</td>
+                                            <td>{{ Course.draft|yesno:"Опублікований,Не опублікований" }}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Кількість розділів</td>
+                                            <td>{{ module_list|length }}</td>
+                                        </tr>
+                                        {#                                    <tr>#}
+                                        {#                                        <td>Загальна кількість уроків</td>#}
+                                        {#                                        <td>XX</td>#}
+                                        {#                                    </tr>#}
+                                        <tr>
+                                            <td>Кількість подій у календарі</td>
+                                            <td>{{ calendar_note_list|length }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Кількість оцінюваних груп</td>
+                                            <td>{{ Course.group_set.count }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-5 pull-right">
+                                <div class="panel panel-danger">
+                                    <!-- Default panel contents -->
+                                    <div class="panel-heading">Найближчі календарні події</div>
+                                    <div class="list-group">
+                                        {% for calendar_note in calendar_note_list|slice:":5" %}
+                                            <a href="{{ calendar_note.get_day_url }}" class="list-group-item">
+                                                <small>{{ calendar_note.date }}</small>
+                                                <h4 class="list-group-item-heading ">{{ calendar_note.title|truncatechars:25 }}</h4>
+                                                <p class="list-group-item-text">{{ calendar_note.content|truncatechars:100 }}
+                                                </p>
+                                            </a>
+                                        {% empty %}
+                                            <p class="text-center">У цьому курсі немає календарних подій</p>
+                                        {% endfor %}
+                                        {#                                    <a href="#" class="list-group-item">#}
+                                        {#                                        <h4 class="list-group-item-heading">{% lorem 3 w random %}</h4>#}
+                                        {#                                        <p class="list-group-item-text">{% lorem 5 w random %}</p>#}
+                                        {#                                    </a>#}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- END MODULES -->
+
+                    <!-- SETTINGS -->
+                    <div role="tabpanel" class="tab-pane" id="settings">
+                        <div class="col-sm-offset-1 col-sm-10">
                             <div class="panel panel-info">
-                                <!-- Default panel contents -->
-                                <div class="panel-heading">
-                                    Список розділів
-                                    <button type="button" class="btn btn-sm btn-info pull-right" data-toggle="modal"
-                                            data-target="#add-module-modal">
-                                        <span class="hidden-xs">Додати розділ</span> <span
-                                            class="glyphicon glyphicon-plus"></span>
-                                    </button>
-                                </div>
-                                <div class="list-group">
-                                    {% for module in module_list %}
-                                        <a href="{% url 'teacher:module-settings' pk=module.pk %}"
-                                           class="list-group-item">
-                                            <h4 class="list-group-item-heading ">{{ module.name }}</h4>
-                                            <p class="list-group-item-text">
-                                                {{ module.description|truncatechars:150 }}
-                                            </p>
-                                        </a>
-                                    {% empty %}
-                                        <h4 class="text-center">У цьому курсі немає розділів</h4>
-                                    {% endfor %}
-                                    {#                                    <a href="#" class="list-group-item">#}
-                                    {#                                        <h4 class="list-group-item-heading ">Модуль 1</h4>#}
-                                    {#                                        <p class="list-group-item-text">{% lorem 20 w random %}#}
-                                    {#                                        </p>#}
-                                    {#                                    </a>#}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-5">
-                            <div class="panel panel-default">
-                                <!-- Default panel contents -->
-                                <div class="panel-heading">Загальні відомості</div>
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <td>Статус</td>
-                                        <td>{{ Course.draft|yesno:"Опублікований,Не опублікований" }}</td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>Кількість розділів</td>
-                                        <td>{{ module_list|length }}</td>
-                                    </tr>
-                                    {#                                    <tr>#}
-                                    {#                                        <td>Загальна кількість уроків</td>#}
-                                    {#                                        <td>XX</td>#}
-                                    {#                                    </tr>#}
-                                    <tr>
-                                        <td>Кількість подій у календарі</td>
-                                        <td>{{ calendar_note_list|length }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Кількість оцінюваних груп</td>
-                                        <td>{{ Course.group_set.count }}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-sm-5 pull-right">
-                            <div class="panel panel-danger">
-                                <!-- Default panel contents -->
-                                <div class="panel-heading">Найближчі календарні події</div>
-                                <div class="list-group">
-                                    {% for calendar_note in calendar_note_list|slice:":5" %}
-                                        <a href="{{ calendar_note.get_day_url }}" class="list-group-item">
-                                            <small>{{ calendar_note.date }}</small>
-                                            <h4 class="list-group-item-heading ">{{ calendar_note.title|truncatechars:25 }}</h4>
-                                            <p class="list-group-item-text">{{ calendar_note.content|truncatechars:100 }}
-                                            </p>
-                                        </a>
-                                    {% empty %}
-                                        <p class="text-center">У цьому курсі немає календарних подій</p>
-                                    {% endfor %}
-                                    {#                                    <a href="#" class="list-group-item">#}
-                                    {#                                        <h4 class="list-group-item-heading">{% lorem 3 w random %}</h4>#}
-                                    {#                                        <p class="list-group-item-text">{% lorem 5 w random %}</p>#}
-                                    {#                                    </a>#}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> <!-- END MODULES -->
-
-                <!-- SETTINGS -->
-                <div role="tabpanel" class="tab-pane" id="settings">
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Опис курсу</div>
-                            <div class="panel-body">
-                                <form class="form-horizontal update-course"
-                                      action="{% url 'teacher:course-update' pk=Course.pk %}">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="{{ update_form.name.id_for_label }}" class="col-sm-3 control-label">Назва
-                                            курсу</label>
-                                        <div class="col-sm-8">
-                                            {{ update_form.name }}
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="{{ update_form.description.id_for_label }}"
-                                               class="col-sm-3 control-label">Опис курсу</label>
-                                        <div class="col-sm-8">
-                                            {{ update_form.description }}
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-offset-3 col-sm-8">
-                                            <div class="checkbox">
-                                                <label>
-                                                    {{ update_form.draft }} Опублікувати
-                                                </label>
+                                <div class="panel-heading">Опис курсу</div>
+                                <div class="panel-body">
+                                    <form class="form-horizontal update-course"
+                                          action="{% url 'teacher:course-update' pk=Course.pk %}">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="{{ update_form.name.id_for_label }}"
+                                                   class="col-sm-3 control-label">Назва
+                                                курсу</label>
+                                            <div class="col-sm-8">
+                                                {{ update_form.name }}
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-offset-3 col-sm-10">
-                                            <button type="submit" class="btn btn-default"
-                                                    data-loading-text="Зберігаємо...">Зберегти зміни
-                                            </button>
-                                            <span class="label label-success status">
+                                        <div class="form-group">
+                                            <label for="{{ update_form.description.id_for_label }}"
+                                                   class="col-sm-3 control-label">Опис курсу</label>
+                                            <div class="col-sm-8">
+                                                {{ update_form.description }}
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-offset-3 col-sm-8">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        {{ update_form.draft }} Опублікувати
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-offset-3 col-sm-10">
+                                                <button type="submit" class="btn btn-default"
+                                                        data-loading-text="Зберігаємо...">Зберегти зміни
+                                                </button>
+                                                <span class="label label-success status">
                                                 <span class="glyphicon glyphicon-ok"></span>
                                                 Збережено
                                             </span>
-                                            <span class="label label-danger status">
+                                                <span class="label label-danger status">
                                                 <span class="glyphicon glyphicon-remove"></span>
                                                 Помилка
                                             </span>
 
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ACCESS SETTINGS -->
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <div class="panel panel-success access-control">
-                            <div class="panel-heading">
-                                Налаштування доступу
-                                <!-- Single button -->
-                                <div class="btn-group pull-right">
-                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle"
-                                            data-toggle="dropdown"
-                                            aria-haspopup="true" aria-expanded="false">
-                                        Дія <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="#" data-url="{% url 'teacher:course-group-list' pk=Course.pk %}"
-                                               class="reload-groups">Оновити</a></li>
-                                        <li><a href="#" class="onhighlight-checkboxes">Виділити усі</a></li>
-                                        <li><a href="#" class="offhighlight-checkboxes">Зняти виділення</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li class="bg-danger"><a href="#"
-                                                                 data-url="{% url 'teacher:course-group-remove' pk=Course.pk %}"
-                                                                 class="groups-remove">Видалити вибрані</a></li>
-                                    </ul>
+                                    </form>
                                 </div>
                             </div>
-                            <div class="panel-body">
-                                <div class="row">
-                                    <ul class="list-group col-md-6 styled-input-container styled-input--diamond">
-                                        <p class="text-center text-muted">Завантаження</p>
-                                    </ul>
-                                    <div class="col-md-6">
-                                        <div class="input-group">
-                                            <input data-url="{% url 'search-group' %}" type="text"
-                                                   class="form-control search-group" placeholder="Знайти групу">
-                                            <span class="input-group-btn">
+                        </div>
+
+                        <!-- ACCESS SETTINGS -->
+                        <div class="col-sm-offset-1 col-sm-10">
+                            <div class="panel panel-success access-control">
+                                <div class="panel-heading">
+                                    Налаштування доступу
+                                    <!-- Single button -->
+                                    <div class="btn-group pull-right">
+                                        <button type="button" class="btn btn-info btn-sm dropdown-toggle"
+                                                data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            Дія <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="#"
+                                                   data-url="{% url 'teacher:course-group-list' pk=Course.pk %}"
+                                                   class="reload-groups">Оновити</a></li>
+                                            <li><a href="#" class="onhighlight-checkboxes">Виділити усі</a></li>
+                                            <li><a href="#" class="offhighlight-checkboxes">Зняти виділення</a></li>
+                                            <li role="separator" class="divider"></li>
+                                            <li class="bg-danger"><a href="#"
+                                                                     data-url="{% url 'teacher:course-group-remove' pk=Course.pk %}"
+                                                                     class="groups-remove">Видалити вибрані</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <ul class="list-group col-md-6 styled-input-container styled-input--diamond">
+                                            <p class="text-center text-muted">Завантаження</p>
+                                        </ul>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input data-url="{% url 'search-group' %}" type="text"
+                                                       class="form-control search-group" placeholder="Знайти групу">
+                                                <span class="input-group-btn">
                                                     <button class="btn btn-default add-group-btn" type="button"
                                                             data-loading-text="<span class='glyphicon glyphicon-refresh'></span>"
                                                             data-add-group-url="{% url 'teacher:group-to-course-add' pk=Course.pk %}">
                                                         <span class="glyphicon glyphicon-plus"></span>
                                                     </button>
                                                 </span>
-                                        </div>
-                                        <div class="list-group search-results">
+                                            </div>
+                                            <div class="list-group search-results">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- DELETE COURSE -->
-                    <div class="col-sm-offset-1 col-sm-10">
-                        <div class="panel panel-danger">
-                            <div class="panel-heading">Небезпека</div>
-                            <div class="panel-body">
-                                <button class="btn btn-danger center-block" data-toggle="modal"
-                                        data-target="#delete-course-modal">Видалити курс
-                                </button>
-                                <p class="text-center text-danger">
-                                    При видаленні курсу, видаляються всі модулі та уроки, які він включає.
-                                    <strong> Дані неможливо буде відновити. </strong>
-                                    Якщо Ви хочете зробити курс недоступним для перегляду і при цьому зберегти
-                                    дані,
-                                    просто приберіть галочку з поля <u>Опублікувати</u>
+                        <!-- DELETE COURSE -->
+                        <div class="col-sm-offset-1 col-sm-10">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">Небезпека</div>
+                                <div class="panel-body">
+                                    <button class="btn btn-danger center-block" data-toggle="modal"
+                                            data-target="#delete-course-modal">Видалити курс
+                                    </button>
+                                    <p class="text-center text-danger">
+                                        При видаленні курсу, видаляються всі модулі та уроки, які він включає.
+                                        <strong> Дані неможливо буде відновити. </strong>
+                                        Якщо Ви хочете зробити курс недоступним для перегляду і при цьому зберегти
+                                        дані,
+                                        просто приберіть галочку з поля <u>Опублікувати</u>
 
-                                </p>
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                    </div> <!-- END SETTINGS TAB -->
+                </div> <!-- END TAB CONTENT -->
+            </div> <!-- END TABS WRAPPER -->
+        </div> <!-- END ROW -->
+    </div> <!-- END CONTENT -->
+
+    <!-- ADD MODULE MODAL -->
+    <div class="modal fade" id="add-module-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Додати розділ</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form class="col-sm-offset-1 col-sm-10 add-module"
+                              action="{% url 'teacher:course-module-add' pk=Course.pk %}">
+                            {% csrf_token %}
+                            {{ add_module_form.course }}
+                            <div class="form-group">
+                                <label for="{{ add_module_form.name.id_for_label }}" class="control-label">Назва
+                                    розділу</label>
+                                {{ add_module_form.name }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ add_module_form.description.id_for_label }}" class="control-label">Опис
+                                    розділу</label>
+                                {{ add_module_form.description }}
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    {{ add_module_form.visible }} Видимий
+                                </label>
+                            </div>
+                        </form>
                     </div>
-                </div> <!-- END SETTINGS TAB -->
-            </div> <!-- END TAB CONTENT -->
-        </div> <!-- END TABS WRAPPER -->
-    </div> <!-- END ROW -->
-</div> <!-- END CONTENT -->
-
-<!-- ADD MODULE MODAL -->
-<div class="modal fade" id="add-module-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Додати розділ</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
+                    <button type="button" class="btn btn-primary submit-modal" data-loading-text="Створюємо...">Створити
+                    </button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <form class="col-sm-offset-1 col-sm-10 add-module"
-                          action="{% url 'teacher:course-module-add' pk=Course.pk %}">
-                        {% csrf_token %}
-                        {{ add_module_form.course }}
-                        <div class="form-group">
-                            <label for="{{ add_module_form.name.id_for_label }}" class="control-label">Назва
-                                розділу</label>
-                            {{ add_module_form.name }}
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ add_module_form.description.id_for_label }}" class="control-label">Опис
-                                розділу</label>
-                            {{ add_module_form.description }}
-                        </div>
+        </div>
+    </div>
 
-                        <div class="checkbox">
-                            <label>
-                                {{ add_module_form.visible }} Видимий
-                            </label>
-                        </div>
+    <div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title text-danger">Видалити курс ?</h4>
+                </div>
+                <div class="modal-body">
+                    <strong class="text-danger">
+                        Після видалення дані неможливо буде відновити
+                    </strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
+                    <form action="{% url 'teacher:course-delete' pk=Course.pk %}" method='post'>{% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Видалити</button>
                     </form>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <button type="button" class="btn btn-primary submit-modal" data-loading-text="Створюємо...">Створити
-                </button>
-            </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title text-danger">Видалити курс ?</h4>
-            </div>
-            <div class="modal-body">
-                <strong class="text-danger">
-                    Після видалення дані неможливо буде відновити
-                </strong>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <form action="{% url 'teacher:course-delete' pk=Course.pk %}" method='post'>{% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Видалити</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
-<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-<script src="{% static 'js/common.js' %}"></script>
-<script src="{% static 'teacher/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'teacher/js/course-settings.js' %}"></script>
-</body>
-</html>
+{% block footer %}
+    <script src="{% static 'teacher/js/course-settings.js' %}"></script>
+{% endblock %}
