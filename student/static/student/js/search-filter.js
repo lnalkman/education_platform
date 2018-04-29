@@ -69,110 +69,31 @@ jQuery.fn.removeHighlight = function() {
  }).end();
 };
 
+
  
  var demo = new Vue({
     el: '#my-courses',
-    data: {
-        searchString: "",
-        limit:2,
-        showMore: true,
-        dateDisplayOptions: { 
-            year: 'numeric', 
-            month: 'numeric', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+    data: function() {
+        return {
+            searchString: "",
+            limit:2,
+            showMore: true,
+            dateDisplayOptions: { 
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
 
-        },
-        activeCategory: "",
-        searchResultCount: 0,
-        // Модель даних, які повинні передаватися ajax'ом
-
-        courses: [
-            {
-                "image": "https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg",
-                "name": "27 блакабуль с задачками для оттачивания навыков программирования",
-                "url_course": "#",
-                "url_author": "#",
-                "categories":[
-                        "Програмування",
-                        "Математика",
-                        "Алгоритмізація",
-                        "Фізика"
-                ],
-                "pub_date": "23.02.2018",
-                "description": " curapatka Lorem ipsum dolor sit amet, consectetur adipisicing elit.curapatka Lorem ipsum dolor sit amet, consectetur adipisicing elit. curapatka Lorem ipsum dolor sit amet, consectetur adipisicing elit.  Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum."
             },
-            {
-                "image": "https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg",
-                "name": "forbi diam magna, varius a",
-                "url_course": "#",
-                "url_author": "#",
-                "categories":[
-                        "Програмування",
-                        "Математика",
-                        "Алгоритмізація",
-                        "Фізика"
-                ],
-                "date_-register": "23.02.2018",
-                "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum."
-            },
-            {
-                "image": "https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg",
-                "name": "forbi diam magna, varius a",
-                "url_course": "#",
-                "url_author": "#",
-                "categories":[
-                        "Системна адміністрація"
-                ],
-                "date_-register": "23.02.2018",
-                "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum."
-            },
-            {
-                "image": "https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg",
-                "name": "Maecenas justo lorem",
-                "url_course": "#",
-                "url_author": "#",
-                "categories":[
-                        "Програмування",
-                        "Математика",
-                        "Алгоритмізація",
-                        "Фізика"
-                ],
-                "pub_date": "23.02.2018",
-                "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum."
-            },
-            {
-                "image": "https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg",
-                "name": "Donec consectetur diam et ",
-                "url_course": "#",
-                "url_author": "#",
-                "categories":[
-                        "Програмування",
-                        "Математика",
-                        "Українська мова",
-                        "Фізика"
-                ],
-                "pub_date": "23.02.2018",
-                "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum."
-            },
-            {
-                "image": "https://www.chiefcourses.com/wp-content/themes/olam332/index/img/our-history/freelance.jpg",
-                "name": "Сгенерировано 5 абзацей",
-                "url_course": "#",
-                "url_author": "#",
-                "categories":[
-                        "Програмування",
-                        "Математика",
-                        "Алгоритмізація",
-                        "Фізика"
-                ],
-                "pub_date": "23.02.2018",
-                "description": "curapatka Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sed sapiente aliquid alias dignissimos. Ipsa debitis nisi totam excepturi enim esse cum nam quaerat voluptatibus! Vitae eum, neque reiciendis harum."
-            }
-        ]
-
+            filteredCourses: undefined,
+            activeCategory: "",
+            searchResultCount: 0,
+            _searchInputTimer: undefined,
+            courses: []
+        }
     },
+    
     mounted: function () {
         var vm = this;
         $.ajax({
@@ -184,8 +105,10 @@ jQuery.fn.removeHighlight = function() {
                 for (var i = 0; i < queryset.length; i++) {
                     queryset[i]['pub_date'] = new Date(queryset[i]['pub_date']);
                 }
-                console.log(queryset);
                 vm.courses = data['queryset:'];
+
+                // Ініціалізуємо список відфільтрованих курсів
+                vm.filteredCourses = vm.get_courses();
             },
             complete: function (xhr, textStatus) {
                 console.log(textStatus);
@@ -193,6 +116,7 @@ jQuery.fn.removeHighlight = function() {
         })
     },
     methods: {
+
         locale_pub_date: function (date) {
             if (typeof(date) === "object") {
                 return date.toLocaleDateString("en-US", this.dateDisplayOptions)
@@ -200,19 +124,24 @@ jQuery.fn.removeHighlight = function() {
             return "";
         },
         set_active_category: function (event) {
-            this.activeCategory = $(event.target).text();
-        }
-    },
-    computed: {
-        //Розрахункова властивість, яка містить розділи, що відповідають searchString
-        filteredCourses: function () {
+            if ($(event.target).text() == "Всі") {
+                this.activeCategory = "";
+            }
+            else { this.activeCategory = $(event.target).text(); }
+            $(".categories .active").removeClass("active");
+            $(".categories").find("div:contains(" + $(event.target).text() + ")").addClass("active");
+            $(event.target).addClass("active"); 
+
+        },
+        
+        get_courses: function(){
             var courses_array = this.courses,
                 searchString = this.searchString,
                 vm = this;
-
+                      
             if (vm.activeCategory.length) {
+                vm.limit = 2;
                 courses_array = courses_array.filter(function(item) {
-                    console.log(item.categories.includes(vm.activeCategory))
                     if (item.categories.includes(vm.activeCategory)) {
                         return true;
                     }
@@ -226,43 +155,50 @@ jQuery.fn.removeHighlight = function() {
                 searchString = searchString.trim().toLowerCase();
                 courses_array = courses_array.filter(function(item){
                     if ((item.name.toLowerCase().indexOf(searchString) !== -1 
-                        || item.description.toLowerCase().indexOf(searchString) !== -1)
-                        ) {
-                        $(".item .name").removeHighlight();    
-                        if ( searchString ) {
-                             $(".item .name").highlight(searchString);
-                        }
-                         $(".item .description").removeHighlight();    
-                        if ( searchString ) {
-                             $(".item .description").highlight(searchString);
-                        }
+                        || item.description.toLowerCase().indexOf(searchString) !== -1)){
+                        $(".item ").removeHighlight();    
+                        $(".item .name").highlight(searchString);
+                        $(".item .description").highlight(searchString);
+                        console.log(item.name);
                         return item;
                     }
                 })
             }
             
-            this.searchResultCount = courses_array.length;
+            vm.searchResultCount = courses_array.length;
+            
             // Повертає відфільтровані розділи
+            
             return courses_array;
         },
-    }
+        category_is_active: function (categoryName) {
+            if (this.activeCategory === categoryName || categoryName == "Всі") {
+                return true;
+            }
+            return false;
+        }
+    },
+    watch: {
+        searchString: function() {
+            var vm = this,
+                delay = 750;
+
+            if (this._searchInputTimer) {
+                clearTimeout(this._searchInputTimer);
+                this._searchInputTimer = undefined;
+            }
+
+            this._searchInputTimer = setTimeout(function () {
+                     console.log(vm.searchString);
+                    vm.filteredCourses = vm.get_courses();
+                },
+                delay
+            )
+        },
+        activeCategory: function () {
+            this.filteredCourses = this.get_courses();
+        }
+    },
 });
 
- $(document).ready(function(){
     
-
-    $(".categories").find("div").click(function(){
-        $(".categories .active").removeClass("active");
-        $(".tags .active").removeClass("active");
-        $(this).addClass("active");
-        $(".tags").find('div:contains('+this.innerHTML+')').addClass("active");
-    });
-
-    $(".tags").find("div").click(function(){
-        $(".tags .active").removeClass("active");
-        $(".categories .active").removeClass("active");
-        $(".categories").find('div:contains('+this.innerHTML+')').addClass("active");
-        $(".tags").find('div:contains('+this.innerHTML+')').addClass("active");
-        $(this).addClass("active");
-    });
- })

@@ -1,14 +1,13 @@
 a:hover, a:focus {
 	text-decoration: none;
-}
+}	
 .highlight{
-	color: #3da8e8;
+	color:#285875;
     -moz-border-radius: 1px; 
     -webkit-border-radius: 1px; 
     border-radius: 1px; 
-    /*-moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); 
-    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); 
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); */
+    background-color: #d1f3f7;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
 }
 .content {
 	padding: 25px 0 100px 54px;
@@ -22,11 +21,11 @@ a:hover, a:focus {
 }
 .search form input {
 	width: 100%;
-  padding: 10px 30px;
-  background-color: #f6f6f6;
+  padding: 8px 20px;
+  background-color: #fafaff;
   border: none;
-  -webkit-border-radius: 5em;
-  border-radius: 5em;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
   border: 1px solid #008ee2;
 }
 .search form {
@@ -54,14 +53,16 @@ a:hover, a:focus {
 }
 .search .results {
 	text-align: right;
+
 	vertical-align: middle;
 	margin-top: 24px;
+	text-transform: uppercase;
 	transform: translateY(-50%);
-	font-size: 18px;
+	font-size: 13px;
 }
 .search .results span {
   color: #008ee2;
-  font-size: 22px;
+  font-size: 18px;
 }
 .search .categories {
 	text-align: center;
@@ -75,9 +76,9 @@ a:hover, a:focus {
   letter-spacing: .05em;
   position: relative;
   display: inline-block;
-  -webkit-transition: all .5s ease;
-  -o-transition: all .5s ease;
-  transition: all .5s ease;
+  -webkit-transition: all .3s ease;
+  -o-transition: all .3s ease;
+  transition: all .3s ease;
   font-size: 20px;
   font-family: Raleway,Arial,sans-serif;
 }
@@ -89,9 +90,9 @@ a:hover, a:focus {
   left: 0;
   background-color: #b9b9b9;
   height: 1px;
-  -webkit-transition: all .5s ease;
-  -o-transition: all .5s ease;
-  transition: all .5s ease;
+  -webkit-transition: all .3s ease;
+  -o-transition: all .3s ease;
+  transition: all .3s ease;
 }
 .search .categories div.active, .search .categories div:hover {
   color: #008ee2;
@@ -155,11 +156,12 @@ a:hover, a:focus {
   padding: 0 8px;
   background-color: transparent;
   border: 1px solid #b9b9b9;
-  font-size: 16px;
+  font-size: 15px;
   color: #b9b9b9;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  margin-right: 10px;
+  margin-right: 8px;
+  margin-bottom:3px;
   -webkit-transition: all .3s ease;
   -o-transition: all .3s ease;
   transition: all .3s ease;
@@ -174,6 +176,7 @@ a:hover, a:focus {
   text-decoration: none;
 }
 .items .item h3 {
+	margin-top: 0px;
 	margin-bottom: 3px;
 	font-size: 26px;
 }
