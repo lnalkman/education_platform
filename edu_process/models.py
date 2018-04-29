@@ -10,6 +10,10 @@ class Group(models.Model):
     """
     Збирає студентів у групи.
     """
+    class Meta:
+        verbose_name = 'Група студентів'
+        verbose_name_plural = 'Групи студентів'
+
     name = models.CharField(
         verbose_name='Назва групи',
         max_length=12,
@@ -36,6 +40,10 @@ class Profile(models.Model):
     потірбно ховати від іншого типу користувача (поля для студента
     потрібно ховати при роботі з викладачем).
     """
+    class Meta:
+        verbose_name = 'Профіль'
+        verbose_name_plural = 'Профілі'
+
     TEACHER = 'TC'
     STUDENT = 'ST'
     USER_TYPES = (
@@ -86,13 +94,6 @@ class Profile(models.Model):
             if curr_photo != self.photo:
                 curr_photo.delete(save=False)
 
-            # Якщо користувач став активним, видяляємо об'єкт тимчасового користувача
-            # який зв'язаний з цим профілем.
-            if self.user.is_active and not Profile.objects.get(pk=self.pk).user.is_active:
-                try:
-                    self.temp_user.delete()
-                except User.DoesNotExist:
-                    pass
         # Помилка виникає, якщо об'єкт створюється(не оновлюється)
         except ObjectDoesNotExist:
             pass
@@ -114,23 +115,11 @@ class Profile(models.Model):
                                )
 
 
-class TemporaryUser(models.Model):
-    """
-    Модель тимчасового користувача, ссилається на користувачів
-    з атрибутом is_active == False.
-    """
-    profile = models.OneToOneField(
-        Profile,
-        on_delete=models.CASCADE,
-        related_name='temp_user',
-        null=True,
-        )
-    password = models.CharField(verbose_name='Тимчасовий пароль', max_length=32)
-
-
 class Message(models.Model):
     class Meta:
         ordering = ('-id',)
+        verbose_name = 'Повідомлення'
+        verbose_name_plural = 'Повідомлення'
 
     sender = models.ForeignKey(User, related_name='sended_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)

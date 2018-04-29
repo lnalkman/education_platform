@@ -1,5 +1,4 @@
 from calendar import HTMLCalendar
-from calendar import month_name
 from datetime import datetime, timedelta, date
 
 from django.urls import reverse_lazy
@@ -13,6 +12,7 @@ from django.http.response import HttpResponseRedirect, JsonResponse, HttpRespons
 from django.core import serializers
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils import dates
 
 from edu_process.models import Group, Profile
 from .models import (
@@ -617,14 +617,20 @@ class HrefCalendar(HTMLCalendar):
         Return a month name as a table row.
         """
         if withyear:
-            s = '%s %s' % (month_name[themonth], theyear)
+            s = '%s %s' % (dates.MONTHS[themonth], theyear)
         else:
-            s = '%s' % month_name[themonth]
+            s = '%s' % dates.MONTHS[themonth]
         return '<tr><th colspan="7" class="month">' \
                '<a href="%s" class="glyphicon glyphicon-chevron-left"></a>' \
                '%s' \
                '<a href="%s" class="glyphicon glyphicon-chevron-right"></a>' \
                '</th></tr>' % (self.prew_url, s, self.next_url)
+
+    def formatweekday(self, day):
+        s = dates.WEEKDAYS[day][:3]
+        if s == "П'я":
+            s = "Птн"
+        return '<th class="%s">%s</th>' % (self.cssclasses[day], s)
 
     def formatday(self, day, weekday, booked=False):
 
