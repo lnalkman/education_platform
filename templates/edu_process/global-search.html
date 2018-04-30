@@ -1,0 +1,24 @@
+{% extends 'skeleton.html' %}
+
+{% block head %}
+    <title>Пошук | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'teacher/css/blog.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    {#   NAVBAR   #}
+    {% if request.user.profile.is_student %}
+        {% include 'student/components/navbar.html' %}
+    {% elif request.user.profile.is_teacher %}
+        {% include 'teacher/components/navbar.html' %}
+    {% endif %}
+
+    <div class="content">
+        <div class="row">
+
+        </div>
+    </div>
+{% endblock %}

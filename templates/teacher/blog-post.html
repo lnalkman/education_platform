@@ -14,7 +14,7 @@
     </div>
 
     {#   NAVBAR   #}
-    {% include 'teacher/components/navbar.html' with blog=True only %}
+    {% include 'teacher/components/navbar.html' with blog=True %}
 
     <div class="page container-fluid">
         <div class="row">
@@ -36,7 +36,7 @@
                 <hr>
                 <div class="row">
                     {% with author=publication.author %}
-                        <div class="col-xs-12 col-sm-3">
+                        <div class="col-xs-8 col-xs-offset-2 col-sm-offset-0 col-sm-3">
                             <img class="img-responsive img-circle center-block" src="{{ author.photo.url }}" />
                         </div>
                         <div class="col-xs-12 col-sm-9">

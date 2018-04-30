@@ -1,0 +1,162 @@
+{% extends 'skeleton.html' %}
+{% load staticfiles %}
+{% block head %}
+    <title>{# course name here #} | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'css/course-detail.css' %}">
+{% endblock %}
+
+{% block body %}
+    {# Кнопка, яка відкриває навігаційну панель на мобільних #}
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% if request.user.profile.is_student %}
+        {% include 'student/components/navbar.html' %}
+    {% elif request.user.profile.is_teacher %}
+        {% include 'teacher/components/navbar.html' %}
+    {% endif %}
+
+    <section class="title-page-parallax">
+        <div id="image-parallax" data-speed="4" data-type="background" style="background-image: url(https://www.gettyimages.ie/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg);"></div>
+        <div class="title-parallax"><h1>GREETINGS WISHES MAKER FOR WINTER HOLIDAYS</h1><div class="date-likes"><span class="date">March 22, 2018</span><span aria-hidden="true" class="glyphicon glyphicon-star"></span><span aria-hidden="true" class="glyphicon glyphicon-star"></span><span aria-hidden="true" class="glyphicon glyphicon-star"></span><span aria-hidden="true" class="glyphicon glyphicon-star-empty"></span><span aria-hidden="true" class="glyphicon glyphicon-star-empty"></span></div></div>
+    </section>
+
+    <div class="container-fluid content">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="all-info">
+                    <div class="description">
+                        <h2>Опис курсу:</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quaerat officiis alias distinctio optio nobis perferendis laudantium velit reprehenderit et ut cupiditate libero perspiciatis architecto nulla sed veritatis commodi, consequuntur aliquam enim cumque quis! Recusandae sit molestias nisi non iusto dolorem omnis, inventore pariatur nesciunt, unde suscipit deleniti rerum. Nobis animi velit magnam neque harum optio nam iste, repudiandae soluta consequatur alias consequuntur ab error corrupti maxime odio iusto necessitatibus eligendi sunt explicabo porro enim. Autem rem cumque repellat at blanditiis sapiente fugiat tenetur necessitatibus doloremque, vitae excepturi ipsa eveniet sed quidem mollitia recusandae earum ipsum atque delectus repellendus maxime dolorem.</p>
+                    </div>
+                    <div class="sections">
+                        <h2>Розділи:</h2>
+                        <div class="section">
+                            <div class="section-outer">
+                                <div class="section-left">
+                                    <h3>Name first</h3>
+                                    <p class="section-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A molestiae repudiandae hic quia quis, corrupti magnam vitae laudantium quisquam delectus quasi totam nostrum reprehenderit. Necessitatibus quia error, recusandae quisquam asperiores?</p>
+                                </div>
+                                <div class="section-right">
+                                    Детальніше
+                                </div>
+                            </div>
+                            <div class="section-inner">
+                                <div class="lesson">
+                                    <div class="lesson-left">
+                                        <h4>#1 lesson</h4>
+                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>
+                                    </div>
+                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-left">
+                                        <h4>#2 lesson</h4>
+                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>
+                                    </div>
+                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section active">
+                            <div class="section-outer">
+                                <div class="section-left">
+                                    <h3>Name first</h3>
+                                    <p class="section-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A molestiae repudiandae hic quia quis, corrupti magnam vitae laudantium quisquam delectus quasi totam nostrum reprehenderit. Necessitatibus quia error, recusandae quisquam asperiores?</p>
+                                </div>
+                                <div class="section-right">
+                                    Сховати
+                                </div>
+                            </div>
+                            <div class="section-inner">
+                                <div class="lesson">
+                                    <div class="lesson-left">
+                                        <h4>#1 lesson</h4>
+                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>
+                                    </div>
+                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-left">
+                                        <h4>#2 lesson</h4>
+                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>
+                                    </div>
+                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-outer">
+                                <div class="section-left">
+                                    <h3>Name first</h3>
+                                    <p class="section-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A molestiae repudiandae hic quia quis, corrupti magnam vitae laudantium quisquam delectus quasi totam nostrum reprehenderit. Necessitatibus quia error, recusandae quisquam asperiores?</p>
+                                </div>
+                                <div class="section-right">
+                                    Детальніше
+                                </div>
+                            </div>
+                            <div class="section-inner">
+                                <div class="lesson">
+                                    <div class="lesson-left">
+                                        <h4>#1 lesson</h4>
+                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>
+                                    </div>
+                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-left">
+                                        <h4>#2 lesson</h4>
+                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>
+                                    </div>
+                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2 col-sm-offset-1">
+                <div class="autor">
+                    <!-- <h2>Автор курсу:</h2> -->
+                    <img src="https://www.mininuniver.ru//media/com_wmart/catalog/2016-06-28-16-31-23-4766-kirillova.jpg" alt="">
+                    <p>Буніна Н. Н.</p>
+                </div>
+                <div class="item-about-course theme">Категорії: <span>Математика</span>, <span>Фізика</span></div>
+                <div class="item-about-course sections">Розділів: <span>12</span></div>
+                <div class="item-about-course lessons">Уроків: <span>43</span></div>
+                <div class="item-about-course durability">Тривалість: <span>2 год.</span></div>
+                <div class="item-about-course subscribers">Підписались: <span>148</span></div>
+                <div class="button-wrap">
+                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-pencil"></span>Записатися</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block footer %}
+
+{#  Додаткові скрипти тут  #}
+
+<script>
+    $(function() {
+        $window = $(window);
+        $('div[data-type="background"]').each(function(){
+            var $bgobj = $(this);
+            $(window).scroll(function() {
+                var yPos = -($window.scrollTop() / $bgobj.data('speed')); 
+                var coords = '50% '+ yPos + 'px';
+                $bgobj.css({ backgroundPosition: coords });
+            }); 
+        });
+    });
+</script>
+
+{% endblock %}

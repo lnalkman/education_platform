@@ -1,64 +1,40 @@
+{% extends 'skeleton.html' %}
 {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
-
-    <meta charset="utf-8">
-
-    <title>Title</title>
+{% block head %}
+    <title>Календар | KPI EDU</title>
     <meta name="description" content="">
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-    <meta property="og:image" content="path/to/image.jpg">
-    <link rel="shortcut icon" href="{% static 'img/favicon/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{% static 'img/favicon/apple-touch-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/favicon/apple-touch-icon-72x72.png' %}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/favicon/apple-touch-icon-114x114.png' %}">
-
-    <!-- Chrome, Firefox OS and Opera -->
-    <meta name="theme-color" content="#000">
-    <!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#000">
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="#000">
-
-    <link rel="stylesheet" href="{% static 'css/all.css' %}">
-    <link rel="stylesheet" href="{% static 'teacher/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'teacher/css/calendar-style.css' %}">
-</head>
+{% endblock %}
 
-<body>
+{% block body %}
 
-<div class="navbar-opener">
-    <span class="glyphicon glyphicon-menu-down"></span>
-</div>
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
 
-{#   NAVBAR   #}
-{% include 'teacher/components/navbar.html' with calendar=True only %}
+    {#   NAVBAR   #}
+    {% include 'teacher/components/navbar.html' with calendar=True %}
 
-<div class="nav">
-    <a href="{% url 'teacher:calendar' year=year|add:"-1" month=month %}"
-       class="glyphicon glyphicon-chevron-left prew-year"></a>
-    <a href="{% url 'teacher:calendar' year=year|add:"1" month=month %}"
-       class="glyphicon glyphicon-chevron-right next-year"></a>
-    <form action="{% url 'teacher:calendar-redirect' %}" method="get">
-        <input type="text" name="year" value="{{ year }}"
-               onkeypress='return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 4'></input>
-        <input type="hidden" name="month" value="{{ month }}"></input>
-        <button><span class="glyphicon glyphicon-arrow-right"></span></button>
-    </form>
-</div>
-<div class="calendar-block">
-    {% autoescape off %}
-        <div class="aspect-text">
-            {{ calendar_table }}
-        </div>
-    {% endautoescape %}
-</div>
-<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-<script src="{% static 'js/common.js' %}"></script>
-</body>
-</html>
+    <div class="nav">
+        <a href="{% url 'teacher:calendar' year=year|add:"-1" month=month %}"
+           class="glyphicon glyphicon-chevron-left prew-year"></a>
+        <a href="{% url 'teacher:calendar' year=year|add:"1" month=month %}"
+           class="glyphicon glyphicon-chevron-right next-year"></a>
+        <form action="{% url 'teacher:calendar-redirect' %}" method="get">
+            <input type="text" name="year" value="{{ year }}"
+                   onkeypress='return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 4'></input>
+            <input type="hidden" name="month" value="{{ month }}"></input>
+            <button><span class="glyphicon glyphicon-arrow-right"></span></button>
+        </form>
+    </div>
+    <div class="calendar-block">
+        {% autoescape off %}
+            <div class="aspect-text">
+                {{ calendar_table }}
+            </div>
+        {% endautoescape %}
+    </div>
+{% endblock %}
+

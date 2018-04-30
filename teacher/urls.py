@@ -16,7 +16,7 @@ from .views import (
 
 
 urlpatterns = [
-    url(r'^$', TeacherProfile.as_view(), name='index'),
+    url(r'^id-(?P<pk>[0-9]+)/$', TeacherProfile.as_view(), name='profile'),
     # url(r'^course/add/$', AddCourseView.as_view(), name='course-add'),
     url(r'^courses/$', CourseListView.as_view(), name='course-list'),
     url(r'^course/(?P<pk>[0-9]+)/$', CourseSettings.as_view(), name='course-settings'),
@@ -41,10 +41,10 @@ urlpatterns = [
     url(r'^lesson/(?P<pk>[0-9]+)/json/$', JsonLessonDetail.as_view(), name='lesson-detail-json'),
     url(r'^lesson/(?P<pk>[0-9]+)/update/$', LessonUpdate.as_view(), name='lesson-update'),
     url(r'^lesson/(?P<pk>[0-9]+)/delete/$', DeleteLesson.as_view(), name='lesson-delete'),
-    url(r'^blog/$', BlogView.as_view(), name='blog'),
+    url(r'^id-(?P<pk>[0-9]+)/blog/$', BlogView.as_view(), name='blog'),
     url(r'^blog/post/(?P<pk>[0-9]+)/$', PublicationView.as_view(), name='blog-post'),
     url(r'^blog/post/add/$', AddPostView.as_view(), name='blog-post-add'),
     url(r'^blog/post/(?P<pk>[0-9]+)/delete/$', DeletePostView.as_view(), name='blog-post-delete'),
     url(r'^blog/post/(?P<pk>[0-9]+)/edit/$', EditPostView.as_view(), name='blog-post-edit'),
-    url(r'^blog/search/$', BlogPostSearchView.as_view(), name='blog-post-search')
+    url(r'^id-(?P<pk>[0-9]+)/blog/search/$', BlogPostSearchView.as_view(), name='blog-post-search')
 ]

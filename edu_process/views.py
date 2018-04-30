@@ -20,39 +20,45 @@ from django.contrib import messages
 from PIL import Image
 
 from .models import Profile, Group, Message, get_user_messages
+from .serializers import CourseSerializer
+from teacher.models import Course
+
+
+LoginRequiredMixin.login_url = reverse_lazy('index')
 
 
 class IndexView(FormView):
     http_method_names = ('get', 'post',)
     template_name = 'edu_process/index.html'
     form_class = AuthenticationForm
-    user_type_urls = {
-        Profile.TEACHER: reverse_lazy('teacher:index'),
-        Profile.STUDENT: reverse_lazy('student:profile'),
-    }
 
     def get(self, request, *args, **kwargs):
         """Якщо користувач вже авторизований, то перенаправляємо його в особистий кабінет"""
         if self.request.user.is_authenticated():
-            # Отримуємо адресу на особистий кабінет
-            url = self.user_type_urls.get(
-                self.request.user.profile.user_type,
-                None
-            )
-            if url:
-                return HttpResponseRedirect(url)
-        return super(FormView, self).get(request, *args, **kwargs)
+            return HttpResponseRedirect(self.get_success_url())
+
+        return super(IndexView, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
         login(self.request, form.get_user())
-        return super(FormView, self).form_valid(form)
+        return super(IndexView, self).form_valid(form)
 
     def get_success_url(self):
-        user_type = self.request.user.profile.user_type
-        if user_type == Profile.TEACHER:
-            return reverse('teacher:index')
-        elif user_type == Profile.STUDENT:
-            return reverse('student:profile')
+        try:
+            url = self.request.user.profile.get_absolute_url()
+            if url:
+                return url
+        except Profile.DoesNotExist:
+            messages.add_message(
+                self.request,
+                messages.WARNING,
+                'За вашим акаунтом не закріплений профіль викладача чи студента'
+            )
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                return reverse('admin:index')
+            else:
+                logout(self.request)
+        return reverse('index')
 
 
 class LogoutView(View):
@@ -341,3 +347,80 @@ class MessageUserApiView(LoginRequiredMixin, View):
 
         queryset = self.get_queryset(id)
         return self.render_to_json(queryset)
+
+
+class CourseListJsonView(LoginRequiredMixin, View):
+    """
+    View для пошуку курсів.
+    Достпупні поля:
+        author_id   -> int or 'self' (Курси автором яких є користувач з id профілю author_id)
+                       якщо self то за id буде взято id користувача, який робить запрос
+        student_id  -> int or 'self' (Курси, на які напряму підписаний студент з id профілю student_id)
+                       якщо self то за id буде взято id користувача, який робить запрос
+        q           -> str (Курси назва чи опис яких містить рядок пошуку q)
+        offset      -> int (Скільки курсів буде пропущено при повернені списку знайдених курсів, потрібно для пагінації)
+        category_id -> int or null (Курси з id = category_id, якщо null, отримаємо курси без кетогорії
+    """
+    http_method_names = ('get',)
+
+    # Максимальна кількість занять, яку повертає view
+    MAX_COURSES_RETURN = 10
+
+    def render_to_json(self, queryset):
+        data = {
+            'queryset:': CourseSerializer(queryset, many=True).data,
+            'result_count': queryset.count(),
+        }
+        return JsonResponse(
+            data,
+            safe=False,
+        )
+
+    def get_queryset(self):
+        queryset = Course.objects.all()
+        get_data = self.request.GET
+
+        author_id = get_data.get('author_id')
+        if author_id:
+            if author_id == 'self':
+                queryset = queryset.filter(author__id=self.request.user.profile.id)
+            else:
+                queryset = queryset.filter(author__id=author_id)
+
+        student_id = get_data.get('student_id')
+        if student_id:
+            if student_id == 'self':
+                queryset = queryset.filter(students__id=self.request.user.profile.id)
+            else:
+                queryset = queryset.filter(students__id=student_id)
+
+        category_id = get_data.get('category_id')
+        if category_id:
+            if category_id != 'null':
+                queryset = queryset.filter(category__id=category_id, category__isnull=False)
+            else:
+                queryset = queryset.filter(category__isnull=True)
+
+        # Рядок пошуку по імені і опису курсу.
+        q = get_data.get('q')
+        if q:
+            queryset = queryset.filter(
+                Q(name__icontains=q) | Q(description__icontains=q)
+            )
+
+        try:
+            offset = int(get_data.get('offset', 0))
+        except (ValueError, TypeError):
+            raise ValueError('Invalid offset parameter value')
+
+        return queryset[offset: offset + 10]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+        except ValueError as e:
+            return HttpResponseBadRequest(e)
+
+        return self.render_to_json(
+            queryset
+        )

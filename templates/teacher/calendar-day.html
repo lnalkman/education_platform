@@ -1,183 +1,155 @@
+{% extends 'skeleton.html' %}
 {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
-
-    <meta charset="utf-8">
-
-    <title>Title</title>
+{% block head %}
+    <title>Огляд дня | KPI EDU</title>
     <meta name="description" content="">
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-    <meta property="og:image" content="path/to/image.jpg">
-    <link rel="shortcut icon" href="{% static 'img/favicon/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{% static 'img/favicon/apple-touch-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/favicon/apple-touch-icon-72x72.png' %}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/favicon/apple-touch-icon-114x114.png' %}">
-
-    <!-- Chrome, Firefox OS and Opera -->
-    <meta name="theme-color" content="#000">
-    <!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#000">
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="#000">
-
-    <link rel="stylesheet" href="{% static 'css/all.css' %}">
-    <link rel="stylesheet" href="{% static 'teacher/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'teacher/css/calendar-day.css' %}">
-</head>
+{% endblock %}
 
-<body>
+{% block body %}
 
-<div class="navbar-opener">
-    <span class="glyphicon glyphicon-menu-down"></span>
-</div>
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
 
-{#   NAVBAR   #}
-{% include 'teacher/components/navbar.html' with calendar=True only %}
+    {#   NAVBAR   #}
+    {% include 'teacher/components/navbar.html' with calendar=True %}
 
-<div class="nav">
-    <a href="{{ month_url }}"><span class="glyphicon glyphicon-menu-left"></span><span
-            class="hidden-xs">Назад</span></a>
-    <h4 class="date">{{ day_date.date }}</h4>
-    <button type="button" class="add-note" data-toggle="modal" data-target="#add-note-modal"><span
-            class="glyphicon glyphicon-pencil"></span><span class="hidden-xs">Додати запис</span>
-    </button>
-</div>
-<div class="content">
-    {% if not object_list %}
-        <h3 class="no-notes">В цей день відсутні події</h3>
-    {% else %}
-        <div class="container">
-            <div class="row">
-                {% for note in object_list %}
-                    <div class="card col-md-5 col-md-offset-{% cycle '0' '1' %} col-sm-offset-1 col-sm-10">
-                        <h2 class="card-title">
-                            {{ note.title|truncatechars:21 }}
-                            <span class="card-subtitle">{{ note.date.timetuple.tm_hour|stringformat:"02d" }}:{{ note.date.timetuple.tm_min|stringformat:"02d" }}</span>
-                        </h2>
-                        {% if note.course %}
-                            <a href="{% url 'teacher:course-settings' pk=note.course.pk %}"
-                               class="label label-primary">{{ note.course }}</a>
-                        {% endif %}
-                        <p class="note-content">{{ note.content }}</p>
-                        <button class="edit" data-toggle="modal" data-target="#edit-note-modal"
-                                data-note-pk="{{ note.pk }}"
-                                data-form-get-url="{% url 'teacher:calendar-note-change' %}">Редагувати
-                        </button>
-                        <button class="delete" data-toggle="modal" data-target="#delete-note-modal"
-                                data-note-pk="{{ note.pk }}">Видалити
-                        </button>
-                    </div>
-                    {% autoescape off %}{% cycle '' '<div class="clearfix"></div>' %}{% endautoescape %}
-                {% endfor %}
-
-            </div>
-        </div>
-    {% endif %}
-</div>
-
-<!-- Add Note Modal -->
-<div class="modal fade" id="add-note-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="myModalLabel">Додати запис в календар</h4>
-            </div>
-            <form action="{% url 'teacher:calendar-note-add' %}" class="form-horizontal" method="post">
-                <div class="modal-body">
-
-                    {% csrf_token %}
-                    <input type="text" name="next_to" value="{{ day_url }}" hidden>
-                    {{ form_add.author }}
-                    <div class="form-group">
-                        <label for="{{ form_add.title.id_for_label }}" class="col-sm-2 control-label">Заголовок</label>
-                        <div class="col-sm-10">
-                            {{ form_add.title }}
+    <div class="nav">
+        <a href="{{ month_url }}"><span class="glyphicon glyphicon-menu-left"></span><span
+                class="hidden-xs">Назад</span></a>
+        <h4 class="date">{{ day_date.date }}</h4>
+        <button type="button" class="add-note" data-toggle="modal" data-target="#add-note-modal"><span
+                class="glyphicon glyphicon-pencil"></span><span class="hidden-xs">Додати запис</span>
+        </button>
+    </div>
+    <div class="content">
+        {% if not object_list %}
+            <h3 class="no-notes">В цей день відсутні події</h3>
+        {% else %}
+            <div class="col-xs-12">
+                <div class="row">
+                    {% for note in object_list %}
+                        <div class="card col-md-4 col-md-offset-{% cycle '1' '2' %} col-sm-offset-1 col-sm-10">
+                            <h2 class="card-title">
+                                {{ note.title|truncatechars:21 }}
+                                <span class="card-subtitle">{{ note.date.timetuple.tm_hour|stringformat:"02d" }}:{{ note.date.timetuple.tm_min|stringformat:"02d" }}</span>
+                            </h2>
+                            {% if note.course %}
+                                <a href="{% url 'teacher:course-settings' pk=note.course.pk %}"
+                                   class="label label-primary">{{ note.course }}</a>
+                            {% endif %}
+                            <p class="note-content">{{ note.content }}</p>
+                            <button class="edit" data-toggle="modal" data-target="#edit-note-modal"
+                                    data-note-pk="{{ note.pk }}"
+                                    data-form-get-url="{% url 'teacher:calendar-note-change' %}">Редагувати
+                            </button>
+                            <button class="delete" data-toggle="modal" data-target="#delete-note-modal"
+                                    data-note-pk="{{ note.pk }}">Видалити
+                            </button>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form_add.course.id_for_label }}" class="col-sm-2 control-label">Курс</label>
-                        <div class="col-sm-10">
-                            {{ form_add.course }}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="{{ form_add.content.id_for_label }}" class="col-sm-2 control-label">Нотатка</label>
-                        <div class="col-sm-10">
-                            {{ form_add.content }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form_add.date.id_for_label }}" class="col-sm-2 control-label">Дата-час</label>
-                        <div class="col-sm-4">
-                            {{ form_add.date }}
-                        </div>
-                    </div>
+                        {% autoescape off %}{% cycle '' '<div class="clearfix"></div>' %}{% endautoescape %}
+                    {% endfor %}
 
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                    <button type="submit" class="btn btn-primary submit-form">Зберегти</button>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Add Note Modal -->
+    <div class="modal fade" id="add-note-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Додати запис в календар</h4>
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
+                <form action="{% url 'teacher:calendar-note-add' %}" class="form-horizontal" method="post">
+                    <div class="modal-body">
 
-<!-- Edit Note Modal -->
-<div class="modal fade" id="edit-note-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Змінити запис в календарі</h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <button type="button" class="btn btn-primary submit-form">Зберегти</button>
-            </div>
-        </div>
-    </div>
-</div>
+                        {% csrf_token %}
+                        <input type="text" name="next_to" value="{{ day_url }}" hidden>
+                        {{ form_add.author }}
+                        <div class="form-group">
+                            <label for="{{ form_add.title.id_for_label }}" class="col-sm-2 control-label">Заголовок</label>
+                            <div class="col-sm-10">
+                                {{ form_add.title }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form_add.course.id_for_label }}" class="col-sm-2 control-label">Курс</label>
+                            <div class="col-sm-10">
+                                {{ form_add.course }}
+                            </div>
+                        </div>
 
-<!-- Delete Note Modal -->
-<div class="modal fade" id="delete-note-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Видалити запис ?</h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
+                        <div class="form-group">
+                            <label for="{{ form_add.content.id_for_label }}" class="col-sm-2 control-label">Нотатка</label>
+                            <div class="col-sm-10">
+                                {{ form_add.content }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form_add.date.id_for_label }}" class="col-sm-2 control-label">Дата-час</label>
+                            <div class="col-sm-7">
+                                {{ form_add.date }}
+                            </div>
+                        </div>
 
-                <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
-                <form method="post" action="{% url 'teacher:calendar-note-delete' %}">
-                    {% csrf_token %}
-                    <input type="text" name="next_to" value="{{ day_url }}" hidden>
-                    <input type="text" name="pk" hidden>
-                    <button type="submit" class="btn btn-danger">Видалити</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
+                        <button type="submit" class="btn btn-primary submit-form">Зберегти</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-<script src="{% static 'js/common.js' %}"></script>
-<script src="{% static 'teacher/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'teacher/js/calendar-day.js' %}"></script>
-</body>
-</html>
+    <!-- Edit Note Modal -->
+    <div class="modal fade" id="edit-note-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Змінити запис в календарі</h4>
+                </div>
+                <div class="xhr-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Note Modal -->
+    <div class="modal fade" id="delete-note-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Видалити запис ?</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
+                    <form method="post" action="{% url 'teacher:calendar-note-delete' %}">
+                        {% csrf_token %}
+                        <input type="text" name="next_to" value="{{ day_url }}" hidden>
+                        <input type="text" name="pk" hidden>
+                        <button type="submit" class="btn btn-danger">Видалити</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    <script src="{% static 'teacher/js/calendar-day.js' %}"></script>
+{% endblock %}

@@ -1,134 +1,106 @@
+{% extends 'skeleton.html' %}
 {% load staticfiles %}
 {% load edu_extras %}
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
-
-    <meta charset="utf-8">
-
-    <title>Title</title>
+{% block head %}
+    <title>Список курсів | KPI EDU</title>
     <meta name="description" content="">
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-    <meta property="og:image" content="path/to/image.jpg">
-    <link rel="shortcut icon" href="{% static 'img/favicon/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{% static 'img/favicon/apple-touch-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/favicon/apple-touch-icon-72x72.png' %}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/favicon/apple-touch-icon-114x114.png' %}">
-
-    <!-- Chrome, Firefox OS and Opera -->
-    <meta name="theme-color" content="#000">
-    <!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#000">
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="#000">
-
-    <link rel="stylesheet" href="{% static 'teacher/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/all.css' %}">
     <link rel="stylesheet" href="{% static 'teacher/css/courses-page.css' %}">
-</head>
+{% endblock %}
 
-<body class="courses-page">
+{% block body %}
 
-<div class="navbar-opener">
-    <span class="glyphicon glyphicon-menu-down"></span>
-</div>
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
 
-{#   NAVBAR   #}
-{% include 'teacher/components/navbar.html' with courses=True only %}
+    {#   NAVBAR   #}
+    {% include 'teacher/components/navbar.html' with courses=True %}
 
-<div class="nav">
-    <h4 class="sub-header text-center hidden-xs">Вашi курси</h4>
-    <button type="button" class="add-course" data-toggle="modal" data-target="#add-course-modal"><span
-            class="glyphicon glyphicon-pencil"></span><span class="hidden-xs">Додати курс</span>
-    </button>
-</div>
-<div class="container-fluid content">
-    <div class="row">
-        <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
-            {% for course in object_list %}
-                <div class="panel {% cycle 'panel-success' 'panel-info' %} lesson" data-pk="{{ Lesson.pk }}">
-                    <!-- Default panel contents -->
-                    <div class="panel-heading">
-                        <span>Курс: {{ course.name }}</span>
+    <div class="nav">
+        <h4 class="sub-header text-center hidden-xs">Вашi курси</h4>
+        <button type="button" class="add-course" data-toggle="modal" data-target="#add-course-modal"><span
+                class="glyphicon glyphicon-pencil"></span><span class="hidden-xs">Додати курс</span>
+        </button>
+    </div>
+    <div class="container-fluid content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
+                {% for course in object_list %}
+                    <div class="panel {% cycle 'panel-success' 'panel-info' %} lesson" data-pk="{{ Lesson.pk }}">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading">
+                            <span>Курс: {{ course.name }}</span>
+                        </div>
+                        <div class="panel-body">
+                            <dl class="dl-horizontal">
+                                <dt>Розділи:</dt>
+                                <dd>{{ course.module_set.count }}</dd>
+                                <dt>Групи:</dt>
+                                <dd>{{ course.group_set.count }}</dd>
+                                <dt>Дата створення:</dt>
+                                <dd>{{ course.pub_date }}</dd>
+                                <br>
+                                <dt>Опис курсу:</dt>
+                                <dd>{{ course.description|cut_extra_indent|linebreaksbr }}</dd>
+                            </dl>
+                            <a href="{% url 'teacher:course-settings' pk=course.pk %}" class="btn btn-default">
+                                Панель управління
+                            </a>
+                        </div>
                     </div>
-                    <div class="panel-body">
-                        <dl class="dl-horizontal">
-                            <dt>Розділи:</dt>
-                            <dd>{{ course.module_set.count }}</dd>
-                            <dt>Групи:</dt>
-                            <dd>{{ course.group_set.count }}</dd>
-                            <dt>Дата створення:</dt>
-                            <dd>{{ course.pub_date }}</dd>
-                            <br>
-                            <dt>Опис курсу:</dt>
-                            <dd>{{ course.description|cut_extra_indent|linebreaksbr }}</dd>
-                        </dl>
-                        <a href="{% url 'teacher:course-settings' pk=course.pk %}" class="btn btn-default">
-                            Панель управління
-                        </a>
-                    </div>
-                </div>
-            {% empty %}
-                <h3 class="text-center">У Вас поки що немає курсiв</h3>
-            {% endfor %}
+                {% empty %}
+                    <h3 class="text-center">У Вас поки що немає курсiв</h3>
+                {% endfor %}
+            </div>
         </div>
     </div>
-</div>
 
-<!-- style='display: none' прибирає просідання фпс при прокручувані сторінки -->
-<div class="modal fade" id="add-course-modal" tabindex="-1" role="dialog" style="display:none">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Додати новий курс</h4>
-            </div>
-            <form class="form-horizontal" method="post" action="{% url 'teacher:course-list' %}">
-                <div class="modal-body">
+    <!-- style='display: none' прибирає просідання фпс при прокручувані сторінки -->
+    <div class="modal fade" id="add-course-modal" tabindex="-1" role="dialog" style="display:none">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Додати новий курс</h4>
+                </div>
+                <form class="form-horizontal" method="post" action="{% url 'teacher:course-list' %}">
+                    <div class="modal-body">
 
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="{{ form.name.id_for_label }}" class="col-sm-3 control-label">Назва
-                            курсу</label>
-                        <div class="col-sm-8">
-                            {{ form.name }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.description.id_for_label }}"
-                               class="col-sm-3 control-label">Опис курсу</label>
-                        <div class="col-sm-8">
-                            {{ form.description }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-8">
-                            <div class="checkbox">
-                                <label>
-                                    {{ form.draft }} Опублікувати
-                                </label>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}" class="col-sm-3 control-label">Назва
+                                курсу</label>
+                            <div class="col-sm-8">
+                                {{ form.name }}
                             </div>
                         </div>
-                    </div>
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}"
+                                   class="col-sm-3 control-label">Опис курсу</label>
+                            <div class="col-sm-8">
+                                {{ form.description }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-8">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.draft }} Опублікувати
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрити</button>
-                    <button type="submit" class="btn btn-primary">Зберегти курс</button>
-                </div>
-            </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрити</button>
+                        <button type="submit" class="btn btn-primary">Зберегти курс</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-
-<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-<script src="{% static 'teacher/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/common.js' %}"></script>
-
-</body>
-</html>
+{% endblock %}

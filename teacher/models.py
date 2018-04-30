@@ -21,12 +21,30 @@ class Course(models.Model):
     name = models.CharField(verbose_name='Назва курсу', max_length=128)
     description = models.TextField(verbose_name='Опис курсу', max_length=4096)
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    categories = models.ManyToManyField('Category', blank=True)
+
+    students = models.ManyToManyField(Profile, related_name='subscribed_courses', blank=True)
 
     draft = models.BooleanField(default=False)
     pub_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return textwrap.shorten(self.name, width=24, placeholder='...')
+
+
+class Category(models.Model):
+    class Meta:
+        verbose_name = 'Категорія'
+        verbose_name_plural = 'Категорії'
+
+    name = models.CharField(
+        verbose_name='Назва категорії',
+        max_length=64,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class Module(models.Model):

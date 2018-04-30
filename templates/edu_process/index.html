@@ -6,7 +6,7 @@
 
     <meta charset="utf-8">
 
-    <title>Title</title>
+    <title>KPI EDU</title>
     <meta name="description" content="">
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -41,6 +41,15 @@
             <h4>Попередження</h4>
             {% for err in form.non_field_errors %}
                 <li>{{ err }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if messages %}
+        <ul class="animated fadeIn errorlist col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <li class="exit">x</li>
+            <h4>Попередження</h4>
+            {% for message in messages %}
+                <li class="message {{ message.level_tag }}">{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
