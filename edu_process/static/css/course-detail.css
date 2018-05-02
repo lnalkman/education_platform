@@ -110,6 +110,20 @@ h1 {
 	color: #008ee2;
 	text-decoration: none;
 }
+.button-wrap .button-try .glyphicon{
+	margin-right: 10px;
+}
+.button-wrap .button-add {
+	margin-left: 10px;
+	border-color: #333;
+	color: #333;
+	background-color: transparent;
+}
+.button-wrap .button-add:hover {
+	background-color: #333;
+	border-color: #333;
+	color: #fff;
+}
 
 .all-info h2 {
 	margin-bottom: 20px;
@@ -208,4 +222,63 @@ h1 {
 }
 .all-info p {
 	line-height: 1.5;
+}
+.comments .comment {
+	padding: 30px 30px 20px;
+	border: 1px solid #e8e8e8;
+	background-color: #f2f2f2;
+	border-radius: 10px;
+  -webkit-box-shadow: 0 3px 20px 0 rgba(0,0,0,.1);
+  box-shadow: 0 3px 20px 0 rgba(0,0,0,.1);
+  margin-top: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+.comments .comment-top {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+}
+.comments .comment-top .comment-photo img {
+	max-width: 150px;
+	border-radius: 50em;
+	border: 2px solid #333;
+	margin-right: 30px;
+}
+.comments .comment-top .comment-info {
+	margin: auto 0;	
+}
+.comments .comment-top .comment-name {
+	font-size: 22px;
+	font-weight: bold;
+}
+.comments .comment-top .comment-date {
+	font-size: 18px;
+	font-style: italic;
+	margin-bottom: 5px;
+}
+.comments .comment-top .comment-rate .glyphicon {
+	font-size: 18px;
+	margin-right: 3px;
+}
+.comments .comment-content {
+	padding: 20px;
+	margin-top: 5px;
+	font-size: 18px;
+	line-height: 1.3;
+}
+.comments .button-wrap {
+	margin-top: 30px;
+}
+
+
+
+.more-courses {
+	background-color: #333;
+	color: #fff;
+}
+.more-courses h2 {
+	text-align: center;
 }
