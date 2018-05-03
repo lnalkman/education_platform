@@ -113,6 +113,13 @@ h1 {
 .button-wrap .button-try .glyphicon{
 	margin-right: 10px;
 }
+.button-wrap .button-untry {
+	background-color: #ff4f4f;
+	border-color: #ff4f4f;
+}
+.button-wrap .button-untry:hover {
+	color: #ff4f4f;
+}
 .button-wrap .button-add {
 	margin-left: 10px;
 	border-color: #333;
@@ -281,4 +288,26 @@ h1 {
 }
 .more-courses h2 {
 	text-align: center;
+}
+
+
+
+
+.modal-lesson .modal-title {
+	font-size: 22px;
+	font-weight: bold;
+	display: inline-block;
+}
+.modal-lesson .close {
+	margin-top: 5px;
+}
+.modal-lesson  .date {
+	display: flex;
+	justify-content: space-between;
+}
+.modal-lesson  .date>div h4, .modal-lesson  .date>div span {
+	display: inline-block;
+}
+.modal-lesson  .date>div span {
+	font-style: italic;
 }
