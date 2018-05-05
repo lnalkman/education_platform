@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from teacher.models import Course
+from teacher.models import Course, Category
 from .models import Profile
 
 
@@ -14,9 +14,17 @@ class CourseAuthorSerializer(serializers.ModelSerializer):
         fields = ('first_name', 'last_name', 'url')
 
 
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
 class CourseSerializer(serializers.ModelSerializer):
     author = CourseAuthorSerializer(read_only=True)
-    categories = serializers.StringRelatedField(many=True, read_only=True)
+    categories = CategorySerializer(many=True)
+    students_count = serializers.IntegerField()
 
     class Meta:
         model = Course

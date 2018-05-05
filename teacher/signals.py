@@ -1,3 +1,3 @@
-def delete_lesson_file(sender, instance, using, **kwargs):
+def delete_field_file(sender, instance, using, field, **kwargs):
     # Видаляємо файл зв'язаний об'єктом класу LessonFile
-    instance.file.delete(save=False)
+    instance.getattr(field).delete(save=False)

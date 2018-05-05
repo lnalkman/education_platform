@@ -24,25 +24,24 @@
 
     {% block head %}{% endblock %}
 </head>
-{% block _body %}
-    <body>
+<body>
 
-    {% block body %}{% endblock %}
+{% block body %}{% endblock %}
 
-    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-    <script src="{% static 'teacher/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/common.js' %}"></script>
+<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'teacher/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/common.js' %}"></script>
 
-    {% block footer %}{% endblock %}
-    {% if messages %}
-        <ul class="animated fadeIn errorlist col-xs-12 col-sm-5 col-md-4 col-lg-3">
-            <li class="exit">x</li>
-            <h4>Повідомлення</h4>
-            {% for message in messages %}
-                <li class="message {{ message.level_tag }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    </body>
-{% endblock %}
+{% block footer %}{% endblock %}
+{% if messages %}
+    <ul class="animated fadeIn errorlist col-xs-12 col-sm-5 col-md-4 col-lg-3">
+        <li class="exit">x</li>
+        <h4>Повідомлення</h4>
+        {% for message in messages %}
+            <li class="message {{ message.level_tag }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+</body>
+
 </html>

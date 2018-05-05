@@ -9,6 +9,14 @@ from edu_process.models import (
 )
 
 
+def course_photo_path(instance, filename):
+    return os.path.join(
+        profile_photo_path(instance.author, ''),
+        'courses',
+        filename
+    )
+
+
 class Course(models.Model):
     """
     Курс включає в себе модулі, які включають заняття
@@ -22,6 +30,12 @@ class Course(models.Model):
     description = models.TextField(verbose_name='Опис курсу', max_length=4096)
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     categories = models.ManyToManyField('Category', blank=True)
+    image = models.FileField(
+        verbose_name='Фото курсу',
+        upload_to=course_photo_path,
+        blank=True,
+        null=True
+    )
 
     students = models.ManyToManyField(Profile, related_name='subscribed_courses', blank=True)
 

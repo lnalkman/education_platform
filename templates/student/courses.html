@@ -3,8 +3,8 @@
 {% block head %}
     <title>Ваші курси | KPI EDU</title>
     <meta name="description" content="">
+
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'student/css/courses.css' %}">
 {% endblock %}
 
@@ -43,61 +43,144 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="categories">
-                                        <div class="btn-link active" v-on:click="set_active_category">Всі</div>
-                                        <div class="btn-link"  v-on:click="set_active_category" >Програмування</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Системна адміністрація</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Фізика</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Математика</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Алгоритмізація</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Програмування</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Системна адміністрація</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Фізика</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Математика</div>
-                                        <div class="btn-link"  v-on:click="set_active_category">Інше</div>
+                                        <div v-bind:class="[category_is_active('Всі') ? 'active' : '', 'btn-link']" v-on:click="set_active_category">Всі</div>
+                                        {% for category_name in subscribed_category_names %}
+                                            <div v-bind:class="[category_is_active('{{ category_name }}') ? 'active' : '', 'btn-link']" v-on:click="set_active_category">{{ category_name }}</div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="filters">
-                                <a href="#" class="active"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Найпопулярніші</a>
-                                <a href="#"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Найновіші</a>
-                            </div> -->
                         </div>
                         <div class="items">
-                            <div class="row">
+                            <div class="courses-loader cssload-thecube" v-show="loading">
+                                	<div class="cssload-cube cssload-c1"></div>
+                                    <div class="cssload-cube cssload-c2"></div>
+                                    <div class="cssload-cube cssload-c4"></div>
+                                    <div class="cssload-cube cssload-c3"></div>
+                            </div>
+                            <div class="row" v-show="!loading" style="display: none">
 
                                {# Рендерінг курсів, що знаходяться у filteredCourses #}
-                                
+
                                 <div class="item clearfix" v-for="(course, index) in filteredCourses" v-show="index < limit">
                                     <div class="col-sm-3">
                                         <a href="#">
-                                            <img   src="{% static 'img/post.jpg' %}"
-                                            alt="Profile">
+                                            <img v-bind:src="course.image || '{% static 'img/samples/gettingstarted.svg' %}'" alt="Course image">
                                         </a>
                                     </div>
                                     <div class="col-sm-9">
 
                                         <a href="#" class="name"><h3 >(( course.name | short(55) )) </h3></a>
-                                        
+
 
                                         <a v-bind:href="course.author.url" class="author" >(( course.author.first_name )) (( course.author.last_name ))</a>
                                         <div class="tags" >
 
                                             {# Рендерінг тегів #}
-                                            <a href="#" v-bind:class="{ active: category_is_active(tag) }" v-on:click="set_active_category" v-for="(tag) in course.categories" >(( tag ))</a>
+                                            <a href="#" v-bind:class="{ active: category_is_active(tag.name) }" v-on:click="set_active_category" v-for="(tag) in course.categories" >(( tag.name ))</a>
 
                                         </div>
-                                        <div class="date-register">(( locale_pub_date(course.pub_date) ))<span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> 12 зареєструвалось</div>
+                                        <div class="date-register">(( locale_pub_date(course.pub_date) ))<span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> (( course.students_count )) зареєструвалось</div>
                                         <div class="description">(( course.description | short(310) ))</div>
                                     </div>
                                     <div class="col-sm-12">
-                                        <div class="buttons" ><a href="#" class="button-more"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>Детальніше</a><a href="#" class="button-try"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Записатися</a></div>
+                                        <div class="buttons">
+                                            <a href="#" class="button-more col-sm-offset-3"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>Детальніше</a>
+{#                                            <a href="#" class="button-try"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Записатися</a>#}
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="no-courses" v-show="searchResultCount == 0 && !loading"><h2 class="text-muted text-center">У вас поки немає курсів</h2></div>
+
                                 <div class="col-sm-12">
                                     <div class="button-wrap">
-                                        <div class="button-more" v-show="limit < searchResultCount" v-on:click="limit +=2 "> Більше</div>
+                                        <div class="button-more" v-show="limit < searchResultCount" v-on:click="limit +=2">Більше</div>
                                     </div>
-                                </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                {# ALL COURSES SEARCH #}
+                <div role="tabpanel" class="tab-pane" id="all-courses">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <div class="search">
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <form action="">
+                                        <input type="search" v-model="searchString"  placeholder="Введіть текст для пошуку">
+                                    </form>
+                                </div>
+                                <div class="col-sm-2 results">Знайдено <span>(( searchResultCount ))</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="categories">
+                                        <div v-bind:class="[category_is_active('Всі') ? 'active' : '', 'btn-link']" v-on:click="set_active_category">Всі</div>
+                                        {% for category in categories %}
+                                            <div v-bind:class="[category_is_active('{{ category.name }}') ? 'active' : '', 'btn-link']"  v-on:click="set_active_category" data-category-id="{{ category.id }}">{{ category.name }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filters">
+                                <a href="#" v-on:click="set_order" data-order="-students_count" class="active"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Найпопулярніші</a>
+                                <a href="#" v-on:click="set_order" data-order="pub_date"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Найновіші</a>
+                            </div>
+                        </div>
+                        <div class="items">
+                            <div class="courses-loader cssload-thecube" v-show="loading">
+                                	<div class="cssload-cube cssload-c1"></div>
+                                    <div class="cssload-cube cssload-c2"></div>
+                                    <div class="cssload-cube cssload-c4"></div>
+                                    <div class="cssload-cube cssload-c3"></div>
+                            </div>
+                            <div class="row" v-show="!loading">
+
+                               {# Рендерінг курсів, що знаходяться у filteredCourses #}
+
+                                <div class="item clearfix" v-for="(course, index) in filteredCourses" v-show="index < limit">
+                                    <div class="col-sm-3">
+                                        <a href="#">
+                                            <img v-bind:src="course.image || '{% static 'img/samples/gettingstarted.svg' %}'" alt="Course image">
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-9">
+
+                                        <a href="#" class="name"><h3 >(( course.name | short(55) )) </h3></a>
+
+
+                                        <a v-bind:href="course.author.url" class="author" >(( course.author.first_name )) (( course.author.last_name ))</a>
+                                        <div class="tags" >
+
+                                            {# Рендерінг тегів #}
+                                            <a href="#" v-bind:class="{ active: category_is_active(tag.name) }" v-on:click="set_active_category" v-bind:data-category-id="tag.id" v-for="(tag) in course.categories" >(( tag.name ))</a>
+
+                                        </div>
+                                        <div class="date-register">(( locale_pub_date(course.pub_date) ))<span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> (( course.students_count )) зареєструвалось</div>
+                                        <div class="description">(( course.description | short(310) ))</div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="buttons">
+                                            <a href="#" class="button-more col-sm-offset-3"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>Детальніше</a>
+{#                                            <a href="#" class="button-try"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Записатися</a>#}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="no-courses" v-show="searchResultCount == 0 && !loading"><h2 class="text-muted text-center">Не знайдено результатів</h2></div>
+                                <div class="col-sm-12">
+                                    <div class="more-courses-loader cssload-thecube" v-show="loading_more">
+                                        <div class="cssload-cube cssload-c1"></div>
+                                        <div class="cssload-cube cssload-c2"></div>
+                                        <div class="cssload-cube cssload-c4"></div>
+                                        <div class="cssload-cube cssload-c3"></div>
+                                    </div>
+                                    <div class="button-wrap">
+                                        <div class="button-more" v-show="limit < searchResultCount && !loading_more" v-on:click="show_more_courses"> Більше</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -109,11 +192,5 @@
 {% endblock %}
 
 {% block footer %}
-<script src="{% static 'student/js/search-filter.js' %}"></script>
-<script>
-    
-</script>
-{#  Додаткові скрипти тут  #}
-
-
+    <script src="{% static 'student/js/search-filter.js' %}"></script>
 {% endblock %}
