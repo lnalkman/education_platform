@@ -15,6 +15,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.base import TemplateView
+from django.views.generic.detail import DetailView
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.db.models import Count
@@ -434,3 +435,29 @@ class CourseListJsonView(LoginRequiredMixin, View):
         return self.render_to_json(
             queryset, offset, result_count
         )
+
+
+from django.db.models import Count, Sum
+
+
+class CourseView(DetailView):
+    template_name = 'edu_process/course-detail.html'
+    model = Course
+    context_object_name = 'course'
+
+    def get_object(self, queryset=None):
+        queryset = self.model.objects.annotate(lesson_count=Count('module__lesson'))
+        return super(CourseView, self).get_object(queryset)
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseView, self).get_context_data(**kwargs)
+        user = self.request.user
+        context['visitor_subscribed'] = False
+        if user.is_authenticated():
+            try:
+                visitor_profile = user.profile
+                context['visitor_subscribed'] = self.object.students.filter(id=visitor_profile.id).exists()
+            except Profile.DoesNotExist:
+                pass
+
+        return context

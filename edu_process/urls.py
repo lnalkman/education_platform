@@ -2,7 +2,8 @@ from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from .views import (
     IndexView, SearchGroup, MessagesApiView, MessageView,
-    MessageUserApiView, UserAvatarView, LogoutView, CourseListJsonView
+    MessageUserApiView, UserAvatarView, LogoutView, CourseListJsonView,
+    CourseView
 )
 
 urlpatterns = [
@@ -14,7 +15,7 @@ urlpatterns = [
     url(r'^api/course/$', CourseListJsonView.as_view()),
     url(r'^avatar/$', UserAvatarView.as_view(), name='user-avatar'),
     url(r'^auth/logout/$', LogoutView.as_view(), name='logout'),
-    url(r'^course/id/$', TemplateView.as_view(template_name='edu_process/course-detail.html'), name='course-detail'),
+    url(r'^course/(?P<pk>[0-9]+)/$', CourseView.as_view(), name='course-detail'),
     url(r'^search/$', TemplateView.as_view(template_name='edu_process/global-search.html'), name='search'),
 
 ]
