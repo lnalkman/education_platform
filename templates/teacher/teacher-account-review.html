@@ -5,7 +5,8 @@
     <meta name="description" content="">
 
     <link rel="stylesheet" href="{% static 'teacher/css/teacher-account.css' %}">
-    <link rel="stylesheet" href="{% static 'teacher/css/jquery-ui.min.css' %}">
+{#    <link rel="stylesheet" href="{% static 'teacher/css/jquery-ui.min.css' %}">#}
+    <link rel="stylesheet" href="{% static 'teacher/css/teacher-account-review.css' %}">
 {% endblock %}
 
 {% block body %}
@@ -15,7 +16,7 @@
     </div>
 
     <div class="events-opener">
-        <span class="glyphicon glyphicon-calendar"></span>
+        <span class="glyphicon glyphicon-question-sign"></span>
     </div>
 
     {#   NAVBAR   #}
@@ -78,60 +79,23 @@
     </div>
 
 
-{#    <div class="events">#}
-{#        <h2>Найближчі події</h2>#}
-{#        {% for event in upcoming_events %}#}
-{#            <a href="{{ event.get_day_url }}" class="event">#}
-{#                <div class="date">#}
-{#                    <span class="number">{{ event.date.day }}.</span><span class="month">{{ event.date.month }}</span>#}
-{#                </div>#}
-{#                <div class="name">{{ event.title|truncatechars:14 }}</div>#}
-{#            </a>#}
-{#        {% empty %}#}
-{#            <p class="text-muted">На найближчі 7 днів не заплановано ніяких подій</p>#}
-{#        {% endfor %}#}
-{#    </div>#}
+    <div class="related-courses">
+        <h2>Курси викладача</h2>
+        <hr class="delimiter"/>
+        {% for course in object.course_set.all %}
+            <a href="{{ course.get_absolute_url }}" class="course">
+                <h4 class="course-name">{{ course.name }}</h4>
+                <span class="course-subscribers">{{ course.students.count }} слухачі</span>
+            </a>
+        {% endfor %}
 
+    </div>
 
-{#    <!-- Modal -->#}
-{#    <div class="modal fade" id="change-photo-modal" tabindex="-1" role="dialog">#}
-{#        <div class="modal-dialog modal-lg" role="document">#}
-{#            <div class="modal-content">#}
-{#                <div class="modal-header">#}
-{#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span#}
-{#                            aria-hidden="true">&times;</span>#}
-{#                    </button>#}
-{#                    <h4 class="modal-title">Додати нову фотографію</h4>#}
-{#                </div>#}
-{#                <form action="{% url 'user-avatar' %}" method="post" enctype="multipart/form-data">{% csrf_token %}#}
-{#                    <div class="modal-body text-center">#}
-{#                        <input type="hidden" name="offset_top1">#}
-{#                        <input type="hidden" name="offset_left1">#}
-{#                        <input type="hidden" name="offset_top2">#}
-{#                        <input type="hidden" name="offset_left2">#}
-{##}
-{#                        <!-- Фотографія тут -->#}
-{##}
-{#                        <div class="clearfix"></div>#}
-{#                        <div class="upload-btn-wrapper">#}
-{#                            <button class="btn btn-default">Обрати фотографію</button>#}
-{#                            <input type="file" name="photo" accept=".jpg, .jpeg, .png"/>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    <div class="modal-footer">#}
-{#                        <button type="button" class="btn btn-default delete-photo" data-dismiss="modal">Відмінити#}
-{#                        </button>#}
-{#                        <button type="submit" class="btn btn-primary save-photo" disabled="disabled">Зберегти зміни#}
-{#                        </button>#}
-{#                    </div>#}
-{#                </form>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
 
 {% endblock %}
 
 {% block footer %}
+    <script src="{% static 'teacher/js/teacher-account-review.js' %}"></script>
 {% endblock %}
 
 
