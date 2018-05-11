@@ -93,8 +93,9 @@ class CourseListView(TeacherRequiredMixin, FormMixin, ListView):
         return self.request.user.profile.course_set.all()
 
     def form_valid(self, form):
-        form.cleaned_data['author'] = self.request.user.profile
-        Course.objects.create(**form.cleaned_data)
+        instance = form.save(commit=False)
+        instance.author = self.request.user.profile
+        instance.save()
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
@@ -120,11 +121,22 @@ class CourseSettings(TeacherRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user.profile.course_set.get(pk=self.kwargs['pk'])
 
+    # def get_form_kwargs(self):
+    #     """
+    #     Щоб запобігти появі віджету ClearableFileInput (псує дизайн)
+    #     робимо поле image пустим, а для видалення фотографії задамо вручну
+    #     в шаблоні input[name='delete-post-photo'] та в self.form_valid перевіримо чи
+    #     він заданий.
+    #     """
+    #     kwargs = super(EditPostView, self).get_form_kwargs()
+    #     kwargs['initial']['image'] = None
+    #     return kwargs
+
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context['module_list'] = self.object.module_set.all()
         context['calendar_note_list'] = self.object.calendarnote_set.all()
-        context['update_form'] = CourseForm(instance=self.object)
+        context['update_form'] = CourseForm(instance=self.object, initial={"image": None})
         context['add_module_form'] = ModuleForm(initial={'course': self.object})
         return context
 
@@ -144,9 +156,7 @@ class AjaxUpdateCourse(TeacherRequiredMixin, View):
         return JsonResponse(data)
 
     def form_valid(self, form):
-        Course.objects.filter(pk=self.kwargs['pk']).update(
-            **form.cleaned_data
-        )
+        form.save()
         return self.render_to_json({'success': True})
 
     def form_invalid(self, form):
@@ -157,7 +167,8 @@ class AjaxUpdateCourse(TeacherRequiredMixin, View):
         return self.render_to_json(data)
 
     def post(self, request, *args, **kwargs):
-        form = self.form(self.request.POST)
+        instance = get_object_or_404(Course, id=self.kwargs['pk'])
+        form = self.form(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             return self.form_valid(form)
         return self.form_invalid(form)

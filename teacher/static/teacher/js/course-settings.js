@@ -7,9 +7,10 @@ $("form.update-course").find("input, textarea").focus(function () {
 $("form.update-course").submit(function (e) {
     $(this).find('.status').hide();
     $(this).find('button[type=submit]').button('loading');
+    var formData = new FormData(this);
     $.ajax({
         url: $(this).attr('action'),
-        data: $(this).serialize(),
+        data: formData,
         method: 'post',
         dataType: 'json',
         context: this,
@@ -23,8 +24,10 @@ $("form.update-course").submit(function (e) {
         error: function (jqXHR, textStatus) {
             $(this).find('.status.label-danger').show();
             $(this).find('button[type=submit]').button('reset');
-        }
-
+        },
+        cache: false,
+        contentType: false,
+        processData: false
     });
     return false;
 });
@@ -174,9 +177,30 @@ $(".groups-remove").click(function (e) {
         success: function (data) {
             loadGroupList();
         }
-    })
-
+    });
 });
+
+
+$('.image-preview-clear').click(function(){
+		$('.image-preview-filename').val("");
+		$('.image-preview-clear').hide();
+		$('.image-preview-input input:file').val("");
+		$(".image-preview-input-title").text("Обрати");
+	});
+	// Create the preview image
+	$(".image-preview-input input:file").change(function (){
+		var file = this.files[0];
+		var reader = new FileReader();
+		// Set preview image into the popover data-content
+		reader.onload = function (e) {
+			$(".image-preview-input-title").text("Змінити");
+			$(".image-preview-clear").show();
+			$(".image-preview-filename").val(file.name);
+			$('#course-image-preview').attr('src', e.target.result);
+		};
+		reader.readAsDataURL(file);
+	});
+
 
 loadGroupList();
 

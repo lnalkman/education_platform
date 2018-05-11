@@ -16,10 +16,11 @@ class CourseForm(ModelForm):
 
     class Meta:
         model = Course
-        exclude = ('author', 'categories', 'students')
+        exclude = ('students', 'author')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'cols': 9}),
+            'categories': forms.SelectMultiple(attrs={'class': 'form-control'}),
         }
 
 

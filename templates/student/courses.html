@@ -43,9 +43,9 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="categories">
-                                        <div v-bind:class="[category_is_active('Всі') ? 'active' : '', 'btn-link']" v-on:click="set_active_category">Всі</div>
-                                        {% for category_name in subscribed_category_names %}
-                                            <div v-bind:class="[category_is_active('{{ category_name }}') ? 'active' : '', 'btn-link']" v-on:click="set_active_category">{{ category_name }}</div>
+                                        <div v-bind:class="[category_is_active(-1) ? 'active' : '', 'btn-link']" v-on:click="set_active_category" data-category-id="-1">Всі</div>
+                                        {% for category in subscribed_categories %}
+                                            <div v-bind:class="[category_is_active('{{ category.id }}') ? 'active' : '', 'btn-link']" v-on:click="set_active_category" data-category-id="{{ category.id }}">{{ category.name }}</div>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -70,14 +70,14 @@
                                     </div>
                                     <div class="col-sm-9">
 
-                                        <a href="#" class="name"><h3 >(( course.name | short(55) )) </h3></a>
+                                        <a href="#" class="name"><h3 >(( course.name | short(55) ))</h3></a>
 
 
                                         <a v-bind:href="course.author.url" class="author" >(( course.author.first_name )) (( course.author.last_name ))</a>
                                         <div class="tags" >
 
                                             {# Рендерінг тегів #}
-                                            <a href="#" v-bind:class="{ active: category_is_active(tag.name) }" v-on:click="set_active_category" v-for="(tag) in course.categories" >(( tag.name ))</a>
+                                            <a href="#" v-bind:class="{ active: category_is_active(tag.id) }" v-bind:data-category-id="tag.id" v-on:click="set_active_category" v-for="(tag) in course.categories" >(( tag.name ))</a>
 
                                         </div>
                                         <div class="date-register">(( locale_pub_date(course.pub_date) ))<span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> (( course.students_count )) зареєструвалось</div>
@@ -118,16 +118,16 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="categories">
-                                        <div v-bind:class="[category_is_active('Всі') ? 'active' : '', 'btn-link']" v-on:click="set_active_category">Всі</div>
+                                        <div v-bind:class="[category_is_active(null) ? 'active' : '', 'btn-link']" v-on:click="set_active_category" data-category-id="null">Всі</div>
                                         {% for category in categories %}
-                                            <div v-bind:class="[category_is_active('{{ category.name }}') ? 'active' : '', 'btn-link']"  v-on:click="set_active_category" data-category-id="{{ category.id }}">{{ category.name }}</div>
+                                            <div v-bind:class="[category_is_active('{{ category.id }}') ? 'active' : '', 'btn-link']"  v-on:click="set_active_category" data-category-id="{{ category.id }}">{{ category.name }}</div>
                                         {% endfor %}
                                     </div>
                                 </div>
                             </div>
                             <div class="filters">
                                 <a href="#" v-on:click="set_order" data-order="-students_count" class="active"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Найпопулярніші</a>
-                                <a href="#" v-on:click="set_order" data-order="pub_date"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Найновіші</a>
+                                <a href="#" v-on:click="set_order" data-order="-pub_date"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Найновіші</a>
                             </div>
                         </div>
                         <div class="items">
@@ -156,7 +156,7 @@
                                         <div class="tags" >
 
                                             {# Рендерінг тегів #}
-                                            <a href="#" v-bind:class="{ active: category_is_active(tag.name) }" v-on:click="set_active_category" v-bind:data-category-id="tag.id" v-for="(tag) in course.categories" >(( tag.name ))</a>
+                                            <a href="#" v-bind:class="{ active: category_is_active(tag.id) }" v-on:click="set_active_category" v-bind:data-category-id="tag.id" v-for="(tag) in course.categories" >(( tag.name ))</a>
 
                                         </div>
                                         <div class="date-register">(( locale_pub_date(course.pub_date) ))<span class="glyphicon glyphicon glyphicon-record" aria-hidden="true"></span> (( course.students_count )) зареєструвалось</div>

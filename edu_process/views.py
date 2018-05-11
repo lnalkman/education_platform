@@ -369,7 +369,7 @@ class CourseListJsonView(LoginRequiredMixin, View):
     # Максимальна кількість занять, яку повертає view
     MAX_COURSES_RETURN = 10
 
-    order_choices = ('-students_count', 'pub_date')
+    order_choices = ('-students_count', '-pub_date')
 
     def render_to_json(self, queryset, offset, result_count):
         data = {
@@ -435,9 +435,6 @@ class CourseListJsonView(LoginRequiredMixin, View):
         return self.render_to_json(
             queryset, offset, result_count
         )
-
-
-from django.db.models import Count, Sum
 
 
 class CourseView(DetailView):

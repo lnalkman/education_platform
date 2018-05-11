@@ -90,7 +90,7 @@ var demo = new Vue({
 
             },
             filteredCourses: undefined,
-            activeCategory: "",
+            activeCategoryId: null,
             searchResultCount: 0,
             _searchInputTimer: undefined,
             courses: [],
@@ -140,11 +140,12 @@ var demo = new Vue({
             return "";
         },
         set_active_category: function (event) {
+            console.log('set_active_cateogry ' + $(event.target).data('category-id'));
             if ($(event.target).text() === "Всі") {
-                this.activeCategory = "";
+                this.activeCategoryId = null;
             }
             else {
-                this.activeCategory = $(event.target).text();
+                this.activeCategoryId = +$(event.target).data('category-id');
             }
             $(".categories .active").removeClass("active");
             $(event.target).addClass("active");
@@ -155,16 +156,17 @@ var demo = new Vue({
                 searchString = this.searchString,
                 vm = this;
 
-            if (vm.activeCategory.length) {
-                vm.limit = 2;
-                courses_array = courses_array.filter(function (item) {
-                    for (var i = 0; i < item.categories.length; i++) {
-                        if (vm.activeCategory === item.categories[i].name) {
-                            return true;
-                        }
+
+            vm.limit = 2;
+            courses_array = courses_array.filter(function (item) {
+                for (var i = 0; i < item.categories.length; i++) {
+                    console.log(vm.activeCategoryId + ' ' + item.categories[i].id);
+                    if (+vm.activeCategoryId === +item.categories[i].id || vm.activeCategoryId === null) {
+                        return true;
                     }
-                })
-            }
+                }
+            });
+
 
             if (!searchString) {
                 $(".item").removeHighlight();
@@ -174,22 +176,19 @@ var demo = new Vue({
                 courses_array = courses_array.filter(function (item) {
                     if ((item.name.toLowerCase().indexOf(searchString) !== -1
                             || item.description.toLowerCase().indexOf(searchString) !== -1)) {
-                        $(".item ").removeHighlight();
-                        $(".item .name").highlight(searchString);
-                        $(".item .description").highlight(searchString);
                         return item;
                     }
                 })
             }
-
+            console.log(courses_array);
             vm.searchResultCount = courses_array.length;
 
             // Повертає відфільтровані розділи
 
             return courses_array;
         },
-        category_is_active: function (categoryName) {
-            return this.activeCategory === categoryName || categoryName === "Всі"
+        category_is_active: function (categoryId) {
+            return this.activeCategoryId === +categoryId || categoryId === "Всі"
         }
     },
     watch: {
@@ -208,8 +207,17 @@ var demo = new Vue({
                 delay
             )
         },
-        activeCategory: function () {
+        activeCategoryId: function () {
             this.filteredCourses = this.get_courses();
+        },
+        filteredCourses: function () {
+            if (this.searchString) {
+                this.$nextTick(function () {
+                    $(".item ").removeHighlight();
+                    $(".item .name").highlight(this.searchString);
+                    $(".item .description").highlight(this.searchString);
+                })
+            }
         }
     }
 });
@@ -231,7 +239,6 @@ var search_courses = new Vue({
 
             },
             filteredCourses: undefined,
-            activeCategory: "",
             activeCategoryId: undefined,
             _searchInputTimer: undefined,
             _result_count: 0,
@@ -253,16 +260,15 @@ var search_courses = new Vue({
         },
 
         set_active_category: function (event) {
+            console.log('set_active_cateogry ' + $(event.target).data('category-id'));
             if ($(event.target).text() === "Всі") {
-                this.activeCategory = "";
-                this.activeCategoryId = undefined;
+                this.activeCategoryId = null;
             }
             else {
-                this.activeCategory = $(event.target).text();
-                this.activeCategoryId = $(event.target).data('category-id');
+                this.activeCategoryId = +$(event.target).data('category-id');
             }
             $(".categories .active").removeClass("active");
-            $(event.target).addClass("active");
+            $(".categories").addClass("active");
 
             this.download_courses();
         },
@@ -275,8 +281,8 @@ var search_courses = new Vue({
             return this.courses;
         },
 
-        category_is_active: function (categoryName) {
-            return this.activeCategory === categoryName || categoryName === "Всі"
+        category_is_active: function (categoryId) {
+            return this.activeCategoryId === categoryId || categoryId === null
         },
 
         download_courses: function (offset) {
@@ -294,7 +300,7 @@ var search_courses = new Vue({
 
             $.ajax({
                 url: '/api/course/',
-                data: {student_id: 'self', offset: offset, q: vm.searchString, order: vm.order, category_id: vm.activeCategoryId},
+                data: {offset: offset, q: vm.searchString, order: vm.order, category_id: vm.activeCategoryId},
                 type: 'get',
                 success: function (data) {
                     var queryset = data['queryset'];
@@ -362,7 +368,7 @@ var search_courses = new Vue({
                 delay
             )
         },
-        activeCategory: function () {
+        activeCategoryId: function () {
             this.download_courses();
         },
         order: function () {

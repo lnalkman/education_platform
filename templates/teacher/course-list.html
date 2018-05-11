@@ -111,6 +111,15 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="{{ form.categories.id_for_label }}"
+                                   class="col-sm-3 control-label">Категорії</label>
+                            <div class="col-sm-8">
+                                {{ form.categories }}
+                                <small class="help-block">Затисніть клавішу "Control", або "Command" на Mac, щоб обрати більше однієї опції.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <div class="col-sm-offset-3 col-sm-8">
                                 <div class="checkbox">
                                     <label>
@@ -119,6 +128,7 @@
                                 </div>
                             </div>
                         </div>
+                        {{ form.author }}
 
                     </div>
                     <div class="modal-footer">

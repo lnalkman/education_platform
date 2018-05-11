@@ -134,7 +134,8 @@
                                 <div class="panel-heading">Опис курсу</div>
                                 <div class="panel-body">
                                     <form class="form-horizontal update-course"
-                                          action="{% url 'teacher:course-update' pk=Course.pk %}">
+                                          action="{% url 'teacher:course-update' pk=Course.pk %}"
+                                          enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <div class="form-group">
                                             <label for="{{ update_form.name.id_for_label }}"
@@ -145,10 +146,63 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <div class="col-sm-3">
+                                                {% if Course.image %}
+                                                    <img id="course-image-preview" class="img-responsive" src="{{ Course.image.url }}">
+                                                {% else %}
+                                                    <img id="course-image-preview" class="img-responsive" src="">
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <div class="input-group image-preview">
+                                                    {#                                                    {% if Course.image %}#}
+                                                    {#                                                        <span class="input-group-addon">#}
+                                                    {#                                                                <input type="checkbox" name="delete-photo">#}
+                                                    {#                                                                Видалити#}
+                                                    {#                                                        </span>#}
+                                                    {#                                                    {% endif %}#}
+                                                    {% if Course.image %}
+                                                        <input type="text" value="{{ Course.image.name }}"
+                                                               class="form-control image-preview-filename"
+                                                               disabled="disabled">
+                                                        <!-- don't give a name === doesn't send on POST/GET -->
+                                                    {% else %}
+                                                        <input type="text" class="form-control image-preview-filename"
+                                                               disabled="disabled">
+                                                        <!-- don't give a name === doesn't send on POST/GET -->
+                                                    {% endif %}
+                                                    <span class="input-group-btn">
+														<!-- image-preview-clear button -->
+														<button type="button"
+                                                                class="btn btn-default image-preview-clear"
+                                                                style="display:none;">
+															<span class="glyphicon glyphicon-remove"></span> Видалити
+														</button>
+                                                        <!-- image-preview-input -->
+														<button class="btn btn-default image-preview-input">
+															<span class="glyphicon glyphicon-folder-open"></span>
+															<span class="image-preview-input-title">Обрати</span>
+                                                            {{ update_form.image }}
+														</button>
+													</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label for="{{ update_form.description.id_for_label }}"
                                                    class="col-sm-3 control-label">Опис курсу</label>
                                             <div class="col-sm-8">
                                                 {{ update_form.description }}
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ update_form.categories.id_for_label }}"
+                                                   class="col-sm-3 control-label">Категорії</label>
+                                            <div class="col-sm-8">
+                                                {{ update_form.categories }}
+                                                <small class="help-block">Затисніть клавішу "Control", або "Command" на
+                                                    Mac, щоб обрати більше однієї опції.
+                                                </small>
                                             </div>
                                         </div>
                                         <div class="form-group">
