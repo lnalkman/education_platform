@@ -61,7 +61,7 @@ h1 {
 }
 
 .content {
-	padding: 55px 100px 54px;
+	padding: 55px 46px 54px 100px;
 	background-color: #fff;
 }
 .author {
@@ -158,13 +158,14 @@ h1 {
 	-webkit-transition: all .3s ease;
 	-o-transition: all .3s ease;
 	transition: all .3s ease;
+	justify-content: space-between;
 }
 .section:not(.active) .section-outer:hover {
 	-webkit-box-shadow: 0 0 33px 4px rgba(0,0,0,.1);
   box-shadow: 0 0 33px 4px rgba(0,0,0,.1);
 }
 .section .section-outer .section-right {
-	margin: auto;
+	margin: auto 0;
 	font-weight: bold;
 	text-decoration: underline;
 	min-width: 91px;
@@ -197,6 +198,7 @@ h1 {
 	display: -ms-flex;
 	display: -o-flex;
 	display: flex;
+	justify-content: space-between;
 }
 .section .section-inner .lesson:not(:last-child) {
 	padding-bottom: 10px;
@@ -204,7 +206,7 @@ h1 {
 	margin-bottom: 10px;
 }
 .section .section-inner .lesson  .lesson-right {
-	margin: auto;
+	margin: auto 0;
 }
 .section .section-inner .lesson .button-more {
 	display: inline-block;
@@ -260,6 +262,7 @@ h1 {
 .comments .comment-top .comment-name {
 	font-size: 22px;
 	font-weight: bold;
+	line-height: 1.3;
 }
 .comments .comment-top .comment-date {
 	font-size: 18px;
@@ -310,4 +313,116 @@ h1 {
 }
 .modal-lesson  .date>div span {
 	font-style: italic;
+}
+
+@media (max-width:992px) {
+	.item-about-wrap-outer {
+		display: -webkit-flex;
+		display: -moz-flex;
+		display: -ms-flex;
+		display: -o-flex;
+		display: flex;
+	}
+	.item-about-wrap {
+		margin: auto;
+	}
+	.all-info {
+		margin-top: 50px;
+	}
+}
+
+@media (max-width:768px) {
+	.content {
+    padding: 55px 30px 54px;
+  }
+  .section .section-inner {
+  	padding: 15px 30px;
+  }
+  .section .section-inner .lesson .button-more .glyphicon {
+  	margin-right: 0;
+  }
+  .hide-text-buut {
+  	display: none;
+  }
+  .comments .comment {
+  	margin-left: 10px;
+  	margin-right: 10px;
+  }
+	.title-page-parallax .title-parallax .date-likes .date {
+		display: block;
+	}
+	.comments .comment-content {
+		font-size: 16px;
+		text-align: center;
+	}
+	.modal-lesson .date {
+		-webkit-flex-wrap: wrap;
+		-moz-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		-o-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.modal-lesson .date > div {
+		width: 100%;
+	}
+}
+
+@media (max-width:480px) {
+	.comments .comment-top {
+		-webkit-flex-wrap: wrap;
+		-moz-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		-o-flex-wrap: wrap;
+		flex-wrap: wrap;
+		text-align: center;
+	}
+	.comments .comment-top .comment-photo img {
+		margin-right: 0;
+	}
+	.comments .comment-top > div {
+		margin: auto;
+		width: 100%;
+	}
+	.comments .comment-top .comment-photo {
+		margin-bottom: 20px;
+	}
+	.content {
+    padding: 55px 15px 54px;
+	}
+	.section .section-outer {
+		-webkit-flex-wrap: wrap;
+		-moz-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		-o-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.section .section-outer > div {
+		width: 100%;
+	}
+	.section .section-outer .section-description {
+		line-height: 1.3;
+	}
+	.section .section-outer .section-right {
+		text-align: center;
+		margin-top: 10px;
+	}
+	.section .section-outer h3 {
+		margin-bottom: 10px;
+	}
+	.section .section-inner .lesson {
+		-webkit-flex-wrap: wrap;
+		-moz-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		-o-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.section .section-inner .lesson > div {
+		width: 100%;
+	}
+	.section .section-inner .lesson .lesson-right {
+		text-align: center;
+	}
+	.comments .comment {
+    padding: 30px 10px 20px;
+  }
 }

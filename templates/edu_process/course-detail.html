@@ -37,7 +37,56 @@
 
     <div class="content">
         <div class="row">
-            <div class="col-xs-12 col-sm-8">
+            <div class="col-sm-12 col-md-4 col-md-push-8">
+                <div class="author">
+                    {% with author=course.author  %}
+                        <!-- <h2>Автор курсу:</h2> -->
+                        {% if author.photo %}
+                            <img src="{{ author.photo.url }}" alt="Course Author">
+                        {% else %}
+                            <img src="" alt="No photo">
+                        {% endif %}
+                        <p>
+                            <a href="{{ author.get_absolute_url }}">{{ author.user.first_name }} {{ author.user.last_name }}</a>
+                        </p>
+                    {% endwith %}
+                </div>
+                <div class="item-about-wrap-outer">
+                    <div class="item-about-wrap">
+                        <div class="item-about-course theme">
+                            Категорії:
+                            {% for category in course.categories.all %}
+                                {% if forloop.last %}
+                                    {# Останню категорію виводимо без коми #}
+                                    <span class="label label-info">{{ category.name }}</span>
+                                {% else %}
+                                    <span class="label label-info">{{ category.name }}</span>,
+                                {% endif %}
+                            {% empty %}
+                                <span class="text-muted">категорії відсутні</span>
+                            {% endfor %}
+                        </div>
+                        <div class="item-about-course sections">Розділів: <span>{{ course.module_set.all.count }}</span></div>
+                        <div class="item-about-course lessons">Уроків: <span>{{ course.lesson_count }}</span></div>
+                        <div class="item-about-course durability">Тривалість: <span><span class="text-danger">TODO</span></span></div>
+                        <div class="item-about-course subscribers">Підписались: <span>{{ course.students.count }}</span></div>
+                    </div>
+                </div>
+                <div class="button-wrap">
+                {% with visitor=request.user %}
+                    {% if visitor.profile.is_student %}
+                        {% if visitor_subscribed %}
+                            <a href="#" class="button-try button-untry"><span aria-hidden="true" class="glyphicon glyphicon-erase"></span>Відписатися</a>
+                        {% else %}
+                            <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-pencil"></span>Записатися</a>
+                        {% endif %}
+                    {% elif visitor.profile == course.author %}
+                        <a href="#" class="button-try btn-primary"><span aria-hidden="true" class="glyphicon glyphicon-pencil"></span>Редагувати</a>
+                    {% endif %}
+                {% endwith %}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-8 col-md-pull-4">
                 <div class="all-info">
                     <div class="description">
                         <h2>Опис курсу:</h2>
@@ -70,7 +119,7 @@
                                                 </p>
                                             </div>
                                             <div class="lesson-right"><a href="#" class="button-more"><span
-                                                    aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a>
+                                                    aria-hidden="true" class="glyphicon glyphicon-folder-open"></span><span class="hide-text-buut">Детальніше</span></a>
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -94,14 +143,14 @@
 {#                                        <h4>#1 lesson</h4>#}
 {#                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>#}
 {#                                    </div>#}
-{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>#}
+{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span><span class="hide-text-buut">Детальніше</span></a></div>#}
 {#                                </div>#}
 {#                                <div class="lesson">#}
 {#                                    <div class="lesson-left">#}
 {#                                        <h4>#2 lesson</h4>#}
 {#                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>#}
 {#                                    </div>#}
-{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>#}
+{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span><span class="hide-text-buut">Детальніше</span></a></div>#}
 {#                                </div>#}
 {#                            </div>#}
 {#                        </div>#}
@@ -121,14 +170,14 @@
 {#                                        <h4>#1 lesson</h4>#}
 {#                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>#}
 {#                                    </div>#}
-{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>#}
+{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span><span class="hide-text-buut">Детальніше</span></a></div>#}
 {#                                </div>#}
 {#                                <div class="lesson">#}
 {#                                    <div class="lesson-left">#}
 {#                                        <h4>#2 lesson</h4>#}
 {#                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>#}
 {#                                    </div>#}
-{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>#}
+{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span><span class="hide-text-buut">Детальніше</span></a></div>#}
 {#                                </div>#}
 {#                            </div>#}
 {#                        </div>#}
@@ -148,14 +197,14 @@
 {#                                        <h4>#1 lesson</h4>#}
 {#                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>#}
 {#                                    </div>#}
-{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>#}
+{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span><span class="hide-text-buut">Детальніше</span></a></div>#}
 {#                                </div>#}
 {#                                <div class="lesson">#}
 {#                                    <div class="lesson-left">#}
 {#                                        <h4>#2 lesson</h4>#}
 {#                                        <p class="lesson-discr">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime iusto rem unde pariatur asperiores suscipit reiciendis esse quas cupiditate earum.</p>#}
 {#                                    </div>#}
-{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a></div>#}
+{#                                    <div class="lesson-right"><a href="#" class="button-more"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span><span class="hide-text-buut">Детальніше</span></a></div>#}
 {#                                </div>#}
 {#                            </div>#}
 {#                        </div>#}
@@ -252,51 +301,6 @@
                     </div>
 
 
-                </div>
-            </div>
-            <div class="col-sm-3 col-sm-offset-1">
-                <div class="author">
-                    {% with author=course.author  %}
-                        <!-- <h2>Автор курсу:</h2> -->
-                        {% if author.photo %}
-                            <img src="{{ author.photo.url }}" alt="Course Author">
-                        {% else %}
-                            <img src="" alt="No photo">
-                        {% endif %}
-                        <p>
-                            <a href="{{ author.get_absolute_url }}">{{ author.user.first_name }} {{ author.user.last_name }}</a>
-                        </p>
-                    {% endwith %}
-                </div>
-                <div class="item-about-course theme">
-                    Категорії:
-                    {% for category in course.categories.all %}
-                        {% if forloop.last %}
-                            {# Останню категорію виводимо без коми #}
-                            <span class="label label-info">{{ category.name }}</span>
-                        {% else %}
-                            <span class="label label-info">{{ category.name }}</span>,
-                        {% endif %}
-                    {% empty %}
-                        <span class="text-muted">категорії відсутні</span>
-                    {% endfor %}
-                </div>
-                <div class="item-about-course sections">Розділів: <span>{{ course.module_set.all.count }}</span></div>
-                <div class="item-about-course lessons">Уроків: <span>{{ course.lesson_count }}</span></div>
-                <div class="item-about-course durability">Тривалість: <span><span class="text-danger">TODO</span></span></div>
-                <div class="item-about-course subscribers">Підписались: <span>{{ course.students.count }}</span></div>
-                <div class="button-wrap">
-                {% with visitor=request.user %}
-                    {% if visitor.profile.is_student %}
-                        {% if visitor_subscribed %}
-                            <a href="#" class="button-try button-untry"><span aria-hidden="true" class="glyphicon glyphicon-erase"></span>Відписатися</a>
-                        {% else %}
-                            <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-pencil"></span>Записатися</a>
-                        {% endif %}
-                    {% elif visitor.profile == course.author %}
-                        <a href="#" class="button-try btn-primary"><span aria-hidden="true" class="glyphicon glyphicon-pencil"></span>Редагувати</a>
-                    {% endif %}
-                {% endwith %}
                 </div>
             </div>
         </div>
