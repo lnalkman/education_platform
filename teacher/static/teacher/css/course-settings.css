@@ -114,6 +114,11 @@ body .content {
 	margin-left: 2px;
 }
 
+.calendar-notes {
+    max-height: 480px;
+    overflow-y: auto;
+}
+
 @media (max-width: 768px) {
     body .content {
         padding-left: 15px;

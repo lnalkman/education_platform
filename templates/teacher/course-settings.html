@@ -58,6 +58,13 @@
                                                 <p class="list-group-item-text">
                                                     {{ module.description|truncatechars:150 }}
                                                 </p>
+                                                <small class="text-muted">Створено: {{ module.pub_date }}</small>
+                                                {% if module.visible %}
+                                                    <small class="pull-right text-success">Видимий</small>
+                                                {% else %}
+                                                    <small class="pull-right text-danger">Прихований</small>
+                                                {% endif %}
+
                                             </a>
                                         {% empty %}
                                             <h4 class="text-center">У цьому курсі немає розділів</h4>
@@ -78,7 +85,7 @@
                                         <thead>
                                         <tr>
                                             <td>Статус</td>
-                                            <td>{{ Course.draft|yesno:"Опублікований,Не опублікований" }}</td>
+                                            <td>{{ Course.visible|yesno:"Опублікований,Не опублікований" }}</td>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -105,9 +112,9 @@
                             <div class="col-xs-12 col-sm-5 pull-right">
                                 <div class="panel panel-danger">
                                     <!-- Default panel contents -->
-                                    <div class="panel-heading">Найближчі календарні події</div>
-                                    <div class="list-group">
-                                        {% for calendar_note in calendar_note_list|slice:":5" %}
+                                    <div class="panel-heading">Календарні події</div>
+                                    <div class="list-group calendar-notes">
+                                        {% for calendar_note in calendar_note_list %}
                                             <a href="{{ calendar_note.get_day_url }}" class="list-group-item">
                                                 <small>{{ calendar_note.date }}</small>
                                                 <h4 class="list-group-item-heading ">{{ calendar_note.title|truncatechars:25 }}</h4>
@@ -117,10 +124,6 @@
                                         {% empty %}
                                             <p class="text-center">У цьому курсі немає календарних подій</p>
                                         {% endfor %}
-                                        {#                                    <a href="#" class="list-group-item">#}
-                                        {#                                        <h4 class="list-group-item-heading">{% lorem 3 w random %}</h4>#}
-                                        {#                                        <p class="list-group-item-text">{% lorem 5 w random %}</p>#}
-                                        {#                                    </a>#}
                                     </div>
                                 </div>
                             </div>
@@ -209,7 +212,7 @@
                                             <div class="col-sm-offset-3 col-sm-8">
                                                 <div class="checkbox">
                                                     <label>
-                                                        {{ update_form.draft }} Опублікувати
+                                                        {{ update_form.visible }} Опублікувати
                                                     </label>
                                                 </div>
                                             </div>
@@ -330,17 +333,20 @@
                                 <label for="{{ add_module_form.name.id_for_label }}" class="control-label">Назва
                                     розділу</label>
                                 {{ add_module_form.name }}
+                                <span class="help-block"></span>
                             </div>
                             <div class="form-group">
                                 <label for="{{ add_module_form.description.id_for_label }}" class="control-label">Опис
                                     розділу</label>
                                 {{ add_module_form.description }}
+                                <span class="help-block"></span>
                             </div>
 
                             <div class="checkbox">
                                 <label>
                                     {{ add_module_form.visible }} Видимий
                                 </label>
+                                <span class="help-block"></span>
                             </div>
                         </form>
                     </div>

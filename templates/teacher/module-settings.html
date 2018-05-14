@@ -125,16 +125,18 @@
                         <div class="form-group">
                             <label for="{{ lesson_form.name.id_for_label }}">Назва уроку</label>
                             {{ lesson_form.name }}
+                            <span class="help-block"></span>
                         </div>
                         <div class="form-group">
                             <label for="{{ lesson_form.short_description.id_for_label }}">Короткий опис заняття</label>
                             {{ lesson_form.short_description }}
+                            <span class="help-block"></span>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Закрити</button>
-                    <button type="button" class="btn btn-primary btn-submit">Додати</button>
+                    <button type="button" class="btn btn-primary btn-submit" data-loading-text="Створюємо...">Додати</button>
                 </div>
             </div>
         </div>

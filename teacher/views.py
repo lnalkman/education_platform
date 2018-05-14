@@ -99,6 +99,7 @@ class CourseListView(TeacherRequiredMixin, FormMixin, ListView):
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
@@ -221,7 +222,7 @@ class AjaxAddModule(TeacherRequiredMixin, View):
     def form_invalid(self, form):
         data = {
             'success': False,
-            'errors': form.errors.as_json()
+            'errors': form.errors
         }
         return self.render_to_json(data)
 

@@ -36,7 +36,8 @@ $("form.update-course").submit(function (e) {
 // ADD MODULE FORM
 $('button.submit-modal').click(function (e) {
     var form = $('form.add-module');
-    $(this).button('loading');
+    var btn = $(this);
+    btn.button('loading');
     $.ajax({
         url: $(form).attr('action'),
         data: $(form).serialize(),
@@ -45,9 +46,16 @@ $('button.submit-modal').click(function (e) {
         context: form,
         timeout: 5000,
         success: function (data) {
-            console.log(data);
             if (data.success) {
                 location.reload();
+            }
+            else {
+                for (var field in data.errors) {
+                    var input = form.find('[name=' + field + ']');
+                    input.parents('.form-group').addClass('has-error');
+                    input.next('.help-block').text(data.errors[field]);
+                }
+                btn.button('reset');
             }
         },
         error: function (jqXHR, textStatus) {

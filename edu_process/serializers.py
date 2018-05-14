@@ -25,7 +25,8 @@ class CourseSerializer(serializers.ModelSerializer):
     author = CourseAuthorSerializer(read_only=True)
     categories = CategorySerializer(many=True)
     students_count = serializers.IntegerField()
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = Course
-        fields = '__all__'
+        exclude = ('students',)

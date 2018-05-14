@@ -131,6 +131,8 @@ $(".file-upload-form input").on('change', function () {
 
 $("#add-lesson-modal .btn-submit").click(function () {
     var form = $("#add-lesson-modal form");
+    var btn = $(this);
+    btn.button('loading');
     $.ajax({
         url: form.attr('action'),
         type: 'post',
@@ -142,7 +144,13 @@ $("#add-lesson-modal .btn-submit").click(function () {
             }
             else {
                 console.log(data);
+                for (var field in data.errors) {
+                    var input = form.find('[name=' + field + ']');
+                    input.parents('.form-group').addClass('has-error');
+                    input.next('.help-block').text(data.errors[field]);
+                }
             }
+            btn.button('reset');
         }
     })
 });

@@ -39,8 +39,11 @@ class Course(models.Model):
 
     students = models.ManyToManyField(Profile, related_name='subscribed_courses', blank=True)
 
-    draft = models.BooleanField(default=False)
+    visible = models.BooleanField(default=True)
     pub_date = models.DateTimeField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        return reverse('course-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return textwrap.shorten(self.name, width=24, placeholder='...')
@@ -91,8 +94,6 @@ class Lesson(models.Model):
     name = models.CharField(
         verbose_name='Назва заняття',
         max_length=255,
-        blank=True,
-        null=True
     )
     short_description = models.TextField(verbose_name='Короткий опис заняття', max_length=512)
 
@@ -168,7 +169,12 @@ class CalendarNote(models.Model):
         verbose_name_plural = 'Календарні записи'
 
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
     lesson = models.ForeignKey(
         Lesson,
         on_delete=models.SET_NULL,

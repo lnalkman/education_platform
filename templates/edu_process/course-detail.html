@@ -258,7 +258,11 @@
                 <div class="author">
                     {% with author=course.author  %}
                         <!-- <h2>Автор курсу:</h2> -->
-                        <img src="{{ author.photo.url }}" alt="Course Author">
+                        {% if author.photo %}
+                            <img src="{{ author.photo.url }}" alt="Course Author">
+                        {% else %}
+                            <img src="" alt="No photo">
+                        {% endif %}
                         <p>
                             <a href="{{ author.get_absolute_url }}">{{ author.user.first_name }} {{ author.user.last_name }}</a>
                         </p>
