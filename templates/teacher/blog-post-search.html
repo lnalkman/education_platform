@@ -8,7 +8,7 @@
                 знайдено {{ paginator.count }}
                 {% with last_digit=paginator.count|get_digit:"1" %}
                     {% if last_digit == 1 %}публікацію
-                    {% elif last_digit == 2 or last_digit == 3 or last_digit == 4 %}публакації
+                    {% elif last_digit == 2 or last_digit == 3 or last_digit == 4 %}публікації
                     {% else %}публікацій
                     {% endif %}
                 {% endwith %}

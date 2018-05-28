@@ -37,7 +37,7 @@
                 <div class="row">
                     {% with author=publication.author %}
                         <div class="col-xs-8 col-xs-offset-2 col-sm-offset-0 col-sm-3">
-                            <img class="img-responsive img-circle center-block" src="{{ author.photo.url }}" />
+                            <img class="img-responsive img-circle center-block" src="{% if author.photo %}{{ author.photo.url }}{% else %}{% static 'img/profile.jpg' %}{% endif %}" />
                         </div>
                         <div class="col-xs-12 col-sm-9">
                             <h3 class="author-name"><a href="#">{{ author.user.first_name }} {{ author.user.last_name }}</a></h3>

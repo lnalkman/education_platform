@@ -1,0 +1,157 @@
+{% extends 'skeleton.html' %}
+{% load static %}
+{% block head %}
+    <title>Пошук | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'css/global-search.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    {#   NAVBAR   #}
+    {% if request.user.profile.is_student %}
+        {% include 'student/components/navbar.html' with search=True %}
+    {% elif request.user.profile.is_teacher %}
+        {% include 'teacher/components/navbar.html' with search=True %}
+    {% endif %}
+
+    <div class="container-fluid content">
+        <div class="row">
+
+            <div class="col-sm-offset-1 col-sm-10">
+                <div class="search">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <form action="" method="get">
+                                <input type="hidden" name="order_by" value="{{ order_by }}">
+                                <input type="hidden" name="category_id" value="{{ active_category_id }}">
+                                <input type="hidden" name="model" value="Course">
+                                <input type="text" name="q" value="{{ q }}" placeholder="Введіть текст для пошуку">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-offset-1 col-md-10">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    <li role="presentation" class="active"><a href="?q={{ q }}&model=Course&order_by=-students_count" aria-controls="settings"
+                                                              aria-expanded="true"
+                                                              class="outer-tab"><span>Список курсів</span><span
+                            class="results">Знайдено <span>{{ result_count }}</span></span></a></li>
+                    <li role="presentation"><a href="?q={{ q }}&model=Profile" aria-controls="modules"
+                                               aria-expanded="false">
+                        Список людей</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+
+                <div role="tabpanel" id="all-courses" class="tab-pane active">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="categories">
+                                    <div class="btn-link {% if active_category_id == '' %}active{% endif %}">
+                                        <a href="?q={{ q }}&order_by={{ order_by }}&model={{ model }}">Всі</a>
+                                    </div>
+                                    {% for category in categories %}
+                                        <div class="btn-link {% if category.id == active_category_id %}active{% endif %}">
+                                            <a href="?q={{ q }}&category_id={{ category.id }}&order_by={{ order_by }}&model={{ model }}">
+                                                {{ category.name }}
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filters">
+                            <a href="?q={{ q }}&category_id={{ category.id }}&order_by=-students_count&model={{ model }}"
+                               {% if order_by == '-students_count' %}class="active"{% endif %}>
+                                <span aria-hidden="true" class="glyphicon glyphicon-star"></span>
+                                Найпопулярніші
+                            </a>
+                            <a href="?q={{ q }}&category_id={{ category.id }}&order_by=-pub_date&model={{ model }}"
+                               {% if order_by == '-pub_date' %}class="active"{% endif %}>
+                                <span aria-hidden="true" class="glyphicon glyphicon-time"></span>
+                                Найновіші
+                            </a>
+                        </div>
+                        <div class="items">
+                            <div class="courses-loader cssload-thecube" style="display: none;">
+                                <div class="cssload-cube cssload-c1"></div>
+                                <div class="cssload-cube cssload-c2"></div>
+                                <div class="cssload-cube cssload-c4"></div>
+                                <div class="cssload-cube cssload-c3"></div>
+                            </div>
+                            <div class="row" style="">
+                                {% for course in courses %}
+                                    <div class="item clearfix">
+                                        <div class="col-sm-3">
+                                            {% if course.image %}
+                                                <a href="{{ course.get_absolute_url }}">
+                                                    <img src="{{ course.image.url }}"
+                                                         alt="Course image">
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ course.get_absolute_url }}">
+                                                    <img src="/Static/img/samples/gettingstarted.svg"
+                                                         alt="Course image">
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <a href="#" class="name"><h3>{{ course.name }}</h3></a>
+                                            {% with user=course.author.user %}
+                                                <a href="{{ course.author.get_absolute_url }}"
+                                                   class="author">{{ user.first_name }} {{ user.last_name }}</a>
+                                            {% endwith %}
+                                            <div class="tags"></div>
+                                            <div class="date-register">{{ course.pub_date }}<span aria-hidden="true"
+                                                                                              class="glyphicon glyphicon glyphicon-record"></span>
+                                                {{ course.students_count }} зареєструвалось
+                                            </div>
+                                            <div class="description">{{ course.description|truncatechars:'128' }}...</div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="buttons">
+                                                <a href="{{ course.get_absolute_url }}" class="button-more col-sm-offset-3"><span
+                                                        aria-hidden="true"
+                                                        class="glyphicon glyphicon-folder-open"></span>Детальніше</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="no-courses col-xs-12">
+                                        <h2 class="text-muted text-center">Не знайдено результатів</h2>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <nav>
+                            <ul class="pager">
+                                {% if page_obj.has_previous %}
+                                    <li class="previous"><a
+                                            href="?q={{ q }}&category_id={{ active_category_id }}&order_by={{ order_by }}&model={{ model }}&page={{ page_obj.previous_page_number }}"><span
+                                            aria-hidden="true">&larr;</span> Назад</a></li>
+                                {% else %}
+                                    <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Назад</a>
+                                    </li>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <li class="next"><a
+                                            href="?q={{ q }}&category_id={{ active_category_id }}&order_by={{ order_by }}&model={{ model }}&page={{ page_obj.next_page_number }}">Вперед
+                                        <span aria-hidden="true">&rarr;</span></a></li>
+                                {% else %}
+                                    <li class="next disabled"><a>Вперед <span aria-hidden="true">&rarr;</span></a></li>
+                                {% endif %}
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -13,8 +13,9 @@ from django.core import serializers
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import dates
+from django.contrib import messages
 
-from edu_process.models import Group, Profile
+from edu_process.models import Group, Profile, Message
 from .models import (
     Course, CalendarNote, Module,
     Lesson, LessonFile, Publication
@@ -82,6 +83,22 @@ class TeacherProfile(LoginRequiredMixin, ListView):
 
         context['last_publications'] = self.get_last_publications()
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        message = request.POST.get('message')
+        if message:
+            from_ = self.request.user
+            to = self.object.user
+
+            Message.objects.create(sender=from_, receiver=to, text=message)
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Повідомлення надіслано'
+            )
+
+        return HttpResponseRedirect(self.object.get_absolute_url())
 
 
 class CourseListView(TeacherRequiredMixin, FormMixin, ListView):
@@ -614,7 +631,7 @@ class HrefCalendar(HTMLCalendar):
     booked_class = 'booked'
     today_class = 'today'
 
-    def __init__(self, theyear, themonth, prew_url='#', next_url='#', booked_days=None):
+    def __init__(self, theyear, themonth, day_url_name, prew_url='#', next_url='#', booked_days=None):
         """:booked_days -> контейнер в якому зберігаються дні в місяці в яких є якісь нотатки"""
         HTMLCalendar.__init__(self)
         self.theyear = theyear
@@ -623,6 +640,7 @@ class HrefCalendar(HTMLCalendar):
         self.next_url = next_url
         self.booked_days = booked_days
         self.today = date.today()
+        self.day_url_name = day_url_name
 
     def formatmonthname(self, theyear, themonth, withyear=True):
         """
@@ -659,7 +677,7 @@ class HrefCalendar(HTMLCalendar):
                                                                       self.booked_class if booked else '',
                                                                       today,
                                                                       reverse(
-                                                                          'teacher:calendar-day',
+                                                                          self.day_url_name,
                                                                           kwargs={
                                                                               'year': self.theyear,
                                                                               'month': self.themonth,
@@ -732,6 +750,7 @@ class CalendarView(TeacherRequiredMixin, TemplateView):
         context['calendar_table'] = HrefCalendar(
             theyear=year,
             themonth=month,
+            day_url_name='teacher:calendar-day',
             prew_url=self.get_prev_month_url(year, month),
             next_url=self.get_next_month_url(year, month),
             booked_days=booked_days,
@@ -909,9 +928,10 @@ class AddPostView(TeacherRequiredMixin, FormView):
     form_class = PublicationForm
 
     def form_valid(self, form):
-        form.cleaned_data['author'] = self.request.user.profile
+        profile = self.request.user.profile
+        form.cleaned_data['author'] = profile
         Publication.objects.create(**form.cleaned_data)
-        return HttpResponseRedirect(reverse('teacher:blog'))
+        return HttpResponseRedirect(reverse('teacher:blog', kwargs={'pk': profile.pk}))
 
 
 class PublicationView(DetailView):

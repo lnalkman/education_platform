@@ -1,0 +1,152 @@
+{% extends 'skeleton.html' %}
+{% load static %}
+{% block head %}
+    <title>Пошук | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'css/global-search.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    {#   NAVBAR   #}
+    {% if request.user.profile.is_student %}
+        {% include 'student/components/navbar.html' with search=True %}
+    {% elif request.user.profile.is_teacher %}
+        {% include 'teacher/components/navbar.html' with search=True %}
+    {% endif %}
+
+    <div class="container-fluid content">
+        <div class="row">
+
+            <div class="col-sm-offset-1 col-sm-10">
+                <div class="search">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <form action="" method="get">
+                                <input type="hidden" name="profile_type" value="{{ profile_type }}">
+                                <input type="search" name="q" value="{{ q }}" placeholder="Введіть текст для пошуку">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-offset-1 col-md-10">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    <li role="presentation" class="">
+                        <a href="?q={{ q }}&model=Course&order_by=-students_count" aria-controls="settings">
+                            Список курсів
+                        </a>
+                    </li>
+                    <li role="presentation" class="active">
+                        <a href="?q={{ q }}&profile_type={{ profile_type }}" aria-controls="modules" aria-expanded="false" class="outer-tab">
+                            <span>Список людей</span>
+                            <span class="results">Знайдено <span>{{ result_count }}</span></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                {# ALL PEOPLE PANEL #}
+                <div role="tabpanel" id="all-people" class="tab-pane active">
+                    <div class="col-sm-offset-1 col-sm-10">
+                        <div class="filters">
+                            <a href="?q={{ q }}&profile_type=teacher" data-order="-students_count"
+                               {% if profile_type == 'teacher' %}class="active"{% endif %}>
+                                <span aria-hidden="true" class="glyphicon glyphicon-education"></span>
+                                Викладачі
+                            </a>
+                            <a href="?q={{ q }}&profile_type=student"
+                               {% if profile_type == 'student' %}class="active"{% endif %}>
+                                <span aria-hidden="true" class="glyphicon glyphicon-user"></span>
+                                Студенти
+                            </a>
+                        </div>
+                        <div class="items">
+                            <div class="courses-loader cssload-thecube" style="display: none;">
+                                <div class="cssload-cube cssload-c1"></div>
+                                <div class="cssload-cube cssload-c2"></div>
+                                <div class="cssload-cube cssload-c4"></div>
+                                <div class="cssload-cube cssload-c3"></div>
+                            </div>
+                            {% for profile in profiles %}
+                                <div class="item">
+                                    <div class="author">
+                                        {% if profile.photo %}
+                                            <img src="{{ profile.photo.url }}" alt="...">
+                                        {% else %}
+                                            <img src="{% static 'img/profile.jpg' %}" alt="No photo">
+                                        {% endif %}
+                                        <p>
+                                            <a href="{{ profile.get_absolute_url }}"
+                                               class="name">{{ profile.user.first_name }} {{ profile.user.last_name }}</a>
+                                            <span class="status">{{ profile.get_user_type_display }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="item-about-wrap-outer">
+                                        <div class="item-about-wrap">
+                                            {% if profile.is_teacher %}
+                                                <div class="item-about-course">
+                                                    <a href="{% url 'teacher:blog' pk=profile.pk %}">Публікацій: <span class="text-muted">{{ profile.publication_set.all.count }}</span></a>
+                                                </div>
+                                                <div class="item-about-course">
+                                                    Створено курсів: <span>{{ profile.course_set.all.count }}</span>
+                                                </div>
+                                            {% endif %}
+                                            {% if profile.is_student %}
+                                                <div class="item-about-course">
+                                                    Група:
+                                                    <span class="text-muted">
+                                                        {% if profile.group %}
+                                                            {{ profile.group.name }}
+                                                        {% else %}
+                                                            ---
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                                <div class="item-about-course">
+                                                    Слухає курсів:
+                                                    <span class="text-muted">
+                                                        {{ profile.subscribed_courses.all.count }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="button-wrap">
+                                        <a href="{{ profile.get_absolute_url }}" class="button-try"><span aria-hidden="true"
+                                                                             class="glyphicon glyphicon-user"></span>Детальніше</a>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="no-courses col-xs-12">
+                                    <h2 class="text-muted text-center">Не знайдено результатів</h2>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+
+                        <nav>
+                            <ul class="pager">
+                                {% if page_obj.has_previous %}
+                                    <li class="previous"><a href="?q={{ q }}&profile_type={{ profile_type }}&page={{ page_obj.previous_page_number }}"><span aria-hidden="true">&larr;</span> Назад</a></li>
+                                {% else %}
+                                    <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Назад</a></li>
+                                {% endif %}
+                                {% if page_obj.has_next %}
+                                    <li class="next"><a href="?q={{ q }}&profile_type={{ profile_type }}&page={{ page_obj.next_page_number }}">Вперед <span aria-hidden="true">&rarr;</span></a></li>
+                                {% else %}
+                                    <li class="next disabled"><a>Вперед <span aria-hidden="true">&rarr;</span></a></li>
+                                {% endif %}
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                {# END ALL PEOPLE PANEL #}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

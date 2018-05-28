@@ -3,18 +3,19 @@ import uuid
 from django.core import serializers
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.shortcuts import reverse
+from django.shortcuts import reverse, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
-from django.views.generic.base import View
+from django.views.generic.base import View, TemplateView
+from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
 from django.http.response import (
     HttpResponseRedirect, HttpResponse, JsonResponse,
     HttpResponseBadRequest, HttpResponseNotFound
 )
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.core.files.base import ContentFile
 from django.contrib import messages
@@ -22,8 +23,8 @@ from django.db.models import Count
 from PIL import Image
 
 from .models import Profile, Group, Message, get_user_messages
-from .serializers import CourseSerializer
-from teacher.models import Course
+from .serializers import CourseSerializer, LessonSerializer
+from teacher.models import Course, Lesson, Category
 
 
 LoginRequiredMixin.login_url = reverse_lazy('index')
@@ -437,7 +438,7 @@ class CourseListJsonView(LoginRequiredMixin, View):
         )
 
 
-class CourseView(DetailView):
+class CourseView(LoginRequiredMixin, DetailView):
     template_name = 'edu_process/course-detail.html'
     model = Course
     context_object_name = 'course'
@@ -446,15 +447,133 @@ class CourseView(DetailView):
         queryset = self.model.objects.annotate(lesson_count=Count('module__lesson'))
         return super(CourseView, self).get_object(queryset)
 
+    def get_similar_courses(self):
+        return Course.objects.filter(categories=self.object.categories.all())[:3]
+
     def get_context_data(self, **kwargs):
         context = super(CourseView, self).get_context_data(**kwargs)
         user = self.request.user
         context['visitor_subscribed'] = False
-        if user.is_authenticated():
-            try:
-                visitor_profile = user.profile
-                context['visitor_subscribed'] = self.object.students.filter(id=visitor_profile.id).exists()
-            except Profile.DoesNotExist:
-                pass
+        # context['similar_courses'] = self.get_similar_courses()
+        try:
+            visitor_profile = user.profile
+            context['visitor_subscribed'] = self.object.students.filter(id=visitor_profile.id).exists()
+        except Profile.DoesNotExist:
+            pass
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get('action')
+        course = get_object_or_404(self.model, pk=kwargs['pk'])
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            return HttpResponseRedirect(
+                reverse('course-detail', kwargs={'pk': kwargs['pk']})
+            )
+        if profile.is_student():
+            if action == 'subscribe':
+                course.students.add(profile)
+            elif action == 'unsubscribe':
+                course.students.remove(profile)
+
+        return HttpResponseRedirect(
+            reverse('course-detail', kwargs={'pk': kwargs['pk']})
+        )
+
+
+class LessonJsonView(LoginRequiredMixin, View):
+
+    def get_lesson(self, pk):
+        return Lesson.objects.get(pk=pk)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            lesson = self.get_lesson(kwargs.get('pk'))
+        except Lesson.DoesNotExist:
+            return JsonResponse({})
+
+        data = LessonSerializer(lesson).data
+
+        return JsonResponse(data, safe=False)
+
+
+class GlobalSearchView(LoginRequiredMixin, ListView):
+    paginate_by = 6
+    paginate_orphans = 3
+    allowed_orderings = ('-students_count', '-pub_date', '-pk')
+
+    def get(self, request, *args, **kwargs):
+        self.model_type = self.request.GET.get('model', 'Profile')
+        self.search_term = self.request.GET.get('q', '')
+        self.order_by = self.request.GET.get('order_by', '-pk')
+        return super(GlobalSearchView, self).get(request, *args, **kwargs)
+
+    def get_template_names(self):
+        if self.model_type == 'Profile':
+            return 'edu_process/global-search-people.html',
+        elif self.model_type == 'Course':
+            return 'edu_process/global-search-courses.html',
+
+    def get_queryset(self):
+        queryset = None
+        if self.model_type == 'Profile':
+            profile_type = self.request.GET.get('profile_type', 'teacher')
+            queryset = Profile.objects.filter(
+                Q(user__first_name__icontains=self.search_term)
+                | Q(user__last_name__icontains=self.search_term)
+            )
+
+            if profile_type == 'teacher':
+                queryset = queryset.filter(user_type=Profile.TEACHER)
+            elif profile_type == 'student':
+                queryset = queryset.filter(user_type=Profile.STUDENT)
+
+        elif self.model_type == 'Course':
+            category_id = self.request.GET.get('category_id')
+            courses = Course.objects.filter(
+                Q(name__icontains=self.search_term)
+                | Q(description__icontains=self.search_term)
+            )
+            if category_id:
+                courses = courses.filter(categories__id=category_id)
+
+            queryset = courses.annotate(students_count=Count('students'))
+        else:
+            raise Http404('Не знайдено сторінки для моделі %s' % self.model_type)
+
+        self.queryset_len = queryset.count()
+        return queryset.order_by(self.get_ordering())
+
+
+    def get_ordering(self):
+        if self.order_by in self.allowed_orderings:
+            return self.order_by
+        return '-pk'
+
+    def get_context_object_name(self, object_list):
+        if self.model_type == 'Profile':
+            return 'profiles'
+        elif self.model_type == 'Course':
+            return 'courses'
+
+    def get_context_data(self, **kwargs):
+        context = super(GlobalSearchView, self).get_context_data(**kwargs)
+        context['model'] = self.model_type
+        context['order_by'] = self.order_by
+        context['q'] = self.search_term
+        context['profile_type'] = self.request.GET.get('profile_type', 'teacher')
+        context['result_count'] = self.queryset_len
+        try:
+            context['active_category_id'] = int(self.request.GET.get('category_id'))
+        except (TypeError, ValueError):
+            context['active_category_id'] = ''
+
+        if self.model_type == 'Course':
+            context['categories'] = Category.objects.filter(course__in=self.object_list).distinct()
+
+        return context
+
+
+

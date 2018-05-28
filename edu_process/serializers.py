@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from teacher.models import Course, Category
+from teacher.models import Course, Category, Lesson, LessonFile
 from .models import Profile
 
 
@@ -30,3 +30,19 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         exclude = ('students',)
+
+
+class LessonFileSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='filename', read_only=True)
+    url = serializers.CharField(source='file.url', read_only=True)
+    class Meta:
+        model = LessonFile
+        fields = ('name', 'url')
+
+
+class LessonSerializer(serializers.ModelSerializer):
+    files = LessonFileSerializer(source='lessonfile_set.all', many=True, read_only=True)
+
+    class Meta:
+        model = Lesson
+        fields = '__all__'

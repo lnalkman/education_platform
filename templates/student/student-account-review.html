@@ -1,10 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'skeleton.html' %}
+{% load staticfiles %}
+{% block head %}
+    <title>Профіль | KPI EDU</title>
+    <meta name="description" content="">
 
-</body>
-</html>
+    <link rel="stylesheet" href="{% static 'student/css/student-account.css' %}">
+    <link rel="stylesheet" href="{% static 'student/css/student-account-review.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    <div class="events-opener">
+        <span class="glyphicon glyphicon-question-sign"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% if request.user.profile.is_student %}
+        {% include 'student/components/navbar.html' %}
+    {% elif request.user.profile.is_teacher %}
+        {% include 'teacher/components/navbar.html' %}
+    {% endif %}
+
+
+    <div class="page-content container-fluid">
+        <h2 class="profile-type">Студентський профіль</h2>
+        <div class="profile-info">
+            <div class="image-block col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-md-3 col-md-offset-0 col-lg-2">
+                <img class='avatar'
+                     src="
+
+                             {% if object.photo %}{{ object.photo.url }}{% else %}{% static 'img/profile.jpg' %}{% endif %}"
+                     alt="Profile">
+
+                <button type="button"
+                        class="btn btn-default center-block"
+                        data-toggle="modal"
+                        data-target="#send-message-modal"
+                >
+                    <span class="glyphicon glyphicon-send"></span>
+                    Написати
+                </button>
+            </div>
+
+            <div class="info col-xs-12 col-sm-10 col-md-8 col-lg-9">
+                <div class="name"><h2>{{ object.user.first_name }} {{ object.user.last_name }}</h2></div>
+                <div class="personal-info">
+                    {% if object.about_me %}
+                        {{ object.about_me }}
+                    {% else %}
+                        <span class="text-muted">Інформація відсутня</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="related-courses">
+        <h2>Курси студента</h2>
+        <hr class="delimiter"/>
+        {% for course in object.subscribed_courses.all %}
+            <a href="{{ course.get_absolute_url }}" class="course">
+                <h4 class="course-name">{{ course.name }}</h4>
+                <span class="course-subscribers">Слухачів: {{ course.students.count }}</span>
+            </a>
+        {% endfor %}
+
+    </div>
+
+    <div class="modal fade" id="send-message-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Надіслати
+                        повідомлення {{ object.user.first_name }} {{ object.user.last_name }}</h4>
+                </div>
+                <form action="" method="post">{% csrf_token %}
+                    <div class="modal-body">
+                        <label for="input-message">Тест повідомлення</label>
+                        <textarea id="input-message" class="form-control" name="message" rows="8" maxlength="512"
+                                  required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрити</button>
+                        <button type="submit" class="btn btn-primary">Надіслати</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    <script src="{% static 'teacher/js/teacher-account-review.js' %}"></script>
+{% endblock %}

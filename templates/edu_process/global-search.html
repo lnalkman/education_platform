@@ -33,12 +33,16 @@
 
             <div class="col-md-offset-1 col-md-10">
                 <ul class="nav nav-tabs nav-justified" role="tablist">
-                    <li role="presentation" class=""><a href="#all-courses" aria-controls="settings" role="tab" data-toggle="tab" aria-expanded="true" class="outer-tab"><span>Список курсів</span><span class="results">Знайдено <span>0</span></span></a></li>
-                    <li role="presentation" class="active"><a href="#all-people" aria-controls="modules" role="tab" data-toggle="tab" aria-expanded="false" class="outer-tab"><span>Список людей</span><span class="results">Знайдено <span>0</span></span></a></li>
+                    <li role="presentation" class=""><a href="#all-courses" aria-controls="settings" role="tab"
+                                                        data-toggle="tab" aria-expanded="true" class="outer-tab"><span>Список курсів</span><span
+                            class="results">Знайдено <span>0</span></span></a></li>
+                    <li role="presentation" class="active"><a href="#all-people" aria-controls="modules" role="tab"
+                                                              data-toggle="tab" aria-expanded="false" class="outer-tab"><span>Список людей</span><span
+                            class="results">Знайдено <span>0</span></span></a></li>
                 </ul>
             </div>
             <div class="tab-content">
-                
+
                 <div role="tabpanel" id="all-courses" class="tab-pane">
                     <div class="col-sm-offset-1 col-sm-10">
                         <div class="row">
@@ -49,8 +53,12 @@
                             </div>
                         </div>
                         <div class="filters">
-                            <a href="#" data-order="-students_count" class="active"><span aria-hidden="true" class="glyphicon glyphicon-star"></span> Найпопулярніші</a>
-                            <a href="#" data-order="-pub_date" class=""><span aria-hidden="true" class="glyphicon glyphicon-time"></span> Найновіші</a>
+                            <a href="#" data-order="-students_count" class="active"><span aria-hidden="true"
+                                                                                          class="glyphicon glyphicon-star"></span>
+                                Найпопулярніші</a>
+                            <a href="#" data-order="-pub_date" class=""><span aria-hidden="true"
+                                                                              class="glyphicon glyphicon-time"></span>
+                                Найновіші</a>
                         </div>
                         <div class="items">
                             <div class="courses-loader cssload-thecube" style="display: none;">
@@ -62,18 +70,23 @@
                             <div class="row" style="">
                                 <div class="item clearfix">
                                     <div class="col-sm-3">
-                                        <a href="#"><img src="/Static/img/samples/gettingstarted.svg" alt="Course image"></a>
+                                        <a href="#"><img src="/Static/img/samples/gettingstarted.svg"
+                                                         alt="Course image"></a>
                                     </div>
                                     <div class="col-sm-9">
                                         <a href="#" class="name"><h3>фывафыв а </h3></a>
                                         <a href="/teacher/id-1/" class="author">Олег Халін</a>
                                         <div class="tags"></div>
-                                        <div class="date-register">31.03.2018, 16:22<span aria-hidden="true" class="glyphicon glyphicon glyphicon-record"></span> 0 зареєструвалось</div>
+                                        <div class="date-register">31.03.2018, 16:22<span aria-hidden="true"
+                                                                                          class="glyphicon glyphicon glyphicon-record"></span>
+                                            0 зареєструвалось
+                                        </div>
                                         <div class="description">ыва фыв афыва фыв афыва</div>
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="buttons">
-                                            <a href="/course/1/" class="button-more col-sm-offset-3"><span aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a>
+                                            <a href="/course/1/" class="button-more col-sm-offset-3"><span
+                                                    aria-hidden="true" class="glyphicon glyphicon-folder-open"></span>Детальніше</a>
                                         </div>
                                     </div>
                                 </div>
@@ -96,11 +109,13 @@
                         </div>
                     </div>
                 </div>
-                
+
+
+                {# ALL PEOPLE PANEL #}
                 <div role="tabpanel" id="all-people" class="tab-pane active">
                     <div class="col-sm-offset-1 col-sm-10">
                         <h2>Викладачі:</h2>
-                        <div class="items">
+                        <div class="items teachers">
                             <div class="courses-loader cssload-thecube" style="display: none;">
                                 <div class="cssload-cube cssload-c1"></div>
                                 <div class="cssload-cube cssload-c2"></div>
@@ -109,138 +124,35 @@
                             </div>
                             <div class="item">
                                 <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
+                                    <!-- <h2>Автор курсу:</h2> -->
+                                    <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
+                                    <p>
+                                        <a href="/teacher/id-1/" class="name">Олег Халін</a>
+                                        <span class="status">Викладач</span>
+                                    </p>
                                 </div>
                                 <div class="item-about-wrap-outer">
                                     <div class="item-about-wrap">
                                         <div class="item-about-course theme">
                                             Категорії:
-                                                <span class="text-muted">категорії відсутні</span>
+                                            <span class="text-muted">категорії відсутні</span>
                                         </div>
                                         <div class="item-about-course sections">Створено курсів: <span>6</span></div>
                                         <div class="item-about-course theme">
                                             Групи:
-                                                <span class="text-muted">групи відсутні</span>
+                                            <span class="text-muted">групи відсутні</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
-                                </div>
-                                <div class="item-about-wrap-outer">
-                                    <div class="item-about-wrap">
-                                        <div class="item-about-course theme">
-                                            Категорії:
-                                                <span class="text-muted">категорії відсутні</span>
-                                        </div>
-                                        <div class="item-about-course sections">Створено курсів: <span>6</span></div>
-                                        <div class="item-about-course theme">
-                                            Групи:
-                                                <span class="text-muted">групи відсутні</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
-                                </div>
-                                <div class="item-about-wrap-outer">
-                                    <div class="item-about-wrap">
-                                        <div class="item-about-course theme">
-                                            Категорії:
-                                                <span class="text-muted">категорії відсутні</span>
-                                        </div>
-                                        <div class="item-about-course sections">Створено курсів: <span>6</span></div>
-                                        <div class="item-about-course theme">
-                                            Групи:
-                                                <span class="text-muted">групи відсутні</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
-                                </div>
-                                <div class="item-about-wrap-outer">
-                                    <div class="item-about-wrap">
-                                        <div class="item-about-course theme">
-                                            Категорії:
-                                                <span class="text-muted">категорії відсутні</span>
-                                        </div>
-                                        <div class="item-about-course sections">Створено курсів: <span>6</span></div>
-                                        <div class="item-about-course theme">
-                                            Групи:
-                                                <span class="text-muted">групи відсутні</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
-                                </div>
-                                <div class="item-about-wrap-outer">
-                                    <div class="item-about-wrap">
-                                        <div class="item-about-course theme">
-                                            Категорії:
-                                                <span class="text-muted">категорії відсутні</span>
-                                        </div>
-                                        <div class="item-about-course sections">Створено курсів: <span>6</span></div>
-                                        <div class="item-about-course theme">
-                                            Групи:
-                                                <span class="text-muted">групи відсутні</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
+                                    <a href="#" class="button-try"><span aria-hidden="true"
+                                                                         class="glyphicon glyphicon-user"></span>Детальніше</a>
                                 </div>
                             </div>
                         </div>
 
                         <h2>Студенти:</h2>
-                        <div class="items">
+                        <div class="items students">
                             <div class="courses-loader cssload-thecube" style="display: none;">
                                 <div class="cssload-cube cssload-c1"></div>
                                 <div class="cssload-cube cssload-c2"></div>
@@ -249,12 +161,12 @@
                             </div>
                             <div class="item">
                                 <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Студент</span>
-                                        </p>
+                                    <!-- <h2>Автор курсу:</h2> -->
+                                    <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
+                                    <p>
+                                        <a href="/teacher/id-1/" class="name">Олег Халін</a>
+                                        <span class="status">Студент</span>
+                                    </p>
                                 </div>
                                 <div class="item-about-wrap-outer">
                                     <div class="item-about-wrap">
@@ -263,17 +175,18 @@
                                     </div>
                                 </div>
                                 <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
+                                    <a href="#" class="button-try"><span aria-hidden="true"
+                                                                         class="glyphicon glyphicon-user"></span>Детальніше</a>
                                 </div>
                             </div>
                             <div class="item">
                                 <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
+                                    <!-- <h2>Автор курсу:</h2> -->
+                                    <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
+                                    <p>
+                                        <a href="/teacher/id-1/" class="name">Олег Халін</a>
+                                        <span class="status">Викладач</span>
+                                    </p>
                                 </div>
                                 <div class="item-about-wrap-outer">
                                     <div class="item-about-wrap">
@@ -282,17 +195,18 @@
                                     </div>
                                 </div>
                                 <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
+                                    <a href="#" class="button-try"><span aria-hidden="true"
+                                                                         class="glyphicon glyphicon-user"></span>Детальніше</a>
                                 </div>
                             </div>
                             <div class="item">
                                 <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
+                                    <!-- <h2>Автор курсу:</h2> -->
+                                    <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
+                                    <p>
+                                        <a href="/teacher/id-1/" class="name">Олег Халін</a>
+                                        <span class="status">Викладач</span>
+                                    </p>
                                 </div>
                                 <div class="item-about-wrap-outer">
                                     <div class="item-about-wrap">
@@ -301,17 +215,18 @@
                                     </div>
                                 </div>
                                 <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
+                                    <a href="#" class="button-try"><span aria-hidden="true"
+                                                                         class="glyphicon glyphicon-user"></span>Детальніше</a>
                                 </div>
                             </div>
                             <div class="item">
                                 <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
+                                    <!-- <h2>Автор курсу:</h2> -->
+                                    <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
+                                    <p>
+                                        <a href="/teacher/id-1/" class="name">Олег Халін</a>
+                                        <span class="status">Викладач</span>
+                                    </p>
                                 </div>
                                 <div class="item-about-wrap-outer">
                                     <div class="item-about-wrap">
@@ -320,17 +235,18 @@
                                     </div>
                                 </div>
                                 <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
+                                    <a href="#" class="button-try"><span aria-hidden="true"
+                                                                         class="glyphicon glyphicon-user"></span>Детальніше</a>
                                 </div>
                             </div>
                             <div class="item">
                                 <div class="author">
-                                        <!-- <h2>Автор курсу:</h2> -->
-                                            <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
-                                        <p>
-                                            <a href="/teacher/id-1/" class="name">Олег Халін</a>
-                                            <span class="status">Викладач</span>
-                                        </p>
+                                    <!-- <h2>Автор курсу:</h2> -->
+                                    <img src="/Static/img/samples/gettingstarted.svg" alt="No photo">
+                                    <p>
+                                        <a href="/teacher/id-1/" class="name">Олег Халін</a>
+                                        <span class="status">Викладач</span>
+                                    </p>
                                 </div>
                                 <div class="item-about-wrap-outer">
                                     <div class="item-about-wrap">
@@ -339,13 +255,15 @@
                                     </div>
                                 </div>
                                 <div class="button-wrap">
-                                    <a href="#" class="button-try"><span aria-hidden="true" class="glyphicon glyphicon-user"></span>Детальніше</a>
+                                    <a href="#" class="button-try"><span aria-hidden="true"
+                                                                         class="glyphicon glyphicon-user"></span>Детальніше</a>
                                 </div>
                             </div>
                         </div>
 
                     </div>
                 </div>
+                {# END ALL PEOPLE PANEL #}
 
             </div>
         </div>

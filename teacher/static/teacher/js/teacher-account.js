@@ -172,7 +172,7 @@ ResizedPhotoManager.prototype.getRealPhotoArea = function () {
         (offset.offsetTop + areaSide) * scale,
         (offset.offsetLeft + areaSide) * scale
     ]
-}
+};
 
 $(function () {
 

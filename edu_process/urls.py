@@ -3,7 +3,7 @@ from django.views.generic.base import TemplateView
 from .views import (
     IndexView, SearchGroup, MessagesApiView, MessageView,
     MessageUserApiView, UserAvatarView, LogoutView, CourseListJsonView,
-    CourseView
+    CourseView, LessonJsonView, GlobalSearchView
 )
 
 urlpatterns = [
@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^avatar/$', UserAvatarView.as_view(), name='user-avatar'),
     url(r'^auth/logout/$', LogoutView.as_view(), name='logout'),
     url(r'^course/(?P<pk>[0-9]+)/$', CourseView.as_view(), name='course-detail'),
-    url(r'^search/$', TemplateView.as_view(template_name='edu_process/global-search.html'), name='search'),
+    url(r'^search/$', GlobalSearchView.as_view(), name='search'),
+    url(r'lesson/(?P<pk>[0-9]+)/json/$', LessonJsonView.as_view(), name='lesson-detail-json'),
 
 ]

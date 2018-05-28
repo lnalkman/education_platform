@@ -138,7 +138,7 @@ a:hover, a:focus {
 	width: 100%;
 }
 .items .item a {
-	display: block;
+	/*display: block;*/
 	color: #555;
 }
 .items .item a:hover {

@@ -1,5 +1,6 @@
 {% extends 'skeleton.html' %}
 {% load staticfiles %}
+{% load edu_extras %}
 
 {% block head %}
     <title>Огляд дня | KPI EDU</title>
@@ -41,7 +42,7 @@
                                 <a href="{% url 'teacher:course-settings' pk=note.course.pk %}"
                                    class="label label-primary">{{ note.course }}</a>
                             {% endif %}
-                            <p class="note-content">{{ note.content }}</p>
+                            <p class="note-content">{{ note.content|cut_extra_indent|linebreaksbr }}</p>
                             <button class="edit" data-toggle="modal" data-target="#edit-note-modal"
                                     data-note-pk="{{ note.pk }}"
                                     data-form-get-url="{% url 'teacher:calendar-note-change' %}">Редагувати

@@ -1,0 +1,40 @@
+{% extends 'skeleton.html' %}
+{% load staticfiles %}
+
+{% block head %}
+    <title>Календар | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'teacher/css/calendar-style.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% include 'student/components/navbar.html' with calendar=True %}
+
+    <div class="nav">
+        <a href="{% url 'student:calendar' year=year|add:"-1" month=month %}"
+           class="glyphicon glyphicon-chevron-left prew-year"></a>
+        <a href="{% url 'student:calendar' year=year|add:"1" month=month %}"
+           class="glyphicon glyphicon-chevron-right next-year"></a>
+        <form action="{% url 'student:calendar-redirect' %}" method="get">
+            <input type="text" name="year" value="{{ year }}"
+                   onkeypress='return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 4'></input>
+            <input type="hidden" name="month" value="{{ month }}"></input>
+            <button><span class="glyphicon glyphicon-arrow-right"></span></button>
+        </form>
+    </div>
+    <div class="calendar-block">
+        {% autoescape off %}
+            <div class="aspect-text">
+                {{ calendar_table }}
+            </div>
+        {% endautoescape %}
+    </div>
+{% endblock %}
+

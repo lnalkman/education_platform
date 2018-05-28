@@ -1,0 +1,53 @@
+{% extends 'skeleton.html' %}
+{% load staticfiles %}
+{% load edu_extras %}
+
+{% block head %}
+    <title>Огляд дня | KPI EDU</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'teacher/css/calendar-day.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="navbar-opener">
+        <span class="glyphicon glyphicon-menu-down"></span>
+    </div>
+
+    {#   NAVBAR   #}
+    {% include 'student/components/navbar.html' with calendar=True %}
+
+    <div class="nav">
+        <a href="{{ month_url }}"><span class="glyphicon glyphicon-menu-left"></span><span
+                class="hidden-xs">Назад</span></a>
+        <h4 class="date">{{ day_date.date }}</h4>
+    </div>
+    <div class="content">
+        {% if not object_list %}
+            <h3 class="no-notes">В цей день відсутні події</h3>
+        {% else %}
+            <div class="col-xs-12">
+                <div class="row">
+                    {% for note in object_list %}
+                        <div class="card col-md-4 col-md-offset-{% cycle '1' '2' %} col-sm-offset-1 col-sm-10">
+                            <h2 class="card-title">
+                                {{ note.title }}
+                                <span class="card-subtitle">{{ note.date.timetuple.tm_hour|stringformat:"02d" }}:{{ note.date.timetuple.tm_min|stringformat:"02d" }}</span>
+                            </h2>
+                            {% if note.course %}
+                                <a href="{% url 'course-detail' pk=note.course.pk %}"
+                                   class="label label-primary">{{ note.course }}</a>
+                            {% endif %}
+                            <p class="note-content">{{ note.content|cut_extra_indent|linebreaksbr }}</p>
+                        </div>
+                        {% autoescape off %}{% cycle '' '<div class="clearfix"></div>' %}{% endautoescape %}
+                    {% endfor %}
+
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+
+{% endblock %}
